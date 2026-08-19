@@ -1750,6 +1750,9 @@ class Component extends DCLogic {
             });
             // The concept variant changes the control only — a pick writes to the
             // note exactly as the chip grid does, same key, same line format.
+            // Append-only, in the sequence the clinician worked (REQ-G-1): a
+            // re-rate lands below whatever was typed since, never rewriting a
+            // line that already sits above free text.
             if (!was && pad) pad.addLine('code:' + key, r.name, cc + ' - ' + cl);
           },
         })),

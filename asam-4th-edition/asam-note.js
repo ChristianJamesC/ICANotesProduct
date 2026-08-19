@@ -71,8 +71,11 @@ export class NotePad {
     }
     entry.id = 'e' + (++SEQ);
     this.entries.push(entry);
-    this.busy = false;
+    // Stay busy through the render: this.text was just moved into an entry, but
+    // the DOM still shows it in .ymanual. A re-read here would capture it back
+    // and the same free text would be frozen again on every later entry.
     this.render();
+    this.busy = false;
   }
 
   /** A key/value line — rating chip, Y/N answer, checkbox. */

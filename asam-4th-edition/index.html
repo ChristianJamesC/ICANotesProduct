@@ -1,0 +1,2209 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ASAM 4th Edition — Prototype</title>
+<!-- Vendored so the page needs no CDN, no bundler and no host runtime: plain
+     static files, all paths relative. Serve the folder from anything. -->
+<script src="vendor/react.production.min.js"></script>
+<script src="vendor/react-dom.production.min.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="ds/tokens/fonts.css">
+  <link rel="stylesheet" href="ds/tokens/colors.css">
+  <link rel="stylesheet" href="ds/tokens/swatch.css">
+  <link rel="stylesheet" href="ds/tokens/typography.css">
+  <link rel="stylesheet" href="ds/tokens/spacing.css">
+  <link rel="stylesheet" href="ds/tokens/radii.css">
+  <link rel="stylesheet" href="ds/tokens/effects.css">
+  <link rel="stylesheet" href="ds/styles.css">
+  <script src="ds/ds-bundle.js"></script>
+  <script src="shrub-data.js"></script>
+  <script src="asam-data.js"></script>
+  <script src="asam-reqs.js"></script>
+  <style>
+    body{margin:0;background:#DEDFDE;font-family:'Lato',sans-serif}
+    a{color:#0084E3}
+    a:hover{color:#0d6f99}
+    /* The note pad is an uncontrolled contenteditable island — NotePad writes raw
+       HTML into it, so these rules cannot be inline styles. */
+    .notepad{cursor:text}
+    .notepad .ydoc{outline:none;min-height:100%;padding:12px 14px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.45;color:#000}
+    .notepad[data-empty="true"]:not([data-focus="true"]) .ydoc::before{content:"Selections compile here — or type your own notes…";color:#a09a72;font-style:italic;font-size:12px;line-height:1.5}
+    .notepad .yline,.notepad .ytext{margin:0 0 8px}
+    .notepad .ynarr{margin:0 0 12px}
+    .notepad .yl-k{font-weight:700}
+    .notepad .ynarr-b p,.notepad .ytext p,.notepad .ymanual p{margin:0 0 8px}
+    .notepad .ymanual{outline:none;min-height:1.45em}
+    /* Focus rings — one token-driven ring for every focusable control.
+       Thickness scales with the control's own font size, floored at 2px.
+       Scoped under #dc-root so it outranks the bundle's .ica-btn:focus reset. */
+    #dc-root{--focus-ring-color:var(--ica-tertiary-emphasis,#7fb942)}
+    #dc-root :is(a,button,input,textarea,summary,[tabindex]){
+      --outline-size:max(2px,0.08em);
+      --outline-style:solid;
+      --outline-color:var(--focus-ring-color);
+    }
+    /* Base fallback — survives in browsers without :focus-visible */
+    #dc-root :is(a,button,input,textarea,summary,[tabindex]):focus{
+      outline:var(--outline-size) var(--outline-style) var(--outline-color);
+      outline-offset:var(--outline-offset,var(--outline-size));
+    }
+    #dc-root :is(a,button,input,textarea,summary,[tabindex]):focus-visible{
+      outline:var(--outline-size) var(--outline-style) var(--outline-color);
+      outline-offset:var(--outline-offset,var(--outline-size));
+    }
+    /* Drop the fallback where :focus-visible is understood (invalid selector
+       in older browsers, so the rule is discarded and the ring stays). */
+    #dc-root :is(a,button,input,textarea,summary,[tabindex]):focus:not(:focus-visible){
+      outline:none;
+    }
+    /* Kendo/ICA buttons ship their own box-shadow ring — don't stack two. */
+    #dc-root .ica-btn:focus-visible{box-shadow:none}
+    /* Production label colour for outline-primary buttons (#124D6A); the bundle's
+       class rule is unreachable from an inline style. */
+    #dc-root .ica-btn.outline.primary{color:#124D6A}
+    #dc-root .ica-btn.outline.primary:hover:not(:disabled){
+      background:var(--ica-primary-hover,#0d6f99);
+      border-color:var(--ica-primary-hover,#0d6f99);
+      color:#fff;
+      text-decoration:none;
+    }
+  </style>
+</helmet>
+
+<div style="width:100%;height:100vh;display:flex;flex-direction:column;overflow:hidden;background:#DEDFDE;font-family:'Lato',sans-serif;color:#4A4A4A">
+
+  <div style="display:flex;align-items:center;gap:18px;height:90px;padding:0 22px;background:#fff;border-bottom:1px solid #d3d3d3;flex:0 0 90px">
+    <img src="assets/ICANotes_Logo_Color.png" alt="ICANotes Plus" style="height:26px;display:block;flex-shrink:0">
+    <sc-if value="{{ isChartFace }}" hint-placeholder-val="{{ false }}">
+      <span style="font-size:18px;font-weight:700;color:#1c1f24">Chart Face</span>
+      <span style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:#2d3138;background:#fff;border:1px solid #c7ccd2;border-radius:14px;padding:5px 12px"><x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-chat-circle-text" size="{{ 13 }}" color="#2d3138" hint-size="13px,13px"></x-import>Go to Messages</span>
+    </sc-if>
+    <div style="flex:0 0 350px;width:350px;margin:0 auto;display:flex;align-items:center;gap:11px;height:40px;padding:0 14px;background:#fff;border:1px solid #9CA4AC;border-radius:5px;font-size:15px;color:#6a727c">
+      <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-magnifier" size="{{ 16 }}" color="#9CA4AC" hint-size="16px,16px"></x-import><span>Search Charts</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:20px;flex-shrink:0">
+      <img src="assets/svg/nav-dashboard.svg" alt="" style="width:18px;height:18px;opacity:.65;filter:grayscale(1)">
+      <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-chat-circle-text" size="{{ 18 }}" color="#6a727c" title="Messages" hint-size="18px,18px"></x-import>
+      <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-notification" size="{{ 18 }}" color="#6a727c" title="Notifications" hint-size="18px,18px"></x-import>
+      <span style="display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding-left:20px;border-left:1px solid #e4e7ea">
+        <span style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:#1c1f24">Christian Carlstrom<span style="font-size:10px;color:#5b6570">▾</span></span>
+        <button type="button" onClick="{{ openReqs }}" style="font-family:'Lato',sans-serif;font-size:10.5px;font-weight:700;color:#124D6A;background:#CDEEFD;border:1px solid #196D96;border-radius:4px;padding:2px 7px;line-height:1.3;cursor:pointer" style-hover="background:#B8E5FA">What’s changing</button>
+      </span>
+    </div>
+  </div>
+
+  <div style="display:flex;background:#fff;flex:1;min-height:0">
+    <nav aria-label="Main navigation" style="width:90px;flex-shrink:0;box-sizing:border-box;background:#fff;border-right:1px solid #e4e7ea;display:flex;flex-direction:column;align-items:center;gap:15px;padding:16px 0;min-height:0;overflow-y:auto">
+      <a style="position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;width:100%;padding:6px 4px;box-sizing:border-box;cursor:pointer;text-decoration:none;color:#082F43"><img src="assets/svg/nav-dashboard.svg" alt="" style="width:22px;height:22px;opacity:.65;filter:grayscale(1)"><span style="font-size:12px;font-weight:700;letter-spacing:.02em;text-align:center;line-height:1.1">DASHBOARD</span></a>
+      <a style="position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;width:100%;padding:6px 4px;box-sizing:border-box;cursor:pointer;text-decoration:none;color:#107ead"><img src="assets/svg/nav-charts.svg" alt="" style="width:22px;height:22px"><span style="font-size:12px;font-weight:700;letter-spacing:.02em;text-align:center;line-height:1.1">CHART ROOM</span><i style="position:absolute;right:13px;top:5px;width:7px;height:7px;border-radius:50%;background:#107ead"></i></a>
+      <a style="position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;width:100%;padding:6px 4px;box-sizing:border-box;cursor:pointer;text-decoration:none;color:#082F43"><img src="assets/svg/nav-calendar.svg" alt="" style="width:22px;height:22px;opacity:.65;filter:grayscale(1)"><span style="font-size:12px;font-weight:700;letter-spacing:.02em;text-align:center;line-height:1.1">CALENDAR</span></a>
+      <a style="position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;width:100%;padding:6px 4px;box-sizing:border-box;cursor:pointer;text-decoration:none;color:#082F43"><img src="assets/svg/nav-calendar.svg" alt="" style="width:22px;height:22px;opacity:.65;filter:grayscale(1)"><span style="font-size:12px;font-weight:700;letter-spacing:.02em;text-align:center;line-height:1.1">QUICK CALENDAR</span></a>
+      <a style="position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;width:100%;padding:6px 4px;box-sizing:border-box;cursor:pointer;text-decoration:none;color:#082F43"><img src="assets/svg/nav-messages.svg" alt="" style="width:22px;height:22px;opacity:.65;filter:grayscale(1)"><span style="font-size:12px;font-weight:700;letter-spacing:.02em;text-align:center;line-height:1.1">SUPPORT</span></a>
+      <a style="position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;width:100%;padding:6px 4px;box-sizing:border-box;cursor:pointer;text-decoration:none;color:#082F43"><span style="font-size:20px;line-height:.7;opacity:.65">⋯</span><span style="font-size:12px;font-weight:700;letter-spacing:.02em;text-align:center;line-height:1.1">MORE</span></a>
+      <a style="position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;width:100%;padding:6px 4px;box-sizing:border-box;cursor:pointer;text-decoration:none;color:#082F43;margin-top:auto"><img src="assets/svg/nav-settings.svg" alt="" style="width:22px;height:22px;opacity:.65;filter:grayscale(1)"><span style="font-size:12px;font-weight:700;letter-spacing:.02em;text-align:center;line-height:1.1">SETTINGS</span></a>
+    </nav>
+
+    <div style="position:relative;flex:1;min-width:0;display:flex;flex-direction:column;background:#DEDFDE;min-height:0">
+
+      <sc-if value="{{ previewOpen }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;background:#fff">
+
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 18px 12px;flex:0 0 auto">
+            <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" themeColor="base" fillMode="outline" icon="{{ tbUserIcon }}" onClick="{{ closePreview }}" hint-size="150px,38px">Chart Face</x-import>
+            <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" themeColor="base" fillMode="outline" icon="{{ tbBackIcon }}" onClick="{{ closePreview }}" hint-size="150px,38px">Go To Work Areas</x-import>
+            <x-import component-from-global-scope="ICANotesDesignSystem_94514a.ButtonGroup" items="{{ invoiceGroup }}" onChange="{{ noop }}" hint-size="240px,38px"></x-import>
+            <x-import component-from-global-scope="ICANotesDesignSystem_94514a.ButtonGroup" items="{{ summaryGroup }}" onChange="{{ noop }}" hint-size="190px,38px"></x-import>
+            <span style="display:flex;align-items:center;gap:10px;margin-left:auto;flex-wrap:wrap">
+            <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" themeColor="base" fillMode="outline" icon="{{ tbCopyIcon }}" hint-size="150px,38px">Copy to Clipboard</x-import>
+            <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" themeColor="base" fillMode="outline" icon="{{ tbDownloadIcon }}" hint-size="150px,38px">Download</x-import>
+            <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" themeColor="base" fillMode="outline" icon="{{ tbPrintIcon }}" hint-size="150px,38px">Print</x-import>
+            </span>
+          </div>
+
+          <div style="flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;padding:0 22px 0 18px;overflow-y:auto">
+
+            <div style="border:1px solid #d3d7db;background:#fff;padding:40px 44px 60px;font-family:'Lato',sans-serif;color:#1c1f24;align-self:start">
+              <div style="text-align:center;font-size:17px;line-height:1.7;margin-bottom:34px">
+                <div>Topaz Care &amp; Solutions, LLC</div>
+                <div>Phone: (647) 497-1652</div>
+              </div>
+              <div style="display:flex;justify-content:space-between;gap:24px;font-size:14px;line-height:1.85;margin-bottom:30px">
+                <span>
+                  <div style="font-weight:700">Test Client</div>
+                  <div><b>Chart ID:</b>&nbsp; 0001</div>
+                  <div><b>DOB:</b>&nbsp; 06-01-1980</div>
+                </span>
+                <span style="text-align:right">
+                  <div><b>Date</b> Thursday, August 13, 2026</div>
+                  <div><b>Start Time</b> 05:21 PM -04</div>
+                </span>
+              </div>
+              <h1 style="margin:0 0 26px;font-size:26px;font-weight:700">ASAM</h1>
+
+              <sc-for list="{{ noteSections }}" as="s" hint-placeholder-count="2">
+                <div style="margin-bottom:30px">
+                  <div style="font-size:16px;font-weight:700;text-decoration:underline;margin-bottom:16px">{{ s.heading }}</div>
+                  <p style="margin:0 0 16px;font-size:14px;line-height:1.7"><b>{{ s.scoreLine }}</b>{{ s.bridge }}</p>
+                  <p style="margin:0;font-size:14px;line-height:1.75;text-wrap:pretty">{{ s.narrative }}</p>
+                </div>
+              </sc-for>
+
+              <sc-if value="{{ noteHasRec }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-bottom:26px">
+                  <div style="font-size:16px;font-weight:700;text-decoration:underline;margin-bottom:16px">Recommendation</div>
+                  <sc-if value="{{ noteHasDx }}" hint-placeholder-val="{{ true }}">
+                    <div style="font-size:14px;font-weight:700;text-decoration:underline;margin-bottom:12px">Diagnoses:</div>
+                    <sc-for list="{{ noteDiagnoses }}" as="d" hint-placeholder-count="1">
+                      <div style="display:flex;gap:24px;font-size:14px;line-height:1.7;margin-bottom:10px">
+                        <span style="flex:1;min-width:0">{{ d.code }} - {{ d.desc }}</span>
+                        <span style="flex:0 0 150px">({{ d.chron }})</span>
+                      </div>
+                    </sc-for>
+                  </sc-if>
+                  <sc-if value="{{ noteHasLoc }}" hint-placeholder-val="{{ false }}">
+                    <p style="margin:16px 0 8px;font-size:14px;line-height:1.7"><b>Recommended Level of Care:</b> {{ noteLoc }}</p>
+                    <p style="margin:0;font-size:14px;line-height:1.75;text-wrap:pretty">{{ noteLocJustify }}</p>
+                  </sc-if>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ previewEmpty }}" hint-placeholder-val="{{ true }}">
+                <p style="margin:0;font-size:14px;color:#8a939b;font-style:italic">Nothing compiled yet — make selections on the dimension tabs, then compile again.</p>
+              </sc-if>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:22px;justify-content:flex-end;padding-bottom:8px;min-height:100%">
+              <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Checkbox" checked="{{ sigLines }}" onChange="{{ setSigLines }}" label="Include blank signature lines for print" hint-size="300px,20px"></x-import>
+
+              <div style="border:1px solid #d3d7db;border-radius:4px;overflow:hidden">
+                <div style="padding:16px 20px;font-size:17px;font-weight:700;color:#1c1f24">Signed Copies</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;background:#EAF3E7;border-top:1px solid #d3d7db;border-bottom:1px solid #d3d7db">
+                  <span style="padding:12px 18px;font-size:14px;color:#1c1f24">Timestamp</span>
+                  <span style="padding:12px 18px;font-size:14px;color:#1c1f24;border-left:1px solid #dbe6d7">Signee</span>
+                  <span style="padding:12px 18px;font-size:14px;color:#1c1f24;border-left:1px solid #dbe6d7">Actions</span>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:64px 20px 56px;background:#F7F7F7">
+                  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-draft" size="{{ 50 }}" color="#9aa3ab" hint-size="50px,50px"></x-import>
+                  <span style="font-size:16px;color:#3a3f46">There are currently no signed copies for this note.</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;padding:12px 18px;border-top:1px solid #d3d7db;font-size:13px;color:#5b6570">
+                  <span style="display:inline-flex;align-items:center;gap:14px">
+                    <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-caret-alt-to-left" size="{{ 12 }}" color="#9aa3ab" hint-size="12px,12px"></x-import>
+                    <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-caret-left" size="{{ 12 }}" color="#9aa3ab" hint-size="12px,12px"></x-import>
+                    <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-caret-right" size="{{ 12 }}" color="#9aa3ab" hint-size="12px,12px"></x-import>
+                    <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-caret-alt-to-right" size="{{ 12 }}" color="#9aa3ab" hint-size="12px,12px"></x-import>
+                  </span>
+                  <span style="width:88px;display:flex">
+                    <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Select" options="{{ pageSizes }}" value="{{ pageSize }}" onChange="{{ setPageSize }}" size="small" stretch="{{ yes }}" hint-size="88px,28px"></x-import>
+                  </span>
+                  <span>items per page</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;justify-content:flex-end;padding:14px 20px;background:#DCE9F5;border-top:1px solid #c3d5e6;flex:0 0 auto">
+            <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" themeColor="primary" fillMode="outline" size="large" hint-size="160px,42px">Electronically Sign</x-import>
+          </div>
+        </div>
+      </sc-if>
+
+      <div style="display:flex;align-items:center;gap:14px;padding:12px 16px 10px;flex-wrap:wrap;flex:0 0 auto">
+        <button type="button" onClick="{{ goChartRoom }}" style="{{ chartRoomBtnStyle }}"><x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-folder" size="{{ 14 }}" hint-size="14px,14px"></x-import>Chart Room</button>
+        <button type="button" onClick="{{ goChartFace }}" style="{{ chartFaceBtnStyle }}"><x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-user" size="{{ 14 }}" hint-size="14px,14px"></x-import>Chart Face</button>
+        <div style="position:relative;border:1px solid #b7bcc3;border-radius:6px;background:#fff;padding:8px 12px;font-size:12.5px;color:#2d3138">
+          <label style="position:absolute;top:-7px;left:9px;background:#DEDFDE;padding:0 5px;font-size:10px;color:#5b6570">Note Date</label>Jul 23, 2026 11:52 AM MDT
+        </div>
+        <a style="color:#0084E3;font-size:12.5px;font-weight:600;cursor:pointer">Link Note to Appointment</a>
+      </div>
+
+      <sc-if value="{{ isChartFace }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1;min-height:0;display:flex;flex-direction:column;overflow-y:auto;padding:0 16px 16px">
+
+          <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:10px 0 6px;flex:0 0 auto">
+            <div style="width:46px;height:46px;border-radius:50%;background:#e4e7ea;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative">
+              <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-user" size="{{ 20 }}" color="#8a95a0" hint-size="20px,20px"></x-import>
+              <span style="position:absolute;top:-3px;left:-3px;background:#fff;border-radius:50%;padding:1px;display:flex"><x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-warning-triangle" size="{{ 14 }}" color="#DF1600" hint-size="14px,14px"></x-import></span>
+            </div>
+            <b style="font-size:15px;color:#1c1f24">Test Client</b>
+            <span style="font-size:12px;color:#2d3138;background:#fff;border:1px solid #c7ccd2;border-radius:5px;padding:5px 10px">In Active ▾</span>
+            <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:#2d3138">MRN <span style="border:1px solid #c7ccd2;border-radius:4px;background:#fff;padding:3px 8px">1</span></span>
+            <span style="font-size:12px;color:#2d3138">Chart ID <b>0001</b></span>
+            <span style="font-size:12px;color:#9aa5ad">DOB 06/01/1980 (46)</span>
+            <span style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
+              <span style="font-size:12px;color:#0084E3;font-weight:600;background:#fff;border:1px solid #bcdcf5;border-radius:5px;padding:5px 10px">$ Account</span>
+              <span style="font-size:12px;color:#0084E3;font-weight:600;background:#fff;border:1px solid #bcdcf5;border-radius:5px;padding:5px 10px">Insurance</span>
+              <span style="font-size:12px;color:#2d3138;background:#fff;border:1px solid #c7ccd2;border-radius:5px;padding:5px 10px">+ Dr. Serena Tree ▾</span>
+              <span style="font-size:12px;color:#2d3138;background:#fff;border:1px solid #c7ccd2;border-radius:5px;padding:5px 10px">Start Telehealth</span>
+              <span style="font-size:12px;color:#2d3138;background:#fff;border:1px solid #c7ccd2;border-radius:5px;padding:5px 10px">Review Lab Orders</span>
+            </span>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:0 0 10px;flex:0 0 auto">
+            <span style="width:46px;flex-shrink:0"></span>
+            <span style="font-size:12px;color:#2d3138;background:#fff;border:1px solid #c7ccd2;border-radius:5px;padding:5px 10px">Episode of Care</span>
+            <span style="font-size:12px;color:#2d3138;background:#fff;border:1px solid #c7ccd2;border-radius:5px;padding:5px 10px">Appointment History</span>
+            <span style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
+              <span style="font-size:12px;color:#2d3138;background:#fff;border:1px solid #c7ccd2;border-radius:5px;padding:5px 10px">+ Houston Clin... ▾</span>
+              <span style="font-size:12px;color:#2d3138;background:#fff;border:1px solid #c7ccd2;border-radius:5px;padding:5px 10px">View Clinial Team</span>
+              <span style="font-size:12px;color:#9aa5ad;background:#ececec;border:1px solid #d8dcdf;border-radius:5px;padding:5px 10px">Pending Lab Orders</span>
+            </span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:0 0 10px;flex:0 0 auto;font-size:12.5px;font-weight:600;color:#B4392B">
+            <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-information-solid" size="{{ 15 }}" color="#B4392B" hint-size="15px,15px"></x-import>Tx Plan Due 3/22/26
+          </div>
+
+          <div style="display:flex;gap:18px;overflow-x:auto;border-bottom:1px solid #c7ccd2;flex:0 0 auto">
+            <sc-for list="{{ faceTabs }}" as="ft" hint-placeholder-count="7">
+              <span style="{{ ft.style }}">{{ ft.label }}</span>
+            </sc-for>
+          </div>
+
+          <div style="background:#dedfde;border:1px solid #bdbdbd;flex:0 0 auto;min-height:420px;padding:14px;display:grid;grid-template-columns:260px 1fr;gap:14px;align-items:stretch">
+
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <sc-for list="{{ faceCards }}" as="c" hint-placeholder-count="6">
+                <div style="background:#fff;border-radius:4px;border-top:3px solid {{ c.color }};padding:10px 12px;font-size:12px">
+                  <div style="font-weight:700;color:#1c1f24;margin-bottom:6px">{{ c.title }}</div>
+                  <div style="color:{{ c.bodyColor }};font-style:{{ c.bodyStyle }};white-space:pre-line">{{ c.body }}</div>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+              <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+                <span style="font-size:12.5px;color:#2d3138;background:#fff;border:1px solid #c7ccd2;border-radius:5px;padding:6px 12px">Show All ▾</span>
+                <span style="font-size:12.5px;color:#5b6570">Showing 10 of 16 Notes</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <sc-for list="{{ noteRows }}" as="n" hint-placeholder-count="3">
+                  <div style="border:1px solid #cfd3d7;border-radius:6px;overflow:hidden;background:#fff">
+                    <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;flex-wrap:wrap">
+                      <span style="color:#9aa5ad;font-size:11px">▸</span>
+                      <button type="button" onClick="{{ n.open }}" style="background:none;border:0;padding:0;font-size:13px;font-weight:700;color:#1c1f24;cursor:pointer">{{ n.name }}</button>
+                      <span style="font-size:12px;color:#5b6570">{{ n.date }}</span>
+                      <span style="font-size:10.5px;font-weight:700;color:#7a6a2f;background:#FFE79A;border-radius:10px;padding:3px 10px">{{ n.status }}</span>
+                      <span style="width:22px;height:22px;border-radius:50%;background:#196D96;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ n.initials }}</span>
+                      <span style="margin-left:auto;display:flex;gap:8px">
+                        <span style="font-size:11px;font-weight:700;color:#8ea6b4;background:#e7edf0;border-radius:4px;padding:5px 10px">Compiled Note</span>
+                        <span style="font-size:11px;font-weight:700;color:#3d6b1f;background:#d9fbb5;border-radius:4px;padding:5px 10px">Work Area</span>
+                      </span>
+                    </div>
+                    <div style="height:64px;background:#FFFFBD;border-top:1px solid #e6e6ae"></div>
+                  </div>
+                </sc-for>
+              </div>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;padding-top:6px">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#1c1f24;margin-bottom:8px">Assessments</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+                <sc-for list="{{ assessBtns }}" as="b" hint-placeholder-count="3">
+                  <button type="button" onClick="{{ b.click }}" style="{{ b.style }}grid-column:span 2;">{{ b.label }}</button>
+                </sc-for>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#1c1f24;margin-bottom:8px">Progress Notes</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+                <sc-for list="{{ noteBtns }}" as="b" hint-placeholder-count="6">
+                  <button type="button" style="{{ b.style }}">{{ b.label }}</button>
+                </sc-for>
+              </div>
+            </div>
+            <div>
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+                <span style="font-size:13px;font-weight:700;color:#1c1f24">Other</span>
+                <span style="font-size:10.5px;font-weight:600;color:#fff;background:#2d3138;border-radius:4px;padding:3px 8px">Coming Soon</span>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+                <sc-for list="{{ otherBtns }}" as="b" hint-placeholder-count="6">
+                  <button type="button" style="{{ b.style }}">{{ b.label }}</button>
+                </sc-for>
+              </div>
+            </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isV3Stub }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1;min-height:0;display:flex;flex-direction:column;padding:16px;overflow-y:auto">
+          <div style="background:#fff;border:1px solid #d3d3d3;border-radius:8px;padding:20px;max-width:520px">
+            <div style="font-size:15px;font-weight:700;color:#1c1f24;margin-bottom:8px">ASAM — 3rd Edition</div>
+            <p style="margin:0 0 16px;font-size:12.5px;color:#5b6570;line-height:1.6">This opens the existing v3 ASAM assessment, unchanged. This prototype covers the 4th Edition rebuild only, so v3 isn’t reproduced here.</p>
+            <button type="button" onClick="{{ goChartFace }}" style="font-family:'Lato',sans-serif;font-size:13px;font-weight:600;color:#2d3138;background:#e9ebee;border:1px solid #b7bcc3;border-radius:6px;padding:9px 14px;cursor:pointer">← Back to Chart Face</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isChartView }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:0 16px 10px;flex-wrap:wrap;flex:0 0 auto">
+        <div style="font-size:12.5px;color:#2d3138;line-height:1.45">
+          <div><b>Client, Test</b> <a style="color:#0084E3;font-weight:600;cursor:pointer">(Demographics)</a></div>
+          <div>Chart ID: 0001 | DOB: 06/01/1980 (46)</div>
+        </div>
+        <div style="font-size:12.5px;color:#2d3138;line-height:1.45;text-align:right">
+          <div>Content Edit Mode</div>
+          
+        </div>
+      </div>
+
+      <div style="display:flex;gap:3px;padding:0 16px;overflow-x:auto;flex:0 0 auto">
+        <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="7">
+          <button type="button" onClick="{{ t.pick }}" style="{{ t.style }}">{{ t.label }}</button>
+        </sc-for>
+      </div>
+
+      <div style="background:#DEDFDE;border:1px solid var(--ica-color-border);margin:0;padding:12px 10px 18px;flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column">
+
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:12px;flex-wrap:wrap;flex:0 0 auto">
+          <span style="font-family:var(--font-lato);font-size:var(--font-size-h6);font-weight:var(--ica-font-weight-700);line-height:normal;color:#1c1f24">{{ activeTitle }}</span>
+          <span style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+            <a style="display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:#B4392B;cursor:pointer;font-weight:600">Delete This Note<x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-trash" size="{{ 13 }}" color="#B4392B" hint-size="13px,13px"></x-import></a>
+          </span>
+        </div>
+
+        <div style="flex:1;min-height:0;display:grid;grid-template-columns:minmax(660px,1fr) minmax(628px,798px);gap:10px;align-items:stretch;overflow-x:auto">
+
+          <div ref="{{ leftColRef }}" style="min-width:0;min-height:0;overflow-y:auto;overflow-x:hidden;scrollbar-gutter:stable;padding-right:20px;display:flex;flex-direction:column">
+            <sc-if value="{{ isRec }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <div style="position:relative;border:1px solid #b7bcc3;border-radius:6px;background:#fff;padding:10px 12px">
+                  <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><span style="font-size:12.5px;font-weight:700;color:#2d3138">Diagnosis</span><button type="button" style="font-family:'Lato',sans-serif;font-size:11.5px;color:#124D6A;background:#e9ebee;border:1px solid #b7bcc3;border-radius:4px;padding:3px 8px;cursor:pointer">Enter</button><span style="font-size:11.5px;color:#5b6570">« Click here to change or add a diagnosis.</span></div>
+                  <div style="min-height:54px;border:1px solid #dfe3e7;border-radius:4px;background:#EAF7F0;padding:7px 9px;font-family:var(--font-lato);font-size:13px;color:#1c1f24">Unspecified mood [affective] disorder, F39 (ICD10), Active</div>
+                  <div style="display:flex;align-items:center;gap:14px;margin-top:8px;flex-wrap:wrap">
+                    <span style="font-family:var(--font-lato);font-size:12px;color:#3a3f46">Include Diagnosis in the note?</span>
+                    <x-import component-from-global-scope="ICANotesDesignSystem_94514a.RadioGroup" options="{{ ynOptions }}" value="{{ recDx }}" onChange="{{ setRecDx }}" orientation="horizontal" hint-size="126px,24px"></x-import>
+                  </div>
+                </div>
+                <div style="position:relative;border:1px solid #b7bcc3;border-radius:6px;background:#fff;padding:10px 12px">
+                  <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><span style="font-size:12.5px;font-weight:700;color:#2d3138">Service Codes</span><button type="button" style="font-family:'Lato',sans-serif;font-size:11.5px;color:#124D6A;background:#e9ebee;border:1px solid #b7bcc3;border-radius:4px;padding:3px 8px;cursor:pointer">Enter</button><span style="font-size:11.5px;color:#5b6570">« Click here to select service code(s).</span></div>
+                  <div style="min-height:54px;border:1px solid #dfe3e7;border-radius:4px;background:#FFFDF0"></div>
+                  <div style="display:flex;align-items:center;gap:14px;margin-top:8px;flex-wrap:wrap">
+                    <span style="font-family:var(--font-lato);font-size:12px;color:#3a3f46">Include Service Codes in the note?</span>
+                    <x-import component-from-global-scope="ICANotesDesignSystem_94514a.RadioGroup" options="{{ ynOptions }}" value="{{ recSvc }}" onChange="{{ setRecSvc }}" orientation="horizontal" hint-size="126px,24px"></x-import>
+                    <span style="margin-left:auto;display:flex"><x-import component-from-global-scope="ICANotesDesignSystem_94514a.Checkbox" checked="{{ telehealth }}" onChange="{{ setTelehealth }}" label="Telehealth Session" hint-size="150px,20px"></x-import></span>
+                  </div>
+                </div>
+                <div style="display:flex;gap:8px">
+                  <span style="flex:1;display:flex"><x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" themeColor="primary" fillMode="outline" stretch="{{ yes }}" hint-size="100%,32px">Make a Recommendation</x-import></span>
+                  <span style="flex:1;display:flex"><x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" themeColor="primary" fillMode="outline" onClick="{{ openTimeSpent }}" stretch="{{ yes }}" hint-size="100%,32px">{{ timeSpentLabel }}</x-import></span>
+                </div>
+                <div ref="{{ ratingsRef }}" style="display:flex;flex-direction:column;gap:5px">
+                  <span onClick="{{ toggleRatings }}" style="display:flex;align-items:center;gap:8px;height:32px;font-size:12.5px;font-weight:700;color:#2d3138;cursor:pointer;user-select:none">
+                    Dimension ratings
+                    <span style="margin-left:auto;font-size:10px;color:#5b6570">{{ ratingsCaret }}</span>
+                  </span>
+                  <sc-if value="{{ ratingsOpen }}" hint-placeholder-val="{{ true }}">
+                    <div style="border:1px solid #b7bcc3;border-radius:6px;background:#fff;overflow:hidden">
+                      <sc-for list="{{ recSummary }}" as="g" hint-placeholder-count="6">
+                        <div style="display:flex;flex-direction:column;gap:2px;padding:6px 10px 7px;border-bottom:1px solid #f2f4f5">
+                          <span style="font-family:var(--font-lato);font-size:11.5px;font-weight:700;color:#2d3138">{{ g.dimLabel }}</span>
+                          <span style="font-family:var(--font-lato);font-size:11.5px;color:#0d6f99;text-wrap:pretty">{{ g.ratingsText }}</span>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                </div>
+
+                <div ref="{{ locRef }}" onPointerDownCapture="{{ revealLoc }}" onClickCapture="{{ revealLoc }}" onFocusCapture="{{ revealLoc }}" style="display:flex;flex-direction:column;gap:5px">
+                  <span style="font-size:12.5px;font-weight:700;color:#2d3138">Recommended Level of Care</span>
+                  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Select" options="{{ locOptions }}" value="{{ loc }}" onChange="{{ setLoc }}" stretch="{{ yes }}" hint-size="100%,32px"></x-import>
+                  <span style="font-size:11px;color:#5b6570">Confirmed option list (REQ-R-4).</span>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isDim }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column">
+                <p style="font-family: var(--font-lato); font-size: 14px; font-weight: var(--ica-font-weight-400); line-height: 20px; color: #2d3138; margin: 0 0 6px">Conduct the following:</p>
+                <sc-if value="{{ isD1 }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Chemical Use History</button>
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Withdrawal History</button>
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Rating Scales</button>
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Addiction Medication Needs (MOUD)<sc-if value="{{ annotDots }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;inset:-2px;border:2px solid #1F7A4C;border-radius:var(--ica-border-radius-8,8px);pointer-events:none"></span></sc-if></button>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ isD2 }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Vital Signs<sc-if value="{{ annotDots }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;inset:-2px;border:2px solid #1F7A4C;border-radius:var(--ica-border-radius-8,8px);pointer-events:none"></span></sc-if></button>
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Current Non-Psychotropics<sc-if value="{{ annotDots }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;inset:-2px;border:2px solid #1274AC;border-radius:var(--ica-border-radius-8,8px);pointer-events:none"></span></sc-if></button>
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Medical Screen<sc-if value="{{ annotDots }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;inset:-2px;border:2px solid #1F7A4C;border-radius:var(--ica-border-radius-8,8px);pointer-events:none"></span></sc-if></button>
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Pregnancy Screen<sc-if value="{{ annotDots }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;inset:-2px;border:2px solid #1F7A4C;border-radius:var(--ica-border-radius-8,8px);pointer-events:none"></span></sc-if></button>
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Sleep Problems<sc-if value="{{ annotDots }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;inset:-2px;border:2px solid #1F7A4C;border-radius:var(--ica-border-radius-8,8px);pointer-events:none"></span></sc-if></button>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ isD3 }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Mental Health Treatment History</button>
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Mental Status Exam<sc-if value="{{ annotDots }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;inset:-2px;border:2px solid #1F7A4C;border-radius:var(--ica-border-radius-8,8px);pointer-events:none"></span></sc-if></button>
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Immediate Risk Factors</button>
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Psychotropic Med History<sc-if value="{{ annotDots }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;inset:-2px;border:2px solid #1274AC;border-radius:var(--ica-border-radius-8,8px);pointer-events:none"></span></sc-if></button>
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Cognitive / Persistent Disability<sc-if value="{{ annotDots }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;inset:-2px;border:2px solid #1F7A4C;border-radius:var(--ica-border-radius-8,8px);pointer-events:none"></span></sc-if></button>
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">COE Determination<sc-if value="{{ annotDots }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;inset:-2px;border:2px solid #1F7A4C;border-radius:var(--ica-border-radius-8,8px);pointer-events:none"></span></sc-if></button>
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Global Appraisal of Individual Needs<sc-if value="{{ annotDots }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;inset:-2px;border:2px solid #1274AC;border-radius:var(--ica-border-radius-8,8px);pointer-events:none"></span></sc-if></button>
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Trauma &amp; PTSD Screening<sc-if value="{{ annotDots }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;inset:-2px;border:2px solid #1F7A4C;border-radius:var(--ica-border-radius-8,8px);pointer-events:none"></span></sc-if></button>
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Cognitive Screening<sc-if value="{{ annotDots }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;inset:-2px;border:2px solid #1F7A4C;border-radius:var(--ica-border-radius-8,8px);pointer-events:none"></span></sc-if></button>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ isD4 }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Relapse History<sc-if value="{{ annotDots }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;inset:-2px;border:2px solid #1274AC;border-radius:var(--ica-border-radius-8,8px);pointer-events:none"></span></sc-if></button>
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Risky Behaviors Checklist<sc-if value="{{ annotDots }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;inset:-2px;border:2px solid #1F7A4C;border-radius:var(--ica-border-radius-8,8px);pointer-events:none"></span></sc-if></button>
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Imminent Consequences (App. C)<sc-if value="{{ annotDots }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;inset:-2px;border:2px solid #1F7A4C;border-radius:var(--ica-border-radius-8,8px);pointer-events:none"></span></sc-if></button>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ isD5 }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Support System / Social Setting<sc-if value="{{ annotDots }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;inset:-2px;border:2px solid #1274AC;border-radius:var(--ica-border-radius-8,8px);pointer-events:none"></span></sc-if></button>
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Housing &amp; Safety Screen<sc-if value="{{ annotDots }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;inset:-2px;border:2px solid #1F7A4C;border-radius:var(--ica-border-radius-8,8px);pointer-events:none"></span></sc-if></button>
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Functional Impairment (App. D)<sc-if value="{{ annotDots }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;inset:-2px;border:2px solid #1F7A4C;border-radius:var(--ica-border-radius-8,8px);pointer-events:none"></span></sc-if></button>
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Recovery Strengths &amp; Resources<sc-if value="{{ annotDots }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;inset:-2px;border:2px solid #1F7A4C;border-radius:var(--ica-border-radius-8,8px);pointer-events:none"></span></sc-if></button>
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Social Determinants of Health<sc-if value="{{ annotDots }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;inset:-2px;border:2px solid #1F7A4C;border-radius:var(--ica-border-radius-8,8px);pointer-events:none"></span></sc-if></button>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ isD6 }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Barriers to Participation<sc-if value="{{ annotDots }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;inset:-2px;border:2px solid #1F7A4C;border-radius:var(--ica-border-radius-8,8px);pointer-events:none"></span></sc-if></button>
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Preferences &amp; Treatment Goals<sc-if value="{{ annotDots }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;inset:-2px;border:2px solid #1F7A4C;border-radius:var(--ica-border-radius-8,8px);pointer-events:none"></span></sc-if></button>
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Readiness / Motivation Change<sc-if value="{{ annotDots }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;inset:-2px;border:2px solid #1F7A4C;border-radius:var(--ica-border-radius-8,8px);pointer-events:none"></span></sc-if></button>
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Cultural &amp; Linguistic Needs<sc-if value="{{ annotDots }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;inset:-2px;border:2px solid #1F7A4C;border-radius:var(--ica-border-radius-8,8px);pointer-events:none"></span></sc-if></button>
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Willingness &amp; Ability to Attend<sc-if value="{{ annotDots }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;inset:-2px;border:2px solid #1F7A4C;border-radius:var(--ica-border-radius-8,8px);pointer-events:none"></span></sc-if></button>
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Recommended vs. Selected LOC<sc-if value="{{ annotDots }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;inset:-2px;border:2px solid #1F7A4C;border-radius:var(--ica-border-radius-8,8px);pointer-events:none"></span></sc-if></button>
+                    <button type="button" onClick="{{ openPillEl }}" style="box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:4px 10px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface);background:var(--ica-color-app-surface);color:#124D6A;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:400;line-height:1.4;text-align:center;white-space:nowrap;cursor:pointer;transition:background-color .12s,border-color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">Shared Decision-Making Notes<sc-if value="{{ annotDots }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;inset:-2px;border:2px solid #1F7A4C;border-radius:var(--ica-border-radius-8,8px);pointer-events:none"></span></sc-if></button>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ cardRatings }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(198px,1fr));grid-template-rows:auto auto;gap:14px 18px;align-items:start;margin-bottom:14px">
+                  <sc-for list="{{ ratings }}" as="r" hint-placeholder-count="2">
+                    <div style="display:grid;grid-template-rows:subgrid;grid-row:span 2;gap:8px;min-width:0">
+                      <div style="display:flex;align-items:flex-start;gap:6px;font-family:var(--font-lato);font-size:var(--font-size-16);font-weight:var(--ica-font-weight-400);line-height:20px;color:#2d3138;text-wrap:pretty"><span style="min-width: 0; font-size: 14px">{{ r.name }}</span><span style="{{ r.dotStyle }}"></span></div>
+                      <div role="radiogroup" style="display:flex;flex-direction:column;gap:6px">
+                        <sc-for list="{{ r.codes }}" as="c" hint-placeholder-count="6">
+                          <sc-if value="{{ c.unselected }}" hint-placeholder-val="{{ true }}">
+                            <div role="radio" onClick="{{ c.pick }}" style="box-sizing:border-box;display:flex;align-items:center;gap:12px;min-height:44px;padding:8px 12px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface,#107ead);background:var(--ica-color-app-surface,#fff);color:#124D6A;font-family:var(--font-lato);cursor:pointer;user-select:none;transition:background-color .12s,border-color .12s,color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">
+                              <span style="font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:var(--ica-font-weight-500);line-height:1.35;color:inherit;text-wrap:pretty"><span style="font-weight:700">{{ c.cc }}</span>: {{ c.cl }}</span>
+                            </div>
+                          </sc-if>
+                          <sc-if value="{{ c.selected }}" hint-placeholder-val="{{ false }}">
+                            <div role="radio" onClick="{{ c.pick }}" style="box-sizing:border-box;display:flex;align-items:center;gap:12px;min-height:44px;padding:8px 12px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-hover,#0d6f99);background:var(--ica-primary-hover,#0d6f99);color:var(--ica-primary-on-primary,#fff);font-family:var(--font-lato);cursor:pointer;user-select:none;transition:background-color .12s,border-color .12s" style-hover="background:#0a5a7d;border-color:#0a5a7d;color:#fff;text-decoration:none">
+                              <span style="font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:700;line-height:1.35;color:inherit;text-wrap:pretty"><span style="font-weight:700">{{ c.cc }}</span>: {{ c.cl }}</span>
+                            </div>
+                          </sc-if>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </sc-for>
+                  </div>
+                </sc-if>
+
+                <sc-for list="{{ ratingsChips }}" as="r" hint-placeholder-count="3">
+                  <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:8px">
+                    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-family:var(--font-lato);font-size:var(--font-size-16);font-weight:var(--ica-font-weight-400);line-height:20px;color:#2d3138"><span style="min-width:0">{{ r.name }}</span><span style="{{ r.dotStyle }}"></span></div>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;align-items:stretch">
+                      <sc-for list="{{ r.codes }}" as="c" hint-placeholder-count="6">
+                        <sc-if value="{{ c.unselected }}" hint-placeholder-val="{{ true }}">
+                          <button type="button" onClick="{{ c.pick }}" style="{{ c.style }}" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">
+                            <span style="font-family:var(--font-lato);font-size:var(--font-size-16);font-weight:700;line-height:1.2">{{ c.cc }}</span>
+                            <span style="font-family:var(--font-lato);font-size:var(--font-size-12);font-weight:var(--ica-font-weight-500);line-height:1.25;text-align:center;text-wrap:pretty">{{ c.cl }}</span>
+                          </button>
+                        </sc-if>
+                        <sc-if value="{{ c.selected }}" hint-placeholder-val="{{ false }}">
+                          <button type="button" onClick="{{ c.pick }}" style="{{ c.style }}" style-hover="background:#0a5a7d;border-color:#0a5a7d;color:#fff;text-decoration:none">
+                            <span style="font-family:var(--font-lato);font-size:var(--font-size-16);font-weight:700;line-height:1.2">{{ c.cc }}</span>
+                            <span style="font-family:var(--font-lato);font-size:var(--font-size-12);font-weight:var(--ica-font-weight-500);line-height:1.25;text-align:center;text-wrap:pretty">{{ c.cl }}</span>
+                          </button>
+                        </sc-if>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-for>
+
+                <sc-for list="{{ subscreens }}" as="s" hint-placeholder-count="0">
+                  <div style="display:flex;flex-direction:column;gap:8px;border:1px solid #d9dde1;border-radius:5px;padding:9px 12px;margin-bottom:9px;background:#FBFCFD">
+                    <div style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:#2d3138">{{ s.name }}<span style="{{ s.dotStyle }}"></span></div>
+                    <div style="display:grid;grid-template-columns:minmax(0,1fr) 100px;column-gap:14px;row-gap:6px;align-items:center;font-size:12.5px;color:#3a3f46">
+                    <sc-for list="{{ s.ynRows }}" as="q" hint-placeholder-count="2">
+                        <span style="min-width:0;text-wrap:pretty">{{ q.text }}</span>
+                        <span style="display:flex;align-items:center;justify-self:start"><x-import component-from-global-scope="ICANotesDesignSystem_94514a.RadioGroup" options="{{ ynOptions }}" value="{{ q.value }}" onChange="{{ q.set }}" orientation="horizontal" hint-size="120px,24px"></x-import></span>
+                    </sc-for>
+                    <sc-for list="{{ s.checkRows }}" as="k" hint-placeholder-count="3">
+                        <span style="min-width:0;text-wrap:pretty">{{ k.text }}</span>
+                        <span style="display:flex;align-items:center;justify-content:center;justify-self:start;width:16px"><x-import component-from-global-scope="ICANotesDesignSystem_94514a.Checkbox" checked="{{ k.on }}" onChange="{{ k.toggle }}" size="medium" hint-size="16px,16px"></x-import></span>
+                    </sc-for>
+                    </div>
+                  </div>
+                </sc-for>
+
+                <div ref="{{ ptcRef }}" style="margin-top:10px;max-width:770px;border:1px solid #d9dde1;border-radius:6px;background:#fff;overflow:hidden;flex:0 0 auto">
+                  <div onClick="{{ togglePtc }}" style="display:flex;align-items:center;gap:8px;padding:9px 12px;background:#FBFCFD;cursor:pointer;user-select:none" style-hover="background:#f2f5f7">
+                    <span style="font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#3a4249">Points to Consider</span>
+                    
+                    <span style="margin-left:auto;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px">
+                      <sc-if value="{{ ptcOpen }}" hint-placeholder-val="{{ false }}">
+                        <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-caret-up" size="{{ 11 }}" color="#107ead" hint-size="11px,11px"></x-import>
+                      </sc-if>
+                      <sc-if value="{{ ptcClosed }}" hint-placeholder-val="{{ true }}">
+                        <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-caret-down" size="{{ 11 }}" color="#107ead" hint-size="11px,11px"></x-import>
+                      </sc-if>
+                    </span>
+                  </div>
+                  <sc-if value="{{ ptcOpen }}" hint-placeholder-val="{{ false }}">
+                    <ul style="margin:0;padding:9px 12px 11px 30px;list-style:disc;border-top:1px solid #e2e6ea;background:#fff">
+                      <sc-for list="{{ ptc }}" as="t" hint-placeholder-count="4">
+                        <li style="font-size:13px;color:#22282e;line-height:1.45;margin-bottom:4px">{{ t.text }}</li>
+                      </sc-for>
+                    </ul>
+                  </sc-if>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+
+          <div style="min-width:0;min-height:0;display:flex;flex-direction:column">
+            <div style="display:flex;gap:8px;align-items:stretch;flex:1 1 auto;min-height:0">
+              <div class="notepad" ref="{{ padRef }}" data-empty="true" style="box-sizing:border-box;flex:1 1 575px;max-width:575px;min-width:500px;min-height:0;align-self:stretch;background:#FFFFBD;border:1px solid #e6e6ae;border-radius:10px;overflow:auto"></div>
+              <div style="box-sizing:border-box;flex:0 1 215px;min-width:120px;align-self:stretch;border:1px solid #e2e6ea;border-radius:10px;background:#fff;background-image:repeating-linear-gradient(to bottom,#fff 0,#fff 25px,#eef0f2 25px,#eef0f2 26px);overflow-y:auto;min-height:0"></div>
+            </div>
+
+            <sc-if value="{{ isRec }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;align-items:stretch;gap:8px;margin-top:4px">
+                <span style="box-sizing:border-box;flex:1 1 575px;max-width:575px;min-width:500px;display:flex"><x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" themeColor="primary" fillMode="solid" size="large" icon="{{ draftIcon }}" onClick="{{ openPreview }}" stretch="{{ yes }}" hint-size="100%,47px">Compile And Preview</x-import></span>
+                <div style="flex:0 1 215px;min-width:120px;display:flex">
+                  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" themeColor="primary" fillMode="outline" stretch="{{ yes }}" hint-size="215px,47px">+ Create Custom Button</x-import>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isDim }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;gap:8px;margin-top:4px">
+                <div style="flex:1 1 575px;max-width:575px;min-width:500px"></div>
+                <div style="flex:0 1 215px;min-width:120px;display:flex">
+                  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" themeColor="primary" fillMode="outline" stretch="{{ yes }}" hint-size="215px,32px">+ Create Custom Button</x-import>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+      <div style="display:flex;align-items:center;gap:18px;padding:12px 18px;background:#bababa;flex-wrap:wrap;font-size:12px;color:#3a3f46;flex:0 0 auto">
+        <div style="position:relative;border:1px solid rgba(31,30,29,.4);border-radius:6px;background:#FAF9F5;padding:8px 26px 8px 12px;font-size:12.5px;font-weight:600;color:#2d3138">
+          <label style="position:absolute;top:-7px;left:9px;background:#DEDFDE;padding:0 5px;font-size:10px;color:#5b6570;font-weight:400">Assigned Clinician</label>Christian Carlstrom<span style="position:absolute;right:9px;top:50%;transform:translateY(-50%);color:#5b6570;font-size:10px">▾</span>
+        </div>
+        <div style="position:relative;border:1px solid rgba(31,30,29,.4);border-radius:6px;background:#FAF9F5;padding:8px 26px 8px 12px;font-size:12.5px;font-weight:600;color:#2d3138">
+          <label style="position:absolute;top:-7px;left:9px;background:#DEDFDE;padding:0 5px;font-size:10px;color:#5b6570;font-weight:400">Service Location</label>Uncle Ben<span style="position:absolute;right:9px;top:50%;transform:translateY(-50%);color:#5b6570;font-size:10px">▾</span>
+        </div>
+        <span style="color:#5b6570">Creator: Christian Carlstrom</span>
+        <span style="margin-left:auto;display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+          <span style="display:inline-flex;align-items:center;gap:7px"><span style="width:16px;height:16px;background:#FFFFBD;border:1px solid #d8d89a"></span>Specific to this note</span>
+          <span style="display:inline-flex;align-items:center;gap:7px"><span style="width:16px;height:16px;background:#fff;border:1px solid #e0b4ae"></span>For all notes</span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Dialog" open="{{ pickerOpen }}" title="Select ASAM Edition" onClose="{{ closePicker }}" width="{{ 620 }}" footer="{{ pickerFooter }}" hint-size="620px,340px">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <span style="font-family:var(--font-lato);font-size:14px;color:#3a4249;line-height:1.5;text-wrap:pretty">Choose the edition this assessment follows. You cannot switch editions once the note is signed.</span>
+      <div role="radiogroup" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px">
+        <sc-if value="{{ ed3Off }}" hint-placeholder-val="{{ true }}">
+          <div role="radio" onClick="{{ pickEd3 }}" style="box-sizing:border-box;display:flex;flex-direction:column;gap:7px;padding:16px;border-radius:var(--ica-border-radius-12,12px);border:1px solid var(--ica-color-border);background:var(--ica-color-app-surface);cursor:pointer;transition:border-color .12s,background-color .12s" style-hover="border-color:var(--ica-primary-on-surface);background:var(--ica-primary-opacity-hover)">
+            <span style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+              <span style="font-family:var(--font-lato);font-size:15px;font-weight:700;color:#1c1f24">ASAM 3rd Edition</span>
+            </span>
+          </div>
+        </sc-if>
+        <sc-if value="{{ ed3On }}" hint-placeholder-val="{{ false }}">
+          <div role="radio" onClick="{{ pickEd3 }}" style="box-sizing:border-box;display:flex;flex-direction:column;gap:7px;padding:16px;border-radius:var(--ica-border-radius-12,12px);border:2px solid var(--ica-primary-on-surface);background:var(--ica-primary-opacity-hover);cursor:pointer">
+            <span style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+              <span style="font-family:var(--font-lato);font-size:15px;font-weight:700;color:#124D6A">ASAM 3rd Edition</span>
+              <span style="display:flex;flex-shrink:0"><x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-checked-circle" size="{{ 18 }}" color="#1F7A4C" hint-size="18px,18px"></x-import></span>
+            </span>
+          </div>
+        </sc-if>
+        <sc-if value="{{ ed4Off }}" hint-placeholder-val="{{ false }}">
+          <div role="radio" onClick="{{ pickEd4 }}" style="box-sizing:border-box;display:flex;flex-direction:column;gap:7px;padding:16px;border-radius:var(--ica-border-radius-12,12px);border:1px solid var(--ica-color-border);background:var(--ica-color-app-surface);cursor:pointer;transition:border-color .12s,background-color .12s" style-hover="border-color:var(--ica-primary-on-surface);background:var(--ica-primary-opacity-hover)">
+            <span style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+              <span style="display:flex;align-items:center;gap:7px"><span style="font-family:var(--font-lato);font-size:15px;font-weight:700;color:#1c1f24">ASAM 4th Edition</span><span style="font-family:var(--font-lato);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#19663F;background:#E4F2EA;border-radius:4px;padding:2px 6px">New</span></span>
+            </span>
+          </div>
+        </sc-if>
+        <sc-if value="{{ ed4On }}" hint-placeholder-val="{{ true }}">
+          <div role="radio" onClick="{{ pickEd4 }}" style="box-sizing:border-box;display:flex;flex-direction:column;gap:7px;padding:16px;border-radius:var(--ica-border-radius-12,12px);border:2px solid var(--ica-primary-on-surface);background:var(--ica-primary-opacity-hover);cursor:pointer">
+            <span style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+              <span style="display:flex;align-items:center;gap:7px"><span style="font-family:var(--font-lato);font-size:15px;font-weight:700;color:#124D6A">ASAM 4th Edition</span><span style="font-family:var(--font-lato);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#19663F;background:#E4F2EA;border-radius:4px;padding:2px 6px">New</span></span>
+              <span style="display:flex;flex-shrink:0"><x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-checked-circle" size="{{ 18 }}" color="#1F7A4C" hint-size="18px,18px"></x-import></span>
+            </span>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </x-import>
+
+  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Dialog" open="{{ shrubOpen }}" title="{{ shrubTitle }}" onClose="{{ closeShrub }}" width="{{ 1240 }}" footer="{{ shrubFooter }}" hint-size="1240px,760px">
+    <div style="display:flex;gap:12px;height:620px">
+      <div ref="{{ shrubStripRef }}" style="flex:1;min-width:0;min-height:0;border:1px solid #e2e6ea;border-radius:10px;overflow-x:auto;overflow-y:hidden;background:#fff;display:flex;align-items:stretch">
+        <sc-for list="{{ shrubCols }}" as="col" hint-placeholder-count="1">
+          <div style="flex:0 0 224px;min-width:224px;min-height:0;border-right:1px solid #eef0f2;overflow-y:auto;display:flex;flex-direction:column">
+            <sc-if value="{{ col.isEmpty }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:14px 12px;font-size:12px;color:#7a6a2f;background:#FFFCEC;line-height:1.5">{{ col.emptyText }}</div>
+            </sc-if>
+            <sc-for list="{{ col.rows }}" as="row" hint-placeholder-count="6">
+              <sc-if value="{{ row.rule }}" hint-placeholder-val="{{ false }}">
+                <div style="border-bottom:1px solid #f2f4f5;padding:6px 12px;flex-shrink:0"></div>
+              </sc-if>
+              <sc-if value="{{ row.notRule }}" hint-placeholder-val="{{ true }}">
+                <sc-if value="{{ row.unselected }}" hint-placeholder-val="{{ true }}">
+                  <button type="button" onClick="{{ row.click }}" style="{{ row.style }}" style-hover="background:var(--ica-primary-hover,#0d6f99);color:#fff;box-shadow:inset 0 0 0 1px var(--ica-primary-hover,#0d6f99);text-decoration:none" style-focus="outline:1px solid var(--ica-primary,#107ead);outline-offset:-1px">
+                    <span>{{ row.label }}</span><span style="{{ row.caretStyle }}">▸</span>
+                  </button>
+                </sc-if>
+                <sc-if value="{{ row.selected }}" hint-placeholder-val="{{ false }}">
+                  <button type="button" onClick="{{ row.click }}" style="{{ row.style }}" style-hover="background:#0a5a7d;color:#fff;box-shadow:inset 0 0 0 1px #0a5a7d;text-decoration:none" style-focus="outline:1px solid #0a5a7d;outline-offset:-1px">
+                    <span>{{ row.label }}</span><span style="{{ row.caretStyle }}">▸</span>
+                  </button>
+                </sc-if>
+              </sc-if>
+            </sc-for>
+          </div>
+        </sc-for>
+      </div>
+      <div style="flex:0 0 490px;display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
+          <span style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#5b6570">Will be added to the note</span>
+          <span style="font-size:11px;color:#7c848c;font-style:italic">Editable — type to add or reword</span>
+        </div>
+        <div ref="{{ shrubNoteRef }}" contentEditable="true" spellCheck="true" onInput="{{ shrubNoteInput }}" onKeyDown="{{ shrubNoteKeyDown }}" style="flex:1;min-height:0;overflow-y:auto;padding:9px 11px;background:#FFFFBD;border:1px solid #e6e6ae;border-radius:8px;font-family:Arial,Helvetica,sans-serif;font-size:12.5px;line-height:1.45;color:#000;outline:none;cursor:text" style-focus="border-color:#c8c894;box-shadow:0 0 0 3px rgba(16,126,173,.14)"></div>
+      </div>
+    </div>
+  </x-import>
+
+  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Dialog" open="{{ tsOpen }}" title="Time Spent" onClose="{{ closeTimeSpent }}" width="{{ 560 }}" footer="{{ tsFooter }}" hint-size="560px,420px">
+    <div style="display:flex;flex-direction:column;gap:var(--ica-spacing-20,20px)">
+      <x-import component-from-global-scope="ICANotesDesignSystem_94514a.FormField" label="Length of session" hint-size="auto,64px">
+        <div style="display:flex;align-items:center;gap:var(--ica-spacing-8,8px)">
+          <x-import component="NumberField" from="./ds-ext/NumberField.js" value="{{ tsMin }}" onChange="{{ setTsMin }}" step="{{ five }}" placeholder="--" hint-size="110px,40px"></x-import>
+          <span style="font-family:var(--font-lato);font-size:var(--font-size-14,14px);color:var(--ica-color-subtle)">min.</span>
+        </div>
+      </x-import>
+
+      <div style="display:flex;align-items:flex-start;gap:var(--ica-spacing-16,16px);flex-wrap:wrap">
+        <x-import component-from-global-scope="ICANotesDesignSystem_94514a.FormField" label="Start Time" hint-size="150px,64px">
+          <x-import component="TimePicker" from="./ds-ext/TimePicker.js" value="{{ tsStart }}" onChange="{{ setTsStart }}" hint-size="150px,40px"></x-import>
+        </x-import>
+        <x-import component-from-global-scope="ICANotesDesignSystem_94514a.FormField" label="End Time" hint-size="150px,64px">
+          <x-import component="TimePicker" from="./ds-ext/TimePicker.js" value="{{ tsEnd }}" onChange="{{ setTsEnd }}" hint-size="150px,40px"></x-import>
+        </x-import>
+        <x-import component-from-global-scope="ICANotesDesignSystem_94514a.FormField" label="Units billed" hint-size="150px,64px">
+          <div style="display:flex;align-items:center;justify-content:center;gap:var(--ica-spacing-6,6px);box-sizing:border-box;height:40px;width:56px;padding:0 var(--ica-spacing-10,10px);border-radius:var(--ica-border-radius-8,8px);background:var(--ica-color-surface-alt);border:1px solid var(--ica-color-border)">
+            <span style="font-family:var(--font-lato);font-size:var(--font-size-14,14px);font-weight:700;color:var(--ica-color-on-app-surface)">{{ tsUnits }}</span>
+          </div>
+        </x-import>
+      </div>
+      <span style="font-family:var(--font-lato);font-size:11.5px;color:var(--ica-color-subtle)">Start and end times are optional — the session length is what the note and the claim use. Units are summed from the encounter's charge items.</span>
+
+      <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Divider" hint-size="100%,1px"></x-import>
+
+      <x-import component-from-global-scope="ICANotesDesignSystem_94514a.FormField" label="Include start and end times in the note?" orientation="horizontal" gap="var(--ica-spacing-16)" hint-size="100%,24px">
+        <x-import component-from-global-scope="ICANotesDesignSystem_94514a.RadioGroup" options="{{ ynOptions }}" value="{{ tsPrintTimes }}" onChange="{{ setTsPrintTimes }}" orientation="horizontal" hint-size="126px,24px"></x-import>
+      </x-import>
+
+      <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Divider" hint-size="100%,1px"></x-import>
+
+      <x-import component-from-global-scope="ICANotesDesignSystem_94514a.FormField" label="Include Time Spent in the note?" orientation="horizontal" gap="var(--ica-spacing-16)" hint-size="100%,24px">
+        <x-import component-from-global-scope="ICANotesDesignSystem_94514a.RadioGroup" options="{{ ynOptions }}" value="{{ tsInclude }}" onChange="{{ setTsInclude }}" orientation="horizontal" hint-size="126px,24px"></x-import>
+      </x-import>
+    </div>
+  </x-import>
+
+  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Dialog" open="{{ vitalsOpen }}" title="Vital Signs" onClose="{{ closeVitals }}" width="{{ 1240 }}" footer="{{ vitalsFooter }}" hint-size="1240px,760px">
+    <div style="display:flex;gap:12px;height:620px">
+      <div style="flex:1;min-width:0;display:flex;gap:12px;overflow-y:auto;padding-right:2px">
+        <sc-for list="{{ vsCols }}" as="col" hint-placeholder-count="2">
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ col.panels }}" as="p" hint-placeholder-count="4">
+              <div style="border:1px solid #e2e6ea;border-radius:10px;background:#fff;padding:10px 12px 12px;flex:0 0 auto">
+                <div style="font-family:'Lato',sans-serif;font-size:13px;font-weight:700;color:#1c1f24;margin-bottom:8px">{{ p.title }}</div>
+                <sc-for list="{{ p.rows }}" as="r" hint-placeholder-count="2">
+                  <div style="display:flex;align-items:flex-end;gap:6px;margin-bottom:8px">
+                    <sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="3">
+                      <sc-if value="{{ c.isText }}" hint-placeholder-val="{{ false }}">
+                        <span style="flex:0 0 56px;width:56px;text-align:right;font-family:'Lato',sans-serif;font-size:11.5px;color:#3a3f46;line-height:30px">{{ c.text }}</span>
+                      </sc-if>
+                      <sc-if value="{{ c.isField }}" hint-placeholder-val="{{ true }}">
+                        <label style="display:flex;flex-direction:column;flex:0 0 auto">
+                          <sc-if value="{{ c.hasLabel }}" hint-placeholder-val="{{ true }}">
+                            <span style="font-family:'Lato',sans-serif;font-size:11px;color:#5b6570;margin-bottom:3px;white-space:nowrap">{{ c.label }}</span>
+                          </sc-if>
+                          <sc-if value="{{ c.isSelect }}" hint-placeholder-val="{{ false }}">
+                            <select value="{{ c.value }}" onChange="{{ c.set }}" style="width:140px;height:30px;box-sizing:border-box;border:1px solid rgba(61,61,61,.5);border-radius:6px;background:#f5f5f5;font-family:'Lato',sans-serif;font-size:13px;color:#3d3d3d;padding:0 6px">
+                              <sc-for list="{{ c.options }}" as="o" hint-placeholder-count="3">
+                                <option value="{{ o.v }}">{{ o.t }}</option>
+                              </sc-for>
+                            </select>
+                          </sc-if>
+                          <sc-if value="{{ c.isNum }}" hint-placeholder-val="{{ true }}">
+                            <span style="display:flex;align-items:center;width:78px;height:30px;box-sizing:border-box;border:1px solid rgba(61,61,61,.5);border-radius:6px;background:#f5f5f5">
+                              <input type="text" inputMode="decimal" value="{{ c.value }}" onChange="{{ c.set }}" style="flex:1;min-width:0;height:100%;padding:0 6px;border:0;background:transparent;font-family:'Lato',sans-serif;font-size:13px;color:#3d3d3d;outline:none">
+                              <sc-if value="{{ c.hasSuffix }}" hint-placeholder-val="{{ false }}">
+                                <span style="padding-right:3px;font-family:'Lato',sans-serif;font-size:10.5px;color:#6b747c">{{ c.suffix }}</span>
+                              </sc-if>
+                              <span style="display:flex;flex-direction:column;padding-right:4px">
+                                <span onClick="{{ c.up }}" style="display:flex;align-items:center;justify-content:center;width:13px;height:9px;font-size:7px;line-height:7px;color:#6b747c;cursor:pointer;user-select:none">▲</span>
+                                <span onClick="{{ c.down }}" style="display:flex;align-items:center;justify-content:center;width:13px;height:9px;font-size:7px;line-height:7px;color:#6b747c;cursor:pointer;user-select:none">▼</span>
+                              </span>
+                            </span>
+                          </sc-if>
+                        </label>
+                      </sc-if>
+                    </sc-for>
+                  </div>
+                </sc-for>
+                <button type="button" onClick="{{ p.add }}" style="font-family:'Lato',sans-serif;font-size:12px;font-weight:700;height:30px;padding:0 14px;background:#fff;border:1px solid var(--ica-primary,#107ead);border-radius:6px;color:#124D6A;cursor:pointer" style-hover="background:#F1F8FC">Add Entry</button>
+              </div>
+            </sc-for>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="flex:0 0 300px;display:flex;flex-direction:column;gap:6px;min-height:0">
+        <span style="font-family:'Lato',sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#5b6570">Will be added to the note</span>
+        <div style="flex:1;min-height:0;overflow-y:auto;padding:10px 12px;background:#FFFFBD;border:1px solid #e6e6ae;border-radius:8px;font-family:Arial,Helvetica,sans-serif;font-size:12.5px;line-height:1.45;color:#000">
+          <p style="margin:0 0 10px;font-weight:700;text-decoration:underline">VITAL SIGNS EXAM:</p>
+          <sc-for list="{{ vsEntries }}" as="e" hint-placeholder-count="0">
+            <p style="margin:0 0 9px;display:flex;gap:6px;align-items:flex-start">
+              <span style="flex:1;min-width:0"><b>{{ e.title }}:</b> {{ e.text }}</span>
+              <button type="button" onClick="{{ e.remove }}" title="Remove" style="flex:0 0 auto;width:17px;height:17px;line-height:15px;border:1px solid #d8d89a;border-radius:4px;background:#fffff0;color:#8a8148;font-size:11px;cursor:pointer">×</button>
+            </p>
+          </sc-for>
+          <sc-if value="{{ vsNoEntries }}" hint-placeholder-val="{{ true }}">
+            <span style="color:#a09a72;font-style:italic;font-size:12px">Fill a section and press Add Entry to build the exam.</span>
+          </sc-if>
+        </div>
+      </div>
+
+      <div style="flex:0 0 140px;display:flex;flex-direction:column;gap:4px;min-height:0">
+        <span style="font-family:'Lato',sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#5b6570">&nbsp;</span>
+        <div style="flex:1;min-height:0;overflow-y:auto;border:1px solid #e2e6ea;border-radius:8px;background:#fff;background-image:repeating-linear-gradient(to bottom,#fff 0,#fff 25px,#eef0f2 25px,#eef0f2 26px)"></div>
+        <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" themeColor="primary" fillMode="outline" size="small" stretch="{{ yes }}" hint-size="140px,30px">+ Create Custom Button</x-import>
+      </div>
+    </div>
+  </x-import>
+
+  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.SideDialog" open="{{ reqsOpen }}" title="{{ reqsTitle }}" onClose="{{ closeReqs }}" width="{{ 720 }}" hint-size="720px,100%">
+    <div style="display:flex;flex-direction:column;gap:9px;min-height:0">
+      <div style="font-family:var(--font-lato);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#5b666e">Requirements &amp; acceptance criteria</div>
+      <label style="display:flex;align-items:center;gap:9px;padding:9px 11px;border:1px solid #D6E4EC;border-radius:8px;background:#F7FBFD;cursor:pointer;user-select:none">
+        <input type="checkbox" checked="{{ annot }}" onChange="{{ toggleAnnot }}" style="margin:0;width:14px;height:14px;cursor:pointer">
+        <span style="display:flex;flex-direction:column;gap:1px">
+          <span style="font-family:var(--font-lato);font-size:12.5px;font-weight:700;color:#1c1f24">Dev annotations</span>
+          <span style="font-family:var(--font-lato);font-size:11px;color:#5b666e">Rings every button that is new (green) or changing (blue) in v4.</span>
+        </span>
+      </label>
+      <sc-if value="{{ hasReqsSummary }}" hint-placeholder-val="{{ true }}">
+        <p style="margin:0;font-family:var(--font-lato);font-size:11.5px;color:#3a4249;line-height:1.5">{{ reqsSummary }}</p>
+      </sc-if>
+      <sc-for list="{{ reqDimNotes }}" as="n" hint-placeholder-count="0">
+        <div style="background:#FFFFBD;border:1px solid #e6e6ae;border-radius:6px;padding:7px 9px">
+          <b style="display:block;margin-bottom:3px;font-family:var(--font-lato);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#8a8148">{{ n.label }}</b>
+          <span style="font-family:var(--font-lato);font-size:12px;color:#4c4634;line-height:1.5">{{ n.text }}</span>
+        </div>
+      </sc-for>
+      <div style="display:flex;flex-direction:column;gap:10px;min-height:0;max-height:calc(100vh - 215px);overflow-y:auto;padding-right:2px">
+        <sc-for list="{{ reqItems }}" as="q" hint-placeholder-count="6">
+          <div style="border:1px solid #D6E4EC;border-radius:10px;background:#FBFDFE;padding:12px 14px;flex:0 0 auto">
+            <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+              <span style="font-family:var(--font-lato);font-size:11px;font-weight:700;letter-spacing:.04em;color:#0d6f99;background:#E4F1F8;border-radius:4px;padding:2px 6px">{{ q.id }}</span>
+              <span style="font-family:var(--font-lato);font-size:13.5px;font-weight:700;color:#1c1f24;min-width:0;text-wrap:pretty">{{ q.title }}</span>
+              <span style="{{ q.badgeStyle }}"><span style="{{ q.dotStyle }}"></span>{{ q.state }}</span>
+            </div>
+            <p style="margin:0 0 8px;font-family:var(--font-lato);font-size:12.5px;color:#3a3f46;line-height:1.5;text-wrap:pretty">{{ q.what }}</p>
+            <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px">
+              <sc-for list="{{ q.ac }}" as="a" hint-placeholder-count="3">
+                <li style="font-family:var(--font-lato);font-size:12.5px;color:#3a3f46;line-height:1.5;text-wrap:pretty">{{ a.text }}</li>
+              </sc-for>
+            </ul>
+            <sc-if value="{{ q.hasImg }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:8px;display:flex;flex-direction:column;gap:6px;align-items:flex-start">
+                <button type="button" onClick="{{ q.toggleImg }}" style="display:inline-flex;align-items:center;gap:6px;border:1px solid #CFE0EA;background:#F6FAFC;border-radius:5px;padding:4px 9px;cursor:pointer;font-family:var(--font-lato);font-size:11.5px;font-weight:700;color:#0d5c7f" style-hover="background:#EAF4F9;border-color:#A9CCDE">
+                  <span style="font-size:9px;line-height:1">{{ q.imgToggleCaret }}</span>
+                  <span>{{ q.imgToggleLabel }}</span>
+                </button>
+                <sc-if value="{{ q.imgOpen }}" hint-placeholder-val="{{ false }}">
+                  <figure style="margin:0;display:flex;flex-direction:column;gap:5px">
+                    {{ q.imgEl }}
+                    <figcaption style="font-family:var(--font-lato);font-size:11.5px;color:#5b666e;line-height:1.45;text-wrap:pretty">{{ q.imgCaption }}</figcaption>
+                  </figure>
+                </sc-if>
+              </div>
+            </sc-if>
+            <sc-if value="{{ q.hasDoc }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:8px;display:flex;flex-direction:column;gap:4px;align-items:flex-start">
+                <button type="button" onClick="{{ q.toggleDoc }}" style="display:inline-flex;align-items:center;gap:6px;border:1px solid #CFE0EA;background:#F6FAFC;border-radius:5px;padding:4px 9px;cursor:pointer;font-family:var(--font-lato);font-size:11.5px;font-weight:700;color:#0d5c7f" style-hover="background:#EAF4F9;border-color:#A9CCDE">
+                  <span style="font-size:9px;line-height:1">{{ q.docToggleCaret }}</span>
+                  <span>{{ q.docToggleLabel }}</span>
+                </button>
+                <sc-if value="{{ q.docOpen }}" hint-placeholder-val="{{ false }}">
+                  <figure style="margin:0;align-self:stretch;display:flex;flex-direction:column;gap:5px">
+                    {{ q.docEl }}
+                    <figcaption style="font-family:var(--font-lato);font-size:11.5px;color:#5b666e;line-height:1.45;text-wrap:pretty">{{ q.docCaption }} <a href="{{ q.docHref }}" target="_blank" rel="noopener" download="" style="color:#0d5c7f;font-weight:700">Open or download the PDF</a></figcaption>
+                  </figure>
+                </sc-if>
+              </div>
+            </sc-if>
+            <sc-if value="{{ q.hasOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:8px;background:#F1F8FC;border:1px solid #CFE4F0;border-radius:6px;padding:7px 9px">
+                <b style="display:block;margin-bottom:3px;font-family:var(--font-lato);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#0d5c7f">{{ q.openLabel }}</b>
+                <ul style="margin:0;padding-left:16px;display:flex;flex-direction:column;gap:3px">
+                  <sc-for list="{{ q.openItems }}" as="o" hint-placeholder-count="2">
+                    <li style="font-family:var(--font-lato);font-size:12px;color:#0d5c7f;line-height:1.5;text-wrap:pretty">{{ o.text }}</li>
+                  </sc-for>
+                </ul>
+              </div>
+            </sc-if>
+            <sc-if value="{{ q.hasNote }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:8px;background:#FFFFBD;border:1px solid #e6e6ae;border-radius:6px;padding:7px 9px">
+                <b style="display:block;margin-bottom:3px;font-family:var(--font-lato);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#8a8148">{{ q.noteLabel }}</b>
+                <span style="font-family:var(--font-lato);font-size:12px;color:#4c4634;line-height:1.5;text-wrap:pretty">{{ q.noteText }}</span>
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </x-import>
+
+</div>
+<sc-if value="{{ conceptOn }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;right:16px;bottom:56px;z-index:9999;display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:999px;background:#2d3138;box-shadow:0 4px 14px rgba(20,26,32,.28);font-family:var(--font-lato,'Lato',sans-serif);pointer-events:none">
+    <span style="width:7px;height:7px;border-radius:9999px;background:#F0B429;flex-shrink:0"></span>
+    <span style="font-size:12px;font-weight:700;color:#fff;white-space:nowrap">Concept preview — button ratings</span>
+    <span style="font-size:11px;color:#aab3bb;white-space:nowrap">not the current design</span>
+    <button type="button" onClick="{{ conceptOff }}" style="font-family:inherit;appearance:none;border:0;background:none;padding:0 0 0 4px;pointer-events:auto;font-size:11.5px;font-weight:700;color:#7fd0f2;cursor:pointer;text-decoration:underline">Exit</button>
+  </div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900}}">
+/* Rating chips keep the v1 metrics (.codebtn): 100×42, r6, stacked code over label.
+   No ica-* component matches this two-line box — flagged in the handoff map.
+   The dimension tabs are the legacy classic folder tabs the real chart uses, not
+   ica-tabstrip, so they are hand-built to the v1 .dtabs metrics.
+   The shrub picker is a real multi-column drill-down (like v1's .sh-shrubs), not
+   a flat checklist: clicking a branch navigates a new column in; clicking a leaf
+   toggles it into the note. */
+const CHIP = 'font-family:var(--font-lato);box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--ica-spacing-4,4px);width:100%;padding:var(--ica-spacing-8,8px);border-radius:var(--ica-border-radius-8,8px);cursor:pointer;';
+const YN = 'font-family:var(--font-lato);font-size:var(--font-size-12);font-weight:700;width:28px;height:24px;border-radius:6px;cursor:pointer;';
+const TAB = 'font-family:\'Lato\',sans-serif;font-size:16px;font-weight:700;color:#000;border-radius:4px 4px 0 0;padding:9px 15px;cursor:pointer;white-space:nowrap;position:relative;';
+const ITEM = 'display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;text-align:left;border:0;background:none;border-bottom:1px solid #f2f4f5;padding:7px 12px;font-family:var(--font-lato);font-size:13px;line-height:18px;cursor:pointer;flex-shrink:0;';
+
+function esc(s) { return String(s == null ? '' : s); }
+// tab names carry unrendered EJS in the export; show the non-prescriber branch.
+function tabNameOf(t) {
+  const n0 = String((t && t.name) || '');
+  const m = n0.match(/<%=[^%]*?'([^']*)'\s*:\s*'([^']*)'[^%]*%>/);
+  if (m) return m[2];
+  const n = n0.replace(/<%[\s\S]*?%>/g, '').trim();
+  return n || (t && t.componentKey) || ('Tab ' + (t && t.tabId));
+}
+
+class Component extends DCLogic {
+  state = {
+    active: 'd1', annot: false, openImgs: {},
+    recDx: 'Y', recSvc: 'Y', telehealth: false,
+    previewOpen: false, sigLines: false, pageSize: '5',
+    tsOpen: false, tsMin: '45', tsStart: '10:00 AM', tsEnd: '10:45 AM',
+    tsPrintTimes: 'Y', tsInclude: 'Y', tsSaved: '',
+    codes: {}, yn: {}, checks: {},
+    shrubOpen: false, shrubPill: null, shrubTabId: null, shrubPath: [], shrubPicks: [],
+    vitalsOpen: false, vitalsPill: null, vsVals: {}, vsEntries: [],
+    reqsOpen: false, loc: 'None',
+    reqOpen: {},
+    screens: null, locOptions: [],
+    // Entry flow: Chart Face -> pick ASAM -> edition picker -> v3 stub or the v4 chart.
+    view: 'chart', pickerOpen: false, edition: '4th',
+    ptcOpen: false,
+  };
+
+  // Screens and the note engine are ES modules loaded at runtime. In a bundled
+  // standalone export the file itself is gone, so prefer the inlined blob URL
+  // (window.__resources) and fall back to re-blobbing with a JS MIME type when a
+  // direct module import of it is rejected.
+  async loadMod(id, path) {
+    const url = (window.__resources || {})[id] || path;
+    try { return await import(/* webpackIgnore */ url); } catch (e) {
+      const txt = await (await fetch(url)).text();
+      return await import(URL.createObjectURL(new Blob([txt], { type: 'text/javascript' })));
+    }
+  }
+
+  /* Concept mode is deliberately unadvertised: there is no control for it in the
+     chart. It turns on with ?ratings=buttons in the URL or Shift+B, is remembered
+     per browser, and announces itself with a corner pill so nobody mistakes the
+     button treatment for the shipped design. */
+  CONCEPT_KEY = 'asam4.ratingConcept';
+
+  readConcept() {
+    try {
+      const q = (new URLSearchParams(location.search)).get('ratings');
+      if (q === 'buttons') { localStorage.setItem(this.CONCEPT_KEY, '1'); return true; }
+      if (q === 'chips') { localStorage.setItem(this.CONCEPT_KEY, '0'); return false; }
+      return localStorage.getItem(this.CONCEPT_KEY) === '1';
+    } catch (e) { return false; }
+  }
+
+  setConcept(on) {
+    try { localStorage.setItem(this.CONCEPT_KEY, on ? '1' : '0'); } catch (e) {}
+    this.setState({ concept: on });
+  }
+
+  onConceptKey = (e) => {
+    if (!e.shiftKey || (e.key !== 'B' && e.key !== 'b')) return;
+    const t = e.target;
+    if (t && (t.isContentEditable || /^(input|textarea|select)$/i.test(t.tagName || ''))) return;
+    e.preventDefault();
+    this.setConcept(!this.state.concept);
+  };
+
+  componentDidMount() {
+    this.setState({ concept: this.readConcept() });
+    document.addEventListener('keydown', this.onConceptKey);
+    this.loadMod('asamScreens', './asam-screens.js').then((m) => this.setState({
+      screens: m.SCREENS, locOptions: m.LOC_OPTIONS,
+    }));
+    this.loadMod('asamNote', './asam-note.js').then((m) => { this.NoteMod = m; this.mountPad(); });
+    // asam-data.js patches window.ICA_DATA asynchronously (both scripts load
+    // async, so arrival order isn't guaranteed) — don't let a conduct button
+    // click race ahead of that patch and read a false "no content" result.
+    this.waitForShrubData();
+  }
+
+  waitForShrubData(tries) {
+    tries = tries || 0;
+    const D = window.ICA_DATA;
+    if (D && D.asamTabFor) { this.shrubDataReady = true; this.forceUpdate(); return; }
+    if (tries > 100) { this.shrubDataReady = true; return; } // give up after ~2s, don't hang forever
+    setTimeout(() => this.waitForShrubData(tries + 1), 20);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.onConceptKey);
+  }
+
+  componentDidUpdate() {
+    this.mountPad();
+    // Keep the newest drill-down column in view, same as v1.
+    if (this.shrubStripEl) this.shrubStripEl.scrollLeft = this.shrubStripEl.scrollWidth;
+    if (this.state.shrubOpen && this.shrubPickSig() !== this.shrubSig) this.paintShrubNote(false);
+    this.scrollPtcIntoView();
+    this.scrollReqIntoView();
+  }
+
+  padRef = (el) => { this.padEl = el; this.mountPad(); };
+  leftColRef = (el) => { this.leftColEl = el; };
+  ratingsRef = (el) => { this.ratingsEl = el; };
+  locRef = (el) => { this.locEl = el; };
+
+  /* The field sits at the bottom of a scrolling column, so its menu would open
+     off-screen. Bring it into view on open; go back to the top once chosen. */
+  scrollCol(top, behavior) {
+    const col = this.leftColEl;
+    if (!col) return;
+    if (behavior && col.scrollTo) col.scrollTo({ top, behavior });
+    else col.scrollTop = top;
+  }
+
+  /* Keep the list dropping downward. The panel's content normally fits, so there
+     is no scroll room to reveal it — while the menu is open, pad the column by the
+     menu's height to create real scroll room, then scroll the list into view.
+     Padding is released on close, and selecting eases back to the ratings. */
+  revealLoc = () => {
+    const col = this.leftColEl, host = this.locEl;
+    if (!col || !host || this.locWatch) return;
+    const sync = () => {
+      const menu = host.querySelector('.ica-menu');
+      if (!menu) { this.releaseLoc(); return; }
+      menu.style.top = '';
+      menu.style.bottom = '';
+      menu.style.marginBottom = '';
+      menu.style.maxHeight = Math.max(160, col.clientHeight - 48) + 'px';
+      const h = menu.getBoundingClientRect().height;
+      col.style.paddingBottom = Math.ceil(h + 16) + 'px';
+      const over = menu.getBoundingClientRect().bottom - col.getBoundingClientRect().bottom + 12;
+      if (over > 1) {
+        const max = col.scrollHeight - col.clientHeight;
+        this.scrollCol(Math.max(0, Math.min(col.scrollTop + over, max)));
+      }
+    };
+    this.locWatch = new MutationObserver(sync);
+    this.locWatch.observe(host, { childList: true, subtree: true });
+    requestAnimationFrame(sync);
+  };
+
+  releaseLoc() {
+    if (this.locWatch) { this.locWatch.disconnect(); this.locWatch = null; }
+    if (this.leftColEl) this.leftColEl.style.paddingBottom = '';
+  }
+
+  /* Toggling the list changes the column's height, which would otherwise shove
+     the header out from under the cursor. Hold its on-screen position instead. */
+  toggleRatings = () => {
+    const col = this.leftColEl, el = this.ratingsEl;
+    const before = col && el ? el.getBoundingClientRect().top - col.getBoundingClientRect().top : null;
+    this.setState((s) => ({ ratingsOpen: s.ratingsOpen === false }), () => {
+      if (before === null || !this.leftColEl || !this.ratingsEl) return;
+      const after = this.ratingsEl.getBoundingClientRect().top - this.leftColEl.getBoundingClientRect().top;
+      this.leftColEl.scrollTop += after - before;
+    });
+  };
+  ptcRef = (el) => { this.ptcEl = el; };
+  reqEls = {};
+  reqScrollRef = (el) => { this.reqScrollEl = el; };
+
+  scrollReqIntoView() {
+    const id = this.reqJustOpened;
+    if (!id) return;
+    this.reqJustOpened = null;
+    const c = this.reqScrollEl, p = this.reqEls[id];
+    if (!c || !p) return;
+    const over = p.getBoundingClientRect().bottom - c.getBoundingClientRect().bottom;
+    if (over <= 0) return;
+    const to = Math.min(c.scrollTop + over + 10, c.scrollHeight - c.clientHeight);
+    this.tweenScroll(c, c.scrollTop, to, 200);
+  }
+
+  // Kendo PanelBar behavior: collapsed by default, and when the expanded body
+  // would fall below the fold of the scrolling column, bring it into view.
+  togglePtc = () => {
+    const open = !this.state.ptcOpen;
+    if (open) this.ptcJustOpened = true;
+    this.setState({ ptcOpen: open });
+  };
+
+  scrollPtcIntoView() {
+    if (!this.ptcJustOpened) return;
+    this.ptcJustOpened = false;
+    const c = this.leftColEl, p = this.ptcEl;
+    if (!c || !p) return;
+    // componentDidUpdate already runs post-mutation and getBoundingClientRect
+    // forces the reflow, so measure and scroll synchronously — rAF is throttled
+    // to a single frame in the preview host and stalls any tween.
+    const over = p.getBoundingClientRect().bottom - c.getBoundingClientRect().bottom;
+    if (over <= 0) return;
+    const to = Math.min(c.scrollTop + over + 10, c.scrollHeight - c.clientHeight);
+    this.tweenScroll(c, c.scrollTop, to, 200);
+  }
+
+  tweenScroll(el, from, to, dur) {
+    clearInterval(this.ptcTween);
+    const t0 = Date.now(), tick = () => {
+      const k = Math.min(1, (Date.now() - t0) / dur);
+      el.scrollTop = from + (to - from) * (k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2);
+      if (k >= 1) clearInterval(this.ptcTween);
+    };
+    this.ptcTween = setInterval(tick, 16);
+    tick();
+  }
+
+  shrubStripRef = (el) => { this.shrubStripEl = el; };
+
+  /* The note box is a real editable field, not a preview: picks compose into it,
+     and the clinician can type or reword before saving. It is populated
+     imperatively (React renders it childless) so typing survives re-renders. */
+  shrubNoteRef = (el) => {
+    const fresh = el && el !== this.shrubNoteEl;
+    this.shrubNoteEl = el;
+    if (fresh) this.paintShrubNote(true);
+  };
+
+  shrubNoteInput = () => { this.shrubNoteDirty = true; };
+
+  shrubNoteKeyDown = (e) => {
+    if (!(e.key === 'Enter' || e.key === 'Backspace' || (e.key && e.key.length === 1))) return;
+    const el = this.shrubNoteEl;
+    if (el && el.querySelector('[data-ph]')) { el.innerHTML = ''; this.caretToEnd(el); }
+    this.shrubNoteDirty = true;
+  };
+
+  caretToEnd(el) {
+    try {
+      const r = document.createRange();
+      r.selectNodeContents(el); r.collapse(false);
+      const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      el.focus();
+    } catch (err) { /* selection unavailable */ }
+  }
+
+  shrubPickSig() { return (this.state.shrubPicks || []).map((p) => p.id).join(','); }
+
+  shrubPlaceholder() {
+    return '<span data-ph="1" style="color:#a09a72;font-style:italic;font-size:12px">'
+      + 'Select items on the left to build the note \u2014 or type here.</span>';
+  }
+
+  paintShrubNote(force) {
+    const el = this.shrubNoteEl;
+    if (!el) return;
+    const { base } = this.computeLevels(this.state.shrubTabId, this.state.shrubPath);
+    const picks = this.state.shrubPicks || [];
+    if (force || !this.shrubNoteDirty) {
+      const html = this.toNoteHtml(this.collectParagraphs(picks, base));
+      el.innerHTML = html || this.shrubPlaceholder();
+    } else {
+      // Typed in already — never overwrite the clinician's words. New picks
+      // append at the end; deselecting leaves the text for them to edit out.
+      const prev = String(this.shrubSig || '').split(',').filter(Boolean);
+      picks.map((p) => String(p.id)).filter((id) => prev.indexOf(id) === -1).forEach((id) => {
+        const txt = this.lblOf(id);
+        if (!txt) return;
+        const p = document.createElement('p');
+        p.setAttribute('style', 'margin:14px 0 0');
+        p.textContent = txt;
+        el.appendChild(p);
+      });
+    }
+    this.shrubSig = this.shrubPickSig();
+  }
+
+  shrubNoteHtml() {
+    const el = this.shrubNoteEl;
+    if (!el) return '';
+    const clone = el.cloneNode(true);
+    Array.prototype.slice.call(clone.querySelectorAll('[data-ph]')).forEach((n) => n.parentNode.removeChild(n));
+    return (clone.textContent || '').trim() ? clone.innerHTML.trim() : '';
+  }
+
+  resetShrubNote(open) {
+    this.shrubNoteDirty = false;
+    this.shrubSig = '';
+    if (open) this.paintShrubNote(true);
+  }
+
+  mountPad() {
+    if (!this.padEl || !this.NoteMod) return;
+    const key = this.state.active;
+    this.pads = this.pads || {};
+    if (this.padEl.__key === key && this.padEl.__pad) return;
+    this.padEl.innerHTML = '';
+    let pad = this.pads[key];
+    if (!pad) {
+      pad = new this.NoteMod.NotePad(this.padEl, { onRelease: (src) => this.release(src) });
+      this.pads[key] = pad;
+    } else {
+      pad.root = this.padEl;
+      pad._bind();
+      pad.render();
+    }
+    this.padEl.__key = key;
+    this.padEl.__pad = pad;
+  }
+
+  pad() { return this.pads && this.pads[this.state.active]; }
+
+  // Button/ButtonGroup take a NODE for icon, not an icon name.
+  dsIcon(name, size, color) {
+    const NS = window.ICANotesDesignSystem_94514a || {};
+    return NS.Icon ? React.createElement(NS.Icon, { name, size: size || 14, color: color || '#1c1f24' }) : null;
+  }
+
+  /* Compiled note (REQ-G-1 + the note-format spec): one section per ASSESSED
+     dimension, in order. Each section states the dimension's calculated risk
+     rating, then "as evidenced by:", then ONE clinical paragraph whose severity
+     comes from the score and whose specifics come from the selected sub-criteria.
+     Recommendation carries the diagnoses and the derived level of care. */
+  SEVERITY = {
+    0: 'No dimension-specific concern is identified. The client presents as stable in this domain and no intervention is required at this level.',
+    1: 'Risk in this dimension is minimal. Monitoring and minor supports are sufficient; no additional level-of-care intensity is indicated on this basis.',
+    2: 'Risk in this dimension is moderate and warrants outpatient-level intervention with structured follow-up.',
+    3: 'Risk in this dimension is significant. Intensive outpatient or partial hospitalization services are indicated to manage it safely.',
+    4: 'Risk in this dimension is severe and imminent, requiring a residential or medically managed inpatient level of care.',
+  };
+
+  // '3B' / 'Min 3.7' / 'C' / 'EVAL' all have to reduce to an ASAM 0–4 score.
+  scoreOf(code) {
+    const c = String(code || '').toUpperCase();
+    if (/^\d/.test(c)) return Math.min(4, parseInt(c, 10));
+    if (c === 'C') return 3;
+    if (c === 'B') return 2;
+    if (c === 'A' || c === 'MOUD-C') return 1;
+    if (c === 'EVAL') return 2;
+    return 0;
+  }
+
+  joinList(items) {
+    const a = items.filter(Boolean);
+    if (a.length <= 1) return a[0] || '';
+    if (a.length === 2) return a[0] + ' and ' + a[1];
+    return a.slice(0, -1).join(', ') + ', and ' + a[a.length - 1];
+  }
+
+  compiledNote() {
+    const strip = (h) => String(h || '').replace(/<br\s*\/?>/gi, ' ')
+      .replace(/<\/(p|div|li)>/gi, '\n').replace(/<[^>]*>/g, '')
+      .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').trim();
+
+    const sections = (this.state.screens || []).map((sc) => {
+      // Ratings actually set on this dimension.
+      const rated = (sc.ratings || []).map((r) => {
+        const code = this.state.codes[sc.id + '|' + r.name];
+        if (!code) return null;
+        const hit = (r.codes || []).find((c) => c[0] === code);
+        return { name: r.name, code, label: hit ? hit[1] : code, score: this.scoreOf(code) };
+      }).filter(Boolean);
+
+      // Sub-criteria: shrub narratives, checklist items and Y/N answers on the pad.
+      const pad = this.pads && this.pads[sc.id];
+      const subs = [];
+      (pad ? pad.entries : []).forEach((e) => {
+        if (e.kind === 'line') {
+          if (rated.some((r) => r.name === e.k)) return;
+          subs.push(e.v && /^(yes|no)$/i.test(e.v) ? e.k.replace(/\?$/, '') + ' — ' + e.v.toLowerCase() : e.v || e.k);
+        } else {
+          strip(e.html).split('\n').forEach((t) => { if (t.trim()) subs.push(t.trim().replace(/\.$/, '')); });
+        }
+      });
+
+      if (!rated.length && !subs.length) return null;
+
+      const score = rated.reduce((m, r) => Math.max(m, r.score), 0);
+      const full = String(sc.title || sc.tab).replace(/^Dimension \d+:\s*/, '');
+      const detail = rated.map((r) => r.name.toLowerCase() + ' rated ' + r.code + ' (' + r.label + ')');
+      const parts = [this.SEVERITY[score]];
+      if (detail.length) parts.push('The rating reflects ' + this.joinList(detail) + '.');
+      if (subs.length) parts.push('Supporting findings include ' + this.joinList(subs.slice(0, 8)) + '.');
+
+      return {
+        heading: sc.tab,
+        scoreLine: sc.tab + ': ' + full + ': ' + score,
+        bridge: ', as evidenced by:',
+        narrative: parts.join(' '),
+        score,
+        label: sc.tab,
+      };
+    }).filter(Boolean);
+
+    const top = sections.reduce((m, s) => Math.max(m, s.score), 0);
+    const drivers = sections.filter((s) => s.score === top && top > 0).map((s) => s.label);
+    const loc = this.state.loc && this.state.loc !== 'None' ? this.state.loc : '';
+
+    return {
+      sections,
+      diagnoses: this.state.recDx === 'Y'
+        ? [{ code: 'F39', desc: 'Unspecified mood [affective] disorder', chron: 'Chronic' }]
+        : [],
+      loc: loc || 'Not yet selected',
+      locJustify: loc
+        ? (drivers.length
+            ? 'Driven by ' + this.joinList(drivers) + ', which carried the highest risk rating of ' + top + '.'
+            : 'No dimension carried a risk rating above 0; the level of care reflects clinical judgment rather than a dimension score.')
+        : 'A level of care has not been selected yet; the dimension ratings above imply the minimum.',
+      hasRec: sections.length > 0 || this.state.recDx === 'Y',
+    };
+  }
+
+  release(src) {
+    const i = src.indexOf(':');
+    const kind = src.slice(0, i), id = src.slice(i + 1);
+    const drop = (obj) => { const o = { ...obj }; delete o[id]; return o; };
+    if (kind === 'code') this.setState((s) => ({ codes: drop(s.codes) }));
+    else if (kind === 'yn') this.setState((s) => ({ yn: drop(s.yn) }));
+    else if (kind === 'check') this.setState((s) => ({ checks: drop(s.checks) }));
+  }
+
+  screen() { return (this.state.screens || []).find((s) => s.id === this.state.active) || null; }
+
+  /* ---------- entry flow: Chart Face -> edition picker -> v3 stub / v4 chart ---------- */
+
+  FACE_TABS = ['Chart Face', 'Demographics', 'Most Recent Note of Mine', 'Most Recent Note', 'Documents', 'Communications', 'Treatment Plan'];
+
+  FACE_CARDS = [
+    { title: 'Current Diagnosis', body: 'No Diagnoses Added.', color: '#38BAF3' },
+    { title: 'Active Problem/Need List', body: '1. Anxiety\n2. Obsessive Compulsive Disorder', color: '#90D34A' },
+    { title: 'Current Medications', body: 'No Medications Prescribed.', color: '#FFD760' },
+    { title: 'Adverse Drug Reactions and Allergies', body: 'No Adverse Drug Reactions Reported.', color: '#DF1600' },
+    { title: 'Health Concerns & Risk Factors', body: 'No Health Concerns or Risk Factors Reported.', color: '#DF1600' },
+    { title: 'Chart Reminders', body: 'Add Chart Reminder', color: '#B76DFF' },
+  ];
+
+  NOTE_ROWS = [
+    { name: 'ASAM (V3)', date: 'Jul. 29, 2026 1:44 PM', status: 'In Progress', initials: '\u2026' },
+    { name: 'ASAM (V3)', date: 'Jul. 29, 2026 12:12 PM', status: 'In Progress', initials: 'CC' },
+    { name: 'ASAM (V3)', date: 'Jul. 29, 2026 12:06 PM', status: 'In Progress', initials: 'CC' },
+  ];
+
+  /* ---------- shrub drill-down (ported from v1's renderCols/click handler) ---------- */
+
+  computeLevels(tabId, path) {
+    const D = window.ICA_DATA;
+    if (!D) return { levels: [[]], base: {}, tab: null, placeholderOnly: false };
+    const tab = D.getTab ? D.getTab(tabId) : null;
+    const levels = [tabId == null ? [] : (D.getRootsForTab(tabId) || [])];
+    const base = {};
+    // a tab whose only root repeats the tab name adds nothing — drill straight through
+    while (levels[0].length === 1 && D.hasChildren(levels[0][0].shrubId)) {
+      base[levels[0][0].shrubId] = 1;
+      levels[0] = D.getChildren(levels[0][0].shrubId) || [];
+    }
+    let placeholderOnly = false;
+    if (levels[0].length === 1 && !D.hasChildren(levels[0][0].shrubId)) {
+      placeholderOnly = true; levels[0] = [];
+    }
+    (path || []).forEach((id) => { levels.push(D.getChildren(id) || []); });
+    return { levels, base, tab, placeholderOnly };
+  }
+
+  toggleShrubItem(lvl, id) {
+    const D = window.ICA_DATA;
+    const kids = D.hasChildren(id);
+    let path = this.state.shrubPath.slice();
+    let picks = this.state.shrubPicks.slice();
+    const at = picks.findIndex((p) => p.id === id);
+    if (kids) {
+      path = path.slice(0, lvl);
+      path[lvl] = id;
+      if (at > -1) picks.splice(at, 1);
+      else picks.push({ id, kind: lvl === 0 ? 'section' : 'heading' });
+    } else {
+      if (at > -1) picks.splice(at, 1);
+      else picks.push({ id, kind: lvl === 0 ? 'section' : 'detail', text: D.contentsFor(id) });
+    }
+    this.setState({ shrubPath: path, shrubPicks: picks });
+  }
+
+  lblOf(id) {
+    const D = window.ICA_DATA;
+    const s = D && D.getShrub(id);
+    return s ? String(s.label).replace(/&nbsp;/g, ' ').replace(/[:\s]+$/, '') : '';
+  }
+  parentOfId(id) {
+    const D = window.ICA_DATA;
+    const s = D && D.getShrub(id);
+    return s ? s.parentId : null;
+  }
+  // real ancestry, trimmed past the LAST collapsed tab-root level
+  chainOfId(id, base) {
+    let c = [], p = this.parentOfId(id), guard = 0;
+    while (p != null && guard++ < 50) { c.unshift(p); p = this.parentOfId(p); }
+    let cut = -1;
+    for (let i = 0; i < c.length; i++) if (base[c[i]]) cut = i;
+    return cut > -1 ? c.slice(cut + 1) : c;
+  }
+
+  // Three tiers, per the production note pane:
+  //   level-0 category  -> bold + underlined, own line
+  //   deeper w/ children -> bold italic "Category: Label", blank line above
+  //   leaf detail        -> plain, directly beneath its heading, no gap
+  collectParagraphs(picks, base) {
+    const paras = [];
+    let first = true;
+    const push = (text, opts) => {
+      if (!text) return;
+      paras.push({ id: 'p' + paras.length, text, weight: opts.weight || 400,
+        italic: !!opts.italic, underline: !!opts.underline, marginTop: first ? 0 : 14 });
+      first = false;
+    };
+    const kidsOf = (pid, kind) => picks.filter((p) => p.kind === kind && String(this.parentOfId(p.id)) === String(pid));
+    const emitBranch = (nodeId, rootLabel) => {
+      kidsOf(nodeId, 'detail').forEach((d) => {
+        const txt = String(d.text || '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+        if (txt) push(txt, { weight: 400 });
+      });
+      kidsOf(nodeId, 'heading').forEach((h) => {
+        push((rootLabel ? rootLabel + ': ' : '') + this.lblOf(h.id), { weight: 700, italic: true });
+        emitBranch(h.id, rootLabel);
+      });
+    };
+    const roots = [], seen = {};
+    picks.forEach((p) => {
+      const c = this.chainOfId(p.id, base);
+      const r = c.length ? c[0] : p.id;
+      if (!seen[r]) { seen[r] = 1; roots.push(r); }
+    });
+    roots.forEach((r) => {
+      push(this.lblOf(r) + ':', { weight: 700, underline: true });
+      emitBranch(r, this.lblOf(r));
+    });
+    return paras;
+  }
+
+  paraStyle(p) {
+    let s = 'margin:' + p.marginTop + 'px 0 0';
+    if (p.weight >= 700) s += ';font-weight:700';
+    if (p.italic) s += ';font-style:italic';
+    if (p.underline) s += ';text-decoration:underline';
+    return s;
+  }
+
+  toNoteHtml(paras) {
+    return paras.map((p) => '<p style="' + this.paraStyle(p) + '">' + esc(p.text) + '</p>').join('');
+  }
+
+  // Pill labels are literal template text so they stay editable in the editor;
+  // the shrub is resolved by reading that text back at click time.
+  openPillEl = (e) => {
+    const label = (e.currentTarget.textContent || '').trim();
+    const S = (this.state.screens || []).find((x) => x.id === this.state.active);
+    const hit = S && (S.pills || []).find((p) => p.label === label);
+    this.openShrub(hit || { label });
+  };
+
+  // Same classification the v1 prototype ran over every conduct button: a shrub
+  // that resolves to a subtab is live, a typed-entry form counts as done, and
+  // anything else (field-level, empty, no match) is a content gap for October.
+  contentGaps(S) {
+    const D = window.ICA_DATA;
+    if (!S || !D || !D.asamMatch) return [];
+    return (S.pills || []).map((p) => {
+      const n = p.label;
+      if (/^(add )?vital signs$/i.test(n)) return null;
+      let m; try { m = D.asamMatch(n); } catch (e) { return null; }
+      if (!m) return n;
+      const st = m.level === 'subtab' ? 'live' : (m.level === 'field' && m.empty ? 'empty' : m.level);
+      return (st === 'live' || st === 'typed') ? null : n;
+    }).filter(Boolean);
+  }
+
+  openShrub(pill) {
+    if (pill.kind === 'vitals') { this.setState({ vitalsOpen: true, vitalsPill: pill.label }); return; }
+    if (!this.shrubDataReady) {
+      // Patch hasn't installed yet (async script race) — retry shortly rather
+      // than opening the dialog on a false "no content" read.
+      setTimeout(() => this.openShrub(pill), 30);
+      return;
+    }
+    const D = window.ICA_DATA;
+    // Route exclusively through the ASAM synthetic overlay (asamTabFor), never a
+    // real production tabId — forward (getChildren) and backward (parentId)
+    // traversal only agree within that synthetic id space.
+    const tabId = (D && D.asamTabFor) ? D.asamTabFor(pill.label) : null;
+    this.shrubNoteDirty = false;
+    this.shrubSig = '';
+    this.setState({ shrubOpen: true, shrubPill: pill.label, shrubTabId: tabId != null ? tabId : null,
+      shrubPath: [], shrubPicks: [] }, () => this.paintShrubNote(true));
+  }
+
+  // What saves is what is IN the box — picks plus whatever was typed or reworded.
+  saveShrub = () => {
+    const pad = this.pad();
+    const { shrubPicks, shrubTabId, shrubPath } = this.state;
+    let html = this.shrubNoteHtml();
+    if (!html && shrubPicks.length) {
+      const { base } = this.computeLevels(shrubTabId, shrubPath);
+      html = this.toNoteHtml(this.collectParagraphs(shrubPicks, base));
+    }
+    if (pad && html) pad.addNarrative('pill:' + this.state.shrubPill, html);
+    this.resetShrubNote(false);
+    this.setState({ shrubOpen: false, shrubPill: null, shrubPath: [], shrubPicks: [] });
+  };
+
+  // Vitals is a structured panel (mirrors the production Vital Signs modal):
+  // each section compiles its filled measures into one exam entry; Save writes
+  // the whole exam as a single note line, replacing an earlier reading.
+  setVs = (k, v) => this.setState((s) => ({ vsVals: { ...(s.vsVals || {}), [k]: v } }));
+
+  vsInches() {
+    const vs = this.state.vsVals || {};
+    if (String(vs['h.in'] || '').trim()) return Number(vs['h.in']) || 0;
+    const ft = Number(vs['h.ft']) || 0, i = Number(vs['h.fti']) || 0;
+    return ft ? ft * 12 + i : 0;
+  }
+
+  // Raw value, or a derived one for the measures the app auto-fills.
+  vsGet(k) {
+    const vs = this.state.vsVals || {};
+    const raw = vs[k];
+    if (String(raw == null ? '' : raw).trim() !== '') return String(raw);
+    const inch = this.vsInches();
+    if (k === 'h.cm' && inch) return String(Math.round(inch * 2.54));
+    if (k === 'w.bmi') {
+      const lb = Number(vs['w.lbs']) || 0;
+      if (lb && inch) return (703 * lb / (inch * inch)).toFixed(1);
+    }
+    if (k === 'w.kgs') {
+      const lb = Number(vs['w.lbs']) || 0;
+      if (lb) return (lb * 0.4536).toFixed(1);
+    }
+    if (k === 't.c') {
+      const f = Number(vs['t.f']) || 0;
+      if (f) return ((f - 32) * 5 / 9).toFixed(1);
+    }
+    return '';
+  }
+
+  vsText(id) {
+    const g = (k) => String(this.vsGet(k) || '').trim();
+    const out = [];
+    const push = (v, fmt) => { if (v) out.push(fmt(v)); };
+    if (id === 'bp') {
+      ['supine', 'sitting', 'upright'].forEach((pos) => {
+        const s = g('bp.' + pos + '.sys'), d = g('bp.' + pos + '.dia'), p = g('bp.' + pos + '.pulse');
+        if (s || d) out.push('BP ' + (s || '—') + '/' + (d || '—') + ' ' + pos);
+        if (p) out.push('pulse ' + p + ' ' + pos);
+      });
+      push(g('bp.reg'), (v) => 'pulse ' + v.toLowerCase());
+    } else if (id === 'height') {
+      const ft = g('h.ft'), fti = g('h.fti'), inch = g('h.in'), cm = g('h.cm');
+      if (ft) out.push('height ' + ft + ' ft' + (fti ? ' ' + fti + ' in' : ''));
+      else if (inch) out.push('height ' + inch + ' in');
+      if (cm) out.push(cm + ' cm');
+    } else if (id === 'weight') {
+      push(g('w.lbs'), (v) => 'weight ' + v + ' lb');
+      push(g('w.kgs'), (v) => v + ' kg');
+      push(g('w.bmi'), (v) => 'BMI ' + v);
+      push(g('w.waist'), (v) => 'waist ' + v + ' in');
+    } else if (id === 'temp') {
+      push(g('t.f'), (v) => 'temp ' + v + ' °F');
+      push(g('t.c'), (v) => v + ' °C');
+    } else if (id === 'resp') {
+      push(g('r.rate'), (v) => 'respirations ' + v + '/min');
+      push(g('r.o2'), (v) => 'O₂ saturation ' + v + '%');
+      push(g('r.inh'), (v) => 'inhaled O₂ ' + v + ' L/min');
+      push(g('r.co'), (v) => 'breath CO ' + v + ' ppm');
+    } else if (id === 'sugar') {
+      push(g('s.fast'), (v) => 'fasting glucose ' + v);
+      push(g('s.non'), (v) => 'non-fasting glucose ' + v);
+      push(g('s.a1c'), (v) => 'HgbA1c ' + v + '%');
+    } else if (id === 'other') {
+      push(g('o.edema'), (v) => 'edema ' + v.toLowerCase());
+      push(g('o.gaf'), (v) => 'GAF ' + v);
+      push(g('o.whodas'), (v) => 'WHODAS ' + v);
+    }
+    return out.join(', ');
+  }
+
+  addVsEntry = (id, title) => {
+    const text = this.vsText(id);
+    if (!text) return;
+    this.setState((s) => ({
+      vsEntries: (s.vsEntries || []).filter((e) => e.id !== id).concat([{ id, title, text }]),
+    }));
+  };
+
+  // Times are the source of truth while both parse — back-fill the length.
+  tsSpan() {
+    const parse = (t) => {
+      const m = /^\s*(\d{1,2}):(\d{2})\s*([ap])\.?m\.?\s*$/i.exec(String(t || ''));
+      if (!m) return null;
+      let h = +m[1] % 12;
+      if (/p/i.test(m[3])) h += 12;
+      return h * 60 + +m[2];
+    };
+    const a = parse(this.state.tsStart), b = parse(this.state.tsEnd);
+    if (a === null || b === null) return null;
+    return b >= a ? b - a : b + 1440 - a;
+  }
+
+  saveTimeSpent = () => {
+    const pad = this.pad();
+    const min = String(this.state.tsMin || '').trim();
+    const label = min ? min + ' min' : '';
+    if (pad) {
+      if (this.state.tsInclude === 'Y' && label) {
+        const times = this.state.tsPrintTimes === 'Y' && this.state.tsStart && this.state.tsEnd
+          ? ' (' + this.state.tsStart + ' \u2013 ' + this.state.tsEnd + ')' : '';
+        pad.replaceLine('timespent', 'Time spent', label + times + '.');
+      } else if (pad.removeLine) {
+        pad.removeLine('timespent');
+      }
+    }
+    this.setState({ tsOpen: false, tsSaved: label });
+  };
+
+  saveVitals = () => {
+    const pad = this.pad();
+    const entries = this.state.vsEntries || [];
+    const body = entries.map((e) => e.text).join('; ');
+    if (pad && body) pad.replaceLine('pill:' + this.state.vitalsPill, 'Vital signs', body + '.');
+    this.setState({ vitalsOpen: false });
+  };
+
+  // Panel model for the vitals dialog: rows of cells, cells are labels or fields.
+  vsPanels() {
+    const dec = /^\d{0,4}(\.\d{0,2})?$/;
+    const val = (k) => { const v = (this.state.vsVals || {})[k]; return v == null ? this.vsGet(k) : String(v); };
+    const set = (k) => (e) => {
+      const raw = e && e.target ? e.target.value : e;
+      if (raw === '' || dec.test(raw)) this.setVs(k, raw);
+    };
+    const bump = (k, d, step) => () => {
+      const cur = Number(val(k));
+      const n = (Number.isFinite(cur) ? cur : 0) + d * step;
+      this.setVs(k, String(Math.max(0, Math.round(n * 10) / 10)));
+    };
+    const F = (label, k, o) => {
+      const opt = o || {};
+      return {
+        isField: true, isNum: true, hasLabel: !!label, label: label || '',
+        value: val(k), set: set(k),
+        up: bump(k, 1, opt.step || 1), down: bump(k, -1, opt.step || 1),
+        hasSuffix: !!opt.suffix, suffix: opt.suffix || '',
+      };
+    };
+    const T = (text) => ({ isText: true, text });
+    const SEL = (label, k, items) => ({
+      isField: true, isSelect: true, hasLabel: !!label, label: label || '',
+      value: val(k), set: (e) => this.setVs(k, e && e.target ? e.target.value : e),
+      options: [''].concat(items).map((v) => ({ v, t: v || '—' })),
+    });
+    const bpRow = (pos, name, first) => ({ cells: [
+      T(name),
+      F(first ? 'Systolic' : '', 'bp.' + pos + '.sys', { step: 5 }),
+      F(first ? 'Diastolic' : '', 'bp.' + pos + '.dia', { step: 5 }),
+      F(first ? 'Pulse' : '', 'bp.' + pos + '.pulse', { step: 2 }),
+    ] });
+
+    return [
+      { id: 'bp', title: 'Blood Pressure and Pulse', rows: [
+        bpRow('supine', 'Supine', true), bpRow('sitting', 'Sitting'), bpRow('upright', 'Upright'),
+        { cells: [T('Regularity'), SEL('', 'bp.reg', ['Regular', 'Irregular', 'Irregularly irregular'])] },
+      ] },
+      { id: 'height', title: 'Height', rows: [
+        { cells: [F('ft/in', 'h.ft', { suffix: 'ft' }), F('', 'h.fti', { suffix: 'in' })] },
+        { cells: [F('in', 'h.in'), F('cm', 'h.cm')] },
+      ] },
+      { id: 'weight', title: 'Weight', rows: [
+        { cells: [F('lbs', 'w.lbs', { step: 2 }), F('kgs', 'w.kgs')] },
+        { cells: [F('BMI', 'w.bmi'), F('Waist (in)', 'w.waist')] },
+      ] },
+      { id: 'resp', title: 'Respiratory', rows: [
+        { cells: [F('Rate / min', 'r.rate'), F('O2 Saturation', 'r.o2')] },
+        { cells: [F('Inhaled O2', 'r.inh'), F('BreathCO', 'r.co')] },
+      ] },
+      { id: 'sugar', title: 'Blood Sugar', rows: [
+        { cells: [F('Fasting', 's.fast', { step: 5 }), F('Non-fasting', 's.non', { step: 5 }), F('HgbA1c', 's.a1c')] },
+      ] },
+      { id: 'other', title: 'Edema, GAF & WHODAS', rows: [
+        { cells: [SEL('EDEMA', 'o.edema', ['None', 'Trace', '1+', '2+', '3+', '4+']), F('GAF', 'o.gaf', { step: 5 }), F('WHODAS', 'o.whodas')] },
+      ] },
+      { id: 'temp', title: 'Temperature', rows: [
+        { cells: [F('Farenheit', 't.f'), F('Celsius', 't.c')] },
+      ] },
+    ].map((p) => ({ ...p, add: () => this.addVsEntry(p.id, p.title) }));
+  }
+
+  renderVals() {
+    const NS = window.ICANotesDesignSystem_94514a || {};
+    const D = window.ICA_DATA;
+    const S = this.screen();
+    const list = this.state.screens || [];
+    const annot = this.state.annot;
+
+    const dotStyle = (dot) => {
+      if (!dot || !annot) return 'display:none';
+      const on = dot === 'new';
+      return 'display:inline-block;width:7px;height:7px;border-radius:50%;flex:0 0 7px;background:'
+        + (on ? '#1F7A4C' : '#1274AC') + ';box-shadow:0 0 0 1px '
+        + (on ? 'rgba(31,122,76,.3)' : 'rgba(18,116,172,.3)');
+    };
+    const dotEl = (dot) => (!dot || !annot) ? null : React.createElement('span', {
+      style: { display: 'inline-block', width: 7, height: 7, borderRadius: '50%', flex: '0 0 7px',
+        background: dot === 'new' ? '#1F7A4C' : '#1274AC' },
+      title: (dot === 'new' ? 'New in v4' : 'Exists in v3, changes in v4'),
+    });
+
+    const tabs = list.map((s) => ({ id: s.id, label: s.tab }))
+      .concat([{ id: 'rec', label: 'Recommendation' }])
+      .map((t) => ({
+        label: t.label,
+        pick: () => this.setState({ active: t.id, ptcOpen: false }),
+        style: TAB + (t.id === this.state.active
+          ? 'background:#DEDFDE;border:1px solid #808080;border-bottom:0;z-index:2;'
+          : 'background:#D7D5D8;border:1px solid #adb2b8;border-bottom:0;'),
+      }));
+
+    const pills = !S ? [] : S.pills.map((p) => ({
+      label: p.label, icon: dotEl(p.dot), open: () => this.openShrub(p),
+    }));
+    const isD = (id) => !!S && S.id === id;
+
+    const concept = !!this.state.concept;
+    const ratingSrc = !S ? [] : (concept
+      ? S.ratings.slice().sort((a, b) => (b.codes || []).length - (a.codes || []).length)
+      : S.ratings);
+    const ratings = ratingSrc.map((r) => {
+      const key = S.id + '|' + r.name;
+      const cur = this.state.codes[key];
+      return {
+        name: r.name, dotStyle: dotStyle(r.dot),
+        codes: r.codes.map(([cc, cl]) => ({
+          cc, cl,
+          style: CHIP + 'transition:background-color .12s,border-color .12s,color .12s;' + (cur === cc
+            ? 'background:var(--ica-primary-hover,#0d6f99);border:1px solid var(--ica-primary-hover,#0d6f99);color:var(--ica-primary-on-primary,#fff);'
+            : 'background:var(--ica-color-app-surface,#fff);border:1px solid var(--ica-primary,#107ead);color:#124D6A;'),
+          selected: cur === cc, unselected: cur !== cc,
+          pick: () => {
+            const pad = this.pad(), was = cur === cc;
+            this.setState((s) => {
+              const c = { ...s.codes };
+              if (c[key] === cc) delete c[key]; else c[key] = cc;
+              return { codes: c };
+            });
+            // The concept variant changes the control only — a pick writes to the
+            // note exactly as the chip grid does, same key, same line format.
+            if (!was && pad) pad.addLine('code:' + key, r.name, cc + ' - ' + cl);
+          },
+        })),
+      };
+    });
+
+    // Recommendation rollup: every dimension's ratings, blank where unresolved.
+    const allScreens = this.state.screens || [];
+    let ratedN = 0, totalN = 0;
+    const setStyle = 'font-size:12px;font-weight:700;color:#1c1f24;text-align:right';
+    const unsetStyle = 'font-size:12px;font-style:italic;color:#666666;text-align:right';
+    const recSummary = allScreens.map((sc) => {
+      const rows = (sc.ratings || []).map((r) => {
+        const cur = this.state.codes[sc.id + '|' + r.name];
+        const hit = cur ? (r.codes || []).find((c) => c[0] === cur) : null;
+        totalN += 1;
+        if (hit) ratedN += 1;
+        return { name: r.name, set: !!hit, code: cur || '', value: hit ? hit[1] : '' };
+      });
+      // Dimensions with no rating codes (D6) are omitted from the rollup entirely.
+      if (!rows.length) return null;
+      const set = rows.filter((r) => r.set);
+      return {
+        dim: (sc.tab || '').replace('Dimension ', 'D'),
+        dimLabel: (sc.tab || '').replace('Dimension ', 'D') + ' ' + String(sc.title || sc.tab).replace(/^Dimension \d+:\s*/, ''),
+        ratingsText: set.length ? set.map((r) => r.name + ' ' + r.code).join(', ') : 'Not rated',
+        title: (sc.title || sc.tab) + ' \u2014 open this dimension',
+        badges: set.map((r) => ({ code: r.code, title: r.name + ' \u2014 ' + r.value })),
+        empty: set.length === 0,
+        jump: () => this.setState({ active: sc.id, ptcOpen: false }),
+      };
+    }).filter(Boolean);
+
+    const subscreens = !S || !S.subscreens ? [] : S.subscreens.map((sub) => ({
+      name: sub.name, dotStyle: dotStyle(sub.dot),
+      ynRows: (sub.yn || []).map((q) => {
+        const key = S.id + '|' + q, cur = this.state.yn[key];
+        // Radio semantics: picking a value replaces the previous one; picking the
+        // same value again clears it so a question can be un-answered.
+        const set = (v) => {
+          const pad = this.pad(), was = cur === v;
+          this.setState((s) => {
+            const y = { ...s.yn };
+            if (y[key] === v) delete y[key]; else y[key] = v;
+            return { yn: y };
+          });
+          if (!was && pad) pad.addLine('yn:' + key, q, v === 'Y' ? 'Yes' : 'No');
+        };
+        return { text: q, value: cur || '', set };
+      }),
+      checkRows: (sub.checks || []).map((t) => {
+        const key = S.id + '|' + t, on = !!this.state.checks[key];
+        return {
+          text: t, on: on,
+          toggle: () => {
+            const pad = this.pad();
+            this.setState((s) => {
+              const k = { ...s.checks };
+              if (k[key]) delete k[key]; else k[key] = true;
+              return { checks: k };
+            });
+            if (!on && pad) pad.addLine('check:' + key, sub.name, t);
+          },
+        };
+      }),
+    }));
+
+    // ---- shrub drill-down columns ----
+    const { levels, base, tab, placeholderOnly } = this.computeLevels(this.state.shrubTabId, this.state.shrubPath);
+    const shrubCols = [];
+    levels.forEach((items, i) => {
+      if (i > 0 && !items.length) return;
+      const rows = [];
+      (items || []).forEach((s) => {
+        const raw = String(s.label || '');
+        const plain = raw.replace(/&nbsp;/g, ' ').replace(/<[^>]*>/g, '').trim();
+        if (!plain) return;
+        const leaf = D && !D.hasChildren(s.shrubId);
+        if (leaf && /^[-_=~.\u2014\u2013*\s|]+$/.test(plain)) {
+          rows.push({ id: 's' + s.shrubId, rule: true, notRule: false, label: '', style: '', caretStyle: '', click: () => {} });
+          return;
+        }
+        const picked = leaf && this.state.shrubPicks.some((p) => p.id === s.shrubId);
+        const onPath = !leaf && this.state.shrubPath[i] === s.shrubId;
+        const sel = picked || onPath;
+        // Leaf picks read like a selected rating chip (solid primary); a branch on the
+        // drill path stays a pale trail marker, since it is navigation, not a choice.
+        rows.push({
+          id: 's' + s.shrubId, rule: false, notRule: true, label: plain,
+          selected: !!picked, unselected: !picked,
+          style: ITEM + 'transition:background-color .12s,color .12s;' + (picked
+            ? 'background:var(--ica-primary-hover,#0d6f99);color:var(--ica-primary-on-primary,#fff);font-weight:700;'
+            : onPath ? 'background:#e4f1f8;color:#0d6f99;font-weight:700;' : 'color:#2d3138;'),
+          caretStyle: leaf ? 'display:none' : 'color:#9aa5ad;font-size:10px;flex-shrink:0',
+          click: () => this.toggleShrubItem(i, s.shrubId),
+        });
+      });
+      const isEmpty = rows.length === 0;
+      shrubCols.push({
+        id: 'col' + i,
+        isEmpty,
+        emptyText: !isEmpty ? '' : (this.state.shrubTabId == null || placeholderOnly
+          ? 'Blocked on content: Need Shrub Data from October.'
+          : 'No shrubs for this tab in the export.'),
+        rows,
+      });
+    });
+
+    const btn = (label, opts, onClick) => NS.Button
+      ? React.createElement(NS.Button, { ...opts, onClick, key: label }, label) : null;
+    const foot = (onCancel, onSave, onClear) => React.createElement('div',
+      { style: { display: 'flex', gap: 8, justifyContent: 'flex-end' } },
+      onClear ? btn('Clear', { themeColor: 'base', fillMode: 'flat', size: 'medium' }, onClear) : null,
+      btn('Cancel', { themeColor: 'base', fillMode: 'outline', size: 'medium' }, onCancel),
+      btn('Save', { themeColor: 'primary', size: 'medium' }, onSave));
+
+    const reqRows = !S ? [] : []
+      .concat(S.pills, S.ratings || [], S.subscreens || [])
+      .filter((x) => x.dot)
+      .map((x, i) => ({ id: 'r' + i, item: x.label || x.name, req: x.req, dot: x.dot,
+        state: x.dot === 'new' ? 'New in v4' : 'Changes in v4' }));
+
+    // Requirements drawer: verbatim spec per dimension, each one a collapsed
+    // PanelBar row that expands on the caret.
+    // On the compiled-note screen the drawer describes the note itself.
+    const reqKey = this.state.previewOpen ? 'note' : this.state.active;
+    const REQ = (window.ASAM_REQS || {})[reqKey] || { summary: '', reqs: [] };
+    const BADGE = {
+      build: ['#E4F2EA', '#19663F'], move: ['#E4EFF7', '#0F5C88'],
+      keep: ['#EDEFF1', '#525E66'], retire: ['#EDEFF1', '#525E66'],
+      content: ['#FFF7DB', '#7a6a2f'], live: ['#E4F2EA', '#1F7A4C'],
+      req: ['transparent', '#4F5B63'],
+    };
+    const badge = (kind) => {
+      const c = BADGE[kind] || BADGE.req;
+      return 'flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;padding:2px 6px;border-radius:2px;'
+        + 'font-family:var(--font-lato);font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;'
+        + 'background:' + c[0] + ';color:' + c[1] + ';white-space:nowrap;'
+        + (kind === 'req' ? 'border:1px dashed #9DAAB3;' : '');
+    };
+    const badgeDot = (kind) => (kind === 'req' || kind === 'content' || kind === 'live')
+      ? 'display:none'
+      : 'display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;flex:0 0 6px';
+    const reqItems = REQ.reqs.map((r) => ({
+      id: r.id, title: r.title, state: r.state, what: r.what,
+      badgeStyle: badge(r.kind),
+      dotStyle: badgeDot(r.kind),
+      ac: r.ac.map((t, i) => ({ text: t, id: r.id + '-a' + i })),
+      hasImg: !!r.img,
+      img: r.img || '',
+      imgCaption: r.imgCaption || '',
+      // Screenshots stay collapsed so the list reads as text; expanding pushes
+      // the rest of the requirement down rather than opening an overlay.
+      imgOpen: !!(this.state.openImgs || {})[r.id],
+      // The <img> is built here rather than in the template: a bare src hole is
+      // parsed before values resolve, and the browser fetches the literal
+      // "{{ q.img }}" string as a URL.
+      imgEl: r.img ? React.createElement('img', {
+        src: r.img, alt: r.imgCaption || '',
+        style: { display: 'block', width: '100%', height: 'auto', border: '1px solid #D6E4EC', borderRadius: 6, background: '#fff' },
+      }) : null,
+      imgToggleLabel: (this.state.openImgs || {})[r.id] ? 'Hide screenshot' : 'Show screenshot',
+      imgToggleCaret: (this.state.openImgs || {})[r.id] ? '▾' : '▸',
+      toggleImg: () => this.setState((s) => ({
+        openImgs: Object.assign({}, s.openImgs, { [r.id]: !(s.openImgs || {})[r.id] }),
+      })),
+      hasDoc: !!(r.docPages || []).length,
+      docCaption: r.docCaption || '',
+      docHref: r.doc || '',
+      docOpen: !!(this.state.openImgs || {})[r.id + ':doc'],
+      docToggleLabel: (this.state.openImgs || {})[r.id + ':doc'] ? 'Hide example note' : 'Show the current note example',
+      docToggleCaret: (this.state.openImgs || {})[r.id + ':doc'] ? '▾' : '▸',
+      toggleDoc: () => this.setState((s) => ({
+        openImgs: Object.assign({}, s.openImgs, { [r.id + ':doc']: !(s.openImgs || {})[r.id + ':doc'] }),
+      })),
+      // Page images rather than an embedded PDF: the shell will not paint a PDF
+      // plugin document inside the drawer.
+      docEl: (r.docPages || []).length ? React.createElement('div', {
+        style: { display: 'flex', flexDirection: 'column', gap: 8 },
+      }, (r.docPages || []).map((src, i) => React.createElement('img', {
+        key: src, src, alt: 'Compiled note page ' + (i + 1),
+        style: { display: 'block', width: '100%', height: 'auto', border: '1px solid #D6E4EC', borderRadius: 6, background: '#fff' },
+      }))) : null,
+      hasOpen: !!r.open,
+      openLabel: r.open ? r.open.label : '',
+      openItems: r.open ? r.open.items.map((t, i) => ({ text: t, id: r.id + '-o' + i })) : [],
+      hasNote: !!r.note,
+      noteLabel: r.note ? r.note.label : '',
+      noteText: r.note ? r.note.text : '',
+    }));
+    // Content-gap audit, ported from the v1 prototype: any conduct button whose
+    // shrub doesn't resolve to real export content is blocked on October content.
+    // Flag it on the requirement that owns it, or at dimension level if none does.
+    const BLOCKED = 'Blocked on content: Need Shrub Data from October';
+    const normReq = (t) => String(t).toLowerCase().replace(/app\.\s*([a-d])/g, 'appendix $1');
+    const ALIAS = { 'willingness & ability to attend': 'engagement questions' };
+    const dimNotes = [];
+    this.contentGaps(S).forEach((name) => {
+      const key = ALIAS[name.toLowerCase()] || normReq(name);
+      const hit = reqItems.find((q) => normReq(q.title).indexOf(key) > -1)
+        || reqItems.find((q) => normReq(q.title + ' ' + q.what + ' ' + q.ac.map((a) => a.text).join(' ')).indexOf(key) > -1);
+      if (hit) {
+        if (hit.noteText.indexOf('Need Shrub Data from October') > -1) return;
+        hit.hasNote = true; hit.noteLabel = 'For October'; hit.noteText = BLOCKED;
+      } else {
+        dimNotes.push({ id: 'dn-' + name, label: 'For October \u2014 ' + name, text: BLOCKED });
+      }
+    });
+
+    const btnBase = 'font-family:\'Lato\',sans-serif;font-size:14px;font-weight:400;color:#2d3138;background:#DEDFDE;border:1px solid #000;border-radius:4px;padding:7px 8px;min-width:128px;height:40px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px;';
+
+    const faceTabs = this.FACE_TABS.map((label, i) => ({
+      label,
+      style: 'font-family:\'Lato\',sans-serif;font-size:13px;font-weight:700;padding:10px 2px;cursor:pointer;white-space:nowrap;'
+        + (i === 0 ? 'color:#124D6A;border-bottom:2px solid #124D6A;'
+          : 'color:#5b6570;border-bottom:2px solid transparent;'),
+    }));
+
+    const faceCards = this.FACE_CARDS.map((c) => ({
+      ...c,
+      bodyColor: c.body.indexOf('\n') >= 0 ? '#2d3138' : '#9aa5ad',
+      bodyStyle: c.body.indexOf('\n') >= 0 ? 'normal' : 'italic',
+    }));
+
+    const noteRows = this.NOTE_ROWS.map((n) => ({ ...n, open: () => this.setState({ pickerOpen: true }) }));
+
+    // Real chart-face buttons: Assessments = ghost tertiary(green); Notes = ghost
+    // primary except Primary Care Note (solid, enabled) and Nursing (solid, disabled);
+    // Other = ghost base, three disabled (Encounter Form / EOC-UB04 / Review MAR).
+    const ghostBase = 'font-family:\'Lato\',sans-serif;font-size:12.5px;font-weight:600;border-radius:4px;padding:9px 8px;background:transparent;';
+    const ghostGreen = ghostBase + 'color:#2d3138;background:#8CC63F;border:1px solid #6BA52E;border-radius:6px;cursor:pointer;';
+    const ghostBlue = ghostBase + 'color:#fff;background:#1B6E9C;border:1px solid #145A80;border-radius:6px;cursor:pointer;';
+    const solidBlue = ghostBase + 'color:#fff;background:#1B6E9C;border:1px solid #145A80;border-radius:6px;cursor:pointer;';
+    const solidBlueDim = ghostBase + 'color:#e8f2f8;background:#A8CFE3;border:1px solid #A8CFE3;border-radius:6px;cursor:not-allowed;';
+    const ghostGray = ghostBase + 'color:#2d3138;background:#D8DCDF;border:1px solid #C7CCD2;border-radius:6px;cursor:pointer;';
+    const ghostGrayDim = ghostBase + 'color:#c5cace;background:#F1F3F4;border:1px solid #E8EBEC;border-radius:6px;cursor:not-allowed;';
+
+    const wide = 'grid-column:span 2;';
+    const assessBtns = [
+      { label: 'ASAM', style: ghostGreen, click: () => this.setState({ pickerOpen: true }) },
+      { label: 'Complete Evaluation', style: ghostGreen, click: () => {} },
+      { label: 'Forms/Assessments', style: ghostGreen, click: () => {} },
+    ];
+    const noteBtns = [
+      { label: 'Progress Note', style: solidBlue }, { label: 'Nursing', style: solidBlueDim },
+      { label: 'Case Management', style: solidBlue }, { label: 'Primary Care', style: solidBlueDim },
+      { label: 'Couples/Family Therapy', style: solidBlue + wide },
+      { label: 'Quick Note', style: solidBlue }, { label: 'SOAP Note', style: solidBlueDim },
+    ];
+    const otherBtns = [
+      { label: 'Clinical Message', style: ghostGrayDim }, { label: 'Clinical Summary', style: ghostGray },
+      { label: 'Encounter Form', style: ghostGrayDim + wide },
+      { label: 'EOC / UB04', style: ghostGrayDim }, { label: 'Review MAR', style: ghostGray },
+      { label: 'Therapy Groups', style: ghostGray + wide },
+    ];
+
+    const note = this.compiledNote();
+    return {
+      yes: true, no: false, annot,
+      view: this.state.view,
+      isChartView: this.state.view === 'chart',
+      isChartFace: this.state.view === 'chartface',
+      isV3Stub: this.state.view === 'v3stub',
+      chartRoomBtnStyle: btnBase + (this.state.view === 'chart' ? 'background:#124D6A;color:#fff;' : ''),
+      chartFaceBtnStyle: btnBase + (this.state.view === 'chartface' ? 'background:#124D6A;color:#fff;' : ''),
+      goChartRoom: () => this.setState({ view: 'chart' }),
+      goChartFace: () => this.setState({ view: 'chartface' }),
+      faceTabs, faceCards, noteRows, assessBtns, noteBtns, otherBtns,
+      pickerOpen: this.state.pickerOpen,
+      closePicker: () => this.setState({ pickerOpen: false }),
+      // The card only selects; Start commits, so a mis-click no longer opens the
+      // wrong assessment.
+      ed3On: this.state.edition === '3rd',
+      ed3Off: this.state.edition !== '3rd',
+      ed4On: this.state.edition !== '3rd',
+      ed4Off: this.state.edition === '3rd',
+      pickEd3: () => this.setState({ edition: '3rd' }),
+      pickEd4: () => this.setState({ edition: '4th' }),
+      pickerFooter: React.createElement('div',
+        { style: { display: 'flex', gap: 8, justifyContent: 'flex-end' } },
+        btn('Cancel', { themeColor: 'secondary', fillMode: 'outline' }, () => this.setState({ pickerOpen: false })),
+        btn('Start', { themeColor: 'primary', fillMode: 'solid' }, () => this.setState({
+          pickerOpen: false, view: this.state.edition === '3rd' ? 'v3stub' : 'chart',
+        }))),
+      tabs,
+      toggleAnnot: (e) => this.setState({ annot: e.target.checked }),
+      activeTitle: S ? S.title : 'Recommendation',
+      isRec: this.state.active === 'rec',
+      isDim: this.state.active !== 'rec',
+      pills,
+      isD1: isD('d1'), isD2: isD('d2'), isD3: isD('d3'),
+      isD4: isD('d4'), isD5: isD('d5'), isD6: isD('d6'),
+      annotDots: annot,
+      ynOptions: [{ value: 'Y', label: 'Yes' }, { value: 'N', label: 'No' }],
+      openPillEl: this.openPillEl, ratings,
+      cardRatings: concept,
+      ratingsChips: concept ? [] : ratings,
+      conceptOn: concept,
+      conceptOff: () => this.setConcept(false),
+      subscreens, recSummary,
+      recRatedLabel: ratedN + ' of ' + totalN + ' complete',
+      ratingsOpen: this.state.ratingsOpen !== false,
+      ratingsCaret: this.state.ratingsOpen !== false ? '\u25be' : '\u25b8',
+      toggleRatings: this.toggleRatings,
+      ratingsRef: this.ratingsRef,
+      // Button's icon prop takes a node, not an icon name.
+      noop: () => {},
+      tbUserIcon: this.dsIcon('ica-user'),
+      tbBackIcon: this.dsIcon('ica-caret-left'),
+      tbCopyIcon: this.dsIcon('ica-copy'),
+      tbDownloadIcon: this.dsIcon('ica-inbox'),
+      tbPrintIcon: this.dsIcon('ica-printer'),
+      invoiceGroup: [
+        { value: 'invoice', label: 'Generate Invoice & Superbill', icon: this.dsIcon('ica-draft') },
+        { value: 'invoice-more', label: '', icon: this.dsIcon('ica-caret-down', 10) },
+      ],
+      summaryGroup: [
+        { value: 'summary', label: 'Create Summary', icon: this.dsIcon('ica-plus', 12) },
+        { value: 'summary-more', label: '', icon: this.dsIcon('ica-caret-down', 10) },
+      ],
+      draftIcon: (() => {
+        const NS = window.ICANotesDesignSystem_94514a || {};
+        return NS.Icon ? React.createElement(NS.Icon, { name: 'ica-draft', size: 16, color: '#ffffff' }) : null;
+      })(),
+      recIncomplete: ratedN < totalN,
+      recComplete: totalN > 0 && ratedN === totalN,
+      recNone: ratedN === 0,
+      ptc: !S ? [] : S.ptc.map((t) => ({ text: t })),
+      ptcCount: !S || !S.ptc.length ? '' : S.ptc.length + (S.ptc.length === 1 ? ' point' : ' points'),
+      ptcOpen: this.state.ptcOpen,
+      ptcClosed: !this.state.ptcOpen,
+      togglePtc: this.togglePtc,
+      ptcRef: this.ptcRef,
+      leftColRef: this.leftColRef,
+      padRef: this.padRef,
+
+      previewOpen: this.state.previewOpen,
+      noteSections: note.sections,
+      noteDiagnoses: note.diagnoses,
+      noteHasDx: note.diagnoses.length > 0,
+      noteLoc: note.loc,
+      noteHasLoc: true,
+      noteLocJustify: note.locJustify,
+      noteHasRec: note.hasRec,
+      previewEmpty: note.sections.length === 0 && !note.hasRec,
+      openPreview: () => this.setState({ previewOpen: true }),
+      closePreview: () => this.setState({ previewOpen: false }),
+      pageSizes: ['5', '10', '20', '50'],
+      pageSize: this.state.pageSize,
+      setPageSize: (v) => this.setState({ pageSize: typeof v === 'string' ? v : (v && v.target ? v.target.value : v) }),
+      sigLines: this.state.sigLines,
+      setSigLines: (v) => this.setState({ sigLines: !!v }),
+      tsOpen: this.state.tsOpen,
+      openTimeSpent: () => this.setState({ tsOpen: true }),
+      closeTimeSpent: () => this.setState({ tsOpen: false }),
+      tsFooter: foot(() => this.setState({ tsOpen: false }), this.saveTimeSpent),
+      timeSpentLabel: this.state.tsSaved ? 'Time Spent · ' + this.state.tsSaved : 'Time Spent',
+      tsMin: this.state.tsMin,
+      tsStart: this.state.tsStart,
+      tsEnd: this.state.tsEnd,
+      tsUnits: 3,
+      tsPrintTimes: this.state.tsPrintTimes,
+      tsInclude: this.state.tsInclude,
+      five: 5,
+      setTsMin: (v) => this.setState({ tsMin: typeof v === 'string' ? v : String(v) }),
+      setTsStart: (v) => {
+        const val = typeof v === 'string' ? v : (v && v.target ? v.target.value : v);
+        this.setState({ tsStart: val }, () => {
+          const d = this.tsSpan();
+          if (d !== null && d > 0) this.setState({ tsMin: String(d) });
+        });
+      },
+      setTsEnd: (v) => {
+        const val = typeof v === 'string' ? v : (v && v.target ? v.target.value : v);
+        this.setState({ tsEnd: val }, () => {
+          const d = this.tsSpan();
+          if (d !== null && d > 0) this.setState({ tsMin: String(d) });
+        });
+      },
+      setTsPrintTimes: (v) => this.setState({ tsPrintTimes: v }),
+      setTsInclude: (v) => this.setState({ tsInclude: v }),
+      recDx: this.state.recDx,
+      recSvc: this.state.recSvc,
+      telehealth: this.state.telehealth,
+      setRecDx: (v) => this.setState({ recDx: v }),
+      setRecSvc: (v) => this.setState({ recSvc: v }),
+      setTelehealth: (v) => this.setState({ telehealth: !!v }),
+      locOptions: this.state.locOptions,
+      loc: this.state.loc,
+      locRef: this.locRef,
+      revealLoc: this.revealLoc,
+      setLoc: (v) => {
+        // Reset padding and scroll SYNCHRONOUSLY, before the new value renders —
+        // doing it after the menu unmounts changed the content height twice and
+        // read as a lurch.
+        this.releaseLoc();
+        // Stay where the work is: bottom of the panel, so the ratings list and the
+        // field remain in view rather than jumping to the top of the tab.
+        const col = this.leftColEl;
+        if (col) this.scrollCol(col.scrollHeight - col.clientHeight);
+        this.setState({ loc: typeof v === 'string' ? v : (v && v.target ? v.target.value : v) });
+      },
+
+      shrubOpen: this.state.shrubOpen,
+      shrubTitle: this.state.shrubPill || '',
+      shrubStripRef: this.shrubStripRef,
+      shrubCols,
+      shrubNoteRef: this.shrubNoteRef,
+      shrubNoteInput: this.shrubNoteInput,
+      shrubNoteKeyDown: this.shrubNoteKeyDown,
+      closeShrub: () => {
+        this.resetShrubNote(false);
+        this.setState({ shrubOpen: false, shrubPath: [], shrubPicks: [] });
+      },
+      shrubFooter: foot(
+        () => {
+          this.resetShrubNote(false);
+          this.setState({ shrubOpen: false, shrubPath: [], shrubPicks: [] });
+        },
+        this.saveShrub,
+        () => this.setState({ shrubPath: [], shrubPicks: [] }, () => this.resetShrubNote(true)),
+      ),
+
+      vitalsOpen: this.state.vitalsOpen,
+      vsCols: (() => { const ps = this.vsPanels(); return [{ panels: ps.slice(0, 4) }, { panels: ps.slice(4) }]; })(),
+      vsEntries: (this.state.vsEntries || []).map((e) => ({
+        title: e.title, text: e.text,
+        remove: () => this.setState((s) => ({ vsEntries: (s.vsEntries || []).filter((x) => x.id !== e.id) })),
+      })),
+      vsNoEntries: !(this.state.vsEntries || []).length,
+      closeVitals: () => this.setState({ vitalsOpen: false }),
+      vitalsFooter: foot(() => this.setState({ vitalsOpen: false }), this.saveVitals),
+
+      reqsOpen: this.state.reqsOpen,
+      reqItems,
+      reqDimNotes: dimNotes,
+      reqsSummary: REQ.summary,
+      hasReqsSummary: !!REQ.summary,
+      reqsTitle: (this.state.previewOpen ? 'Compiled note' : (S ? S.tab : 'Recommendation')) + ' \u2014 what\u2019s changing',
+      openReqs: () => this.setState({ reqsOpen: true }),
+      closeReqs: () => this.setState({ reqsOpen: false }),
+      reqRows,
+      reqCols: [
+        { field: 'item', title: 'Control', render: (r) => React.createElement('b', null, r.item) },
+        { field: 'req', title: 'Requirement', width: 150, render: (r) => React.createElement('code',
+          { style: { fontFamily: 'ui-monospace,monospace', fontSize: '12.5px', color: '#095d82' } }, r.req) },
+        { field: 'state', title: 'Build state', width: 190, render: (r) => React.createElement('span',
+          { style: { display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#3a3f46' } },
+          React.createElement('span', { style: { width: 8, height: 8, borderRadius: '50%', flex: '0 0 8px',
+            background: r.dot === 'new' ? '#1F7A4C' : '#1274AC' } }), r.state) },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

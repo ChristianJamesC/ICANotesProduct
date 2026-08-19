@@ -1,0 +1,13 @@
+/* Border-radius scale — exported from Figma. Small, tight radii; controls sit
+   at 6–8px, containers at 12–16px, pills at full. */
+:root {
+  --ica-border-radius-null: 0px;
+  --ica-border-radius-2: 2px;
+  --ica-border-radius-3: 3px;
+  --ica-border-radius-4: 4px;
+  --ica-border-radius-6: 6px;   /* small controls */
+  --ica-border-radius-8: 8px;   /* default control */
+  --ica-border-radius-12: 12px; /* toasts */
+  --ica-border-radius-16: 16px; /* panels / cards */
+  --ica-border-radius-full: 9999px;
+}

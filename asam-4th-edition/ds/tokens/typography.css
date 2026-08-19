@@ -1,0 +1,33 @@
+/* Typography — Lato is the single brand typeface.
+   Type ramp exported from Figma. */
+:root {
+  --font-lato: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* Display / heading ramp */
+  --font-size-display1: 96px;
+  --font-size-display2: 80px;
+  --font-size-display3: 72px;
+  --font-size-display4: 64px;
+  --font-size-h1: 56px;
+  --font-size-h2: 48px;
+  --font-size-h3: 40px;
+  --font-size-h4: 32px;
+  --font-size-h5: 24px;
+  --font-size-h6: 18px;
+
+  /* Body / UI ramp */
+  --font-size-24: 24px;
+  --font-size-16: 16px;   /* large control text */
+  --font-size-14: 14px;   /* default body / medium control */
+  --font-size-12: 12px;   /* labels, small control, hints */
+  --font-size-10: 10px;   /* chips, badges */
+
+  --letter-spacing-null: 0px;
+
+  /* Weights — Lato ships 400/700; 500/600/800 fall back gracefully */
+  --ica-font-weight-400: 400;
+  --ica-font-weight-500: 500;
+  --ica-font-weight-600: 600;
+  --ica-font-weight-700: 700;
+  --ica-font-weight-800: 800;
+}

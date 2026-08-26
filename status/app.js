@@ -349,6 +349,65 @@ function scope(title, reqs) {
   return box;
 }
 
+const TICKET_CAP = 12;
+
+/* Shared by the milestone view and the epic-rollup view. */
+function ticketList(issues, epicUrl, epicKey) {
+  const ul = el("ul", "tickets");
+  issues.slice(0, TICKET_CAP).forEach((t) => {
+    const li = el("li");
+    const a = el("a", "k", t.key);
+    a.href = t.url; a.target = "_blank"; a.rel = "noopener";
+    li.append(a, el("span", null, t.summary));
+    if (t.assignee) li.append(el("span", "who", t.assignee));
+    li.append(el("span", `s chip ${t.category === "indeterminate" ? "info" : ""}`, t.status));
+    ul.append(li);
+  });
+  const box = el("div");
+  box.append(ul);
+  /* Never truncate silently -- say what was left out and where to see it. */
+  if (issues.length > TICKET_CAP) {
+    const more = el("p", "bar-empty");
+    const link = el("a", null, epicKey || "the epic");
+    if (epicUrl) { link.href = epicUrl; link.target = "_blank"; link.rel = "noopener"; }
+    more.append(
+      document.createTextNode(`Showing ${TICKET_CAP} of ${issues.length} open — the rest are in `),
+      link, document.createTextNode("."),
+    );
+    box.append(more);
+  }
+  return box;
+}
+
+/* A feature with delivery data but no milestone narrative. */
+function renderRollup(host, feature) {
+  host.textContent = "";
+  host.className = "detail";
+
+  const t = feature.tickets;
+  host.append(el("h3", "claim rollup", "Epic rollup"));
+  host.append(el("p", "why",
+    "No milestones are defined for this feature, so this is what the team has "
+    + "ticketed and closed under the epic — activity, not progress toward a plan."));
+
+  const bars = el("div", "bars");
+  bars.append(bar("Built (Jira)", t, [
+    { count: t.done, cls: "s-done", color: "var(--green)", label: "done" },
+    { count: t.in_progress, cls: "s-prog", color: "var(--accent)", label: "in progress" },
+    { count: t.todo, color: "var(--text-faint)", label: "to do", fill: false },
+  ], "No tickets under this epic."));
+  host.append(bars);
+
+  const block = el("div", "block");
+  block.append(el("h3", null, "Open now"));
+  if (feature.open_tickets && feature.open_tickets.length) {
+    block.append(ticketList(feature.open_tickets, feature.epic_url, feature.epic));
+  } else {
+    block.append(el("div", "empty", "Nothing open."));
+  }
+  host.append(block);
+}
+
 function renderDetail(host, feature, ms, animate) {
   host.textContent = "";
   host.className = "detail" + (animate ? " swap" : "");
@@ -389,17 +448,7 @@ function renderDetail(host, feature, ms, animate) {
   const block = el("div", "block");
   block.append(el("h3", null, "Next two weeks"));
   if (ms.open_tickets && ms.open_tickets.length) {
-    const ul = el("ul", "tickets");
-    ms.open_tickets.forEach((t) => {
-      const li = el("li");
-      const a = el("a", "k", t.key);
-      a.href = t.url; a.target = "_blank"; a.rel = "noopener";
-      li.append(a, el("span", null, t.summary));
-      if (t.assignee) li.append(el("span", "who", t.assignee));
-      li.append(el("span", `s chip ${t.category === "indeterminate" ? "info" : ""}`, t.status));
-      ul.append(li);
-    });
-    block.append(ul);
+    block.append(ticketList(ms.open_tickets, feature.epic_url, feature.epic));
   } else if (ms.reqs.work) {
     const box = el("div", "empty");
     box.append(
@@ -428,6 +477,36 @@ function renderDetail(host, feature, ms, animate) {
     ms.notes.forEach((t) => ul.append(el("li", null, t)));
     host.append(ul);
   }
+}
+
+/* Feature-level notes that sit below whichever body was rendered.
+   Returns an empty fragment when there is nothing to say. */
+function renderTail(feature) {
+  const has = feature.flags.length || (feature.risks && feature.risks.length);
+  if (!has) return document.createDocumentFragment();
+  const tail = el("div", "detail");
+
+  if (feature.flags.length) {
+    const drift = el("div", "block");
+    drift.append(el("h3", null, "Drift"), flagList(feature.flags));
+    tail.append(drift);
+  }
+  if (feature.risks && feature.risks.length) {
+    const block = el("div", "block");
+    block.append(el("h3", null, "Open risks"));
+    const ul = el("ul", "risks");
+    feature.risks.forEach((r) => {
+      const li = el("li");
+      li.append(el("span", `chip ${r.severity === "high" ? "red" : "amber"}`, r.severity));
+      li.append(el("span", r.redacted ? "redacted" : null,
+        r.redacted ? "Tracked internally — not published here." : r.text));
+      if (r.owner) li.append(el("span", "who", r.owner));
+      ul.append(li);
+    });
+    block.append(ul);
+    tail.append(block);
+  }
+  return tail;
 }
 
 function renderFeature(feature, index) {
@@ -467,6 +546,15 @@ function renderFeature(feature, index) {
   head.append(meta);
   card.append(head);
 
+  /* No milestones -- epic rollup instead of the milestone rail. */
+  if (!feature.milestones.length) {
+    const only = el("div", "detail");
+    renderRollup(only, feature);
+    card.append(only);
+    card.append(renderTail(feature));
+    return card;
+  }
+
   /* rail */
   const rail = el("div", "rail");
   const detail = el("div", "detail");
@@ -500,32 +588,7 @@ function renderFeature(feature, index) {
   renderDetail(detail, feature, feature.milestones[feature.current], false);
   card.append(detail);
 
-  /* feature-level */
-  if (feature.flags.length || (feature.risks && feature.risks.length)) {
-    const tail = el("div", "detail");
-    if (feature.flags.length) {
-      const drift = el("div", "block");
-      drift.append(el("h3", null, "Drift"), flagList(feature.flags));
-      tail.append(drift);
-    }
-    if (feature.risks && feature.risks.length) {
-      const block = el("div", "block");
-      block.append(el("h3", null, "Open risks"));
-      const ul = el("ul", "risks");
-      feature.risks.forEach((r) => {
-        const li = el("li");
-        li.append(el("span", `chip ${r.severity === "high" ? "red" : "amber"}`, r.severity));
-        li.append(el("span", r.redacted ? "redacted" : null,
-          r.redacted ? "Tracked internally — not published here." : r.text));
-        if (r.owner) li.append(el("span", "who", r.owner));
-        ul.append(li);
-      });
-      block.append(ul);
-      tail.append(block);
-    }
-    card.append(tail);
-  }
-
+  card.append(renderTail(feature));
   return card;
 }
 

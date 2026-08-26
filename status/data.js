@@ -2,7 +2,7 @@
    Do not edit by hand -- edit resources/roadmap.yml there instead. */
 window.STATUS_DATA = {
   "schema": 2,
-  "generated_at": "2026-08-26T14:20:49+00:00",
+  "generated_at": "2026-08-26T16:14:02+00:00",
   "quarter": "Q3-2026",
   "note": "Milestone progress is measured against two independent sources: the PRD requirement set (what we said we'd build) and Jira (what the team has ticketed and done). Where they disagree, the page says so rather than picking one.",
   "jira_connected": false,
@@ -581,6 +581,14 @@ window.STATUS_DATA = {
       "current": 0,
       "rag": "amber",
       "flags": [],
+      "tickets": {
+        "total": 0,
+        "percent": 0,
+        "todo": 0,
+        "in_progress": 0,
+        "done": 0
+      },
+      "open_tickets": [],
       "unmapped_tickets": [],
       "unmapped_reqs": [],
       "risks": [
@@ -614,6 +622,114 @@ window.STATUS_DATA = {
           "redacted": false
         }
       ]
+    },
+    {
+      "key": "go-sessions",
+      "name": "Go Sessions — In-Office Patient Intake",
+      "blurb": "Staff-controlled digital intake on a device in the waiting room, replacing the Office Ally intake flow.",
+      "owner": "Christian Carlstrom",
+      "eng": null,
+      "status": "In Development",
+      "prd": {
+        "title": "PRD: Staff-Controlled In-Office Digital Intake",
+        "url": "https://docs.google.com/spreadsheets/d/1KX0O4ZBLDKa_L0oWVmLV2nLFULcyp65h5x37ERHqgy4/edit",
+        "note": "Authored as a spreadsheet rather than the standard PRD template, and owned by Mark Lindell.\n"
+      },
+      "prototype": null,
+      "epic": "CLN-3809",
+      "epic_url": "https://icanotes.atlassian.net/browse/CLN-3809",
+      "milestones": [],
+      "current": -1,
+      "rag": "amber",
+      "flags": [
+        {
+          "level": "info",
+          "text": "No milestones defined — showing epic rollup only, so there is no plan to measure delivery against"
+        }
+      ],
+      "tickets": {
+        "total": 0,
+        "percent": 0,
+        "todo": 0,
+        "in_progress": 0,
+        "done": 0
+      },
+      "open_tickets": [],
+      "unmapped_tickets": [],
+      "unmapped_reqs": [],
+      "risks": []
+    },
+    {
+      "key": "zoho-one-provisioning",
+      "name": "Product-Led Provisioning in Zoho One",
+      "blurb": "A customer signing up product-led is created and can self-subscribe in Zoho One with no manual step, and existing product-led customers migrate across automatically.",
+      "owner": "Christian Carlstrom",
+      "eng": null,
+      "status": "In Development",
+      "prd": null,
+      "prototype": null,
+      "epic": "CLN-3764",
+      "epic_url": "https://icanotes.atlassian.net/browse/CLN-3764",
+      "milestones": [],
+      "current": -1,
+      "rag": "amber",
+      "flags": [
+        {
+          "level": "info",
+          "text": "No milestones defined — showing epic rollup only, so there is no plan to measure delivery against"
+        },
+        {
+          "level": "info",
+          "text": "No PRD linked"
+        }
+      ],
+      "tickets": {
+        "total": 0,
+        "percent": 0,
+        "todo": 0,
+        "in_progress": 0,
+        "done": 0
+      },
+      "open_tickets": [],
+      "unmapped_tickets": [],
+      "unmapped_reqs": [],
+      "risks": []
+    },
+    {
+      "key": "note-ownership",
+      "name": "Historical Note Ownership on Clinician Transfer",
+      "blurb": "A note keeps the clinician who wrote it. Deactivating a clinician stops silently reassigning their signed work, and inactive clinicians stay visible where the record depends on them.",
+      "owner": "Christian Carlstrom",
+      "eng": null,
+      "status": "In Development",
+      "prd": null,
+      "prototype": null,
+      "epic": "CLN-3516",
+      "epic_url": "https://icanotes.atlassian.net/browse/CLN-3516",
+      "milestones": [],
+      "current": -1,
+      "rag": "amber",
+      "flags": [
+        {
+          "level": "info",
+          "text": "No milestones defined — showing epic rollup only, so there is no plan to measure delivery against"
+        },
+        {
+          "level": "info",
+          "text": "No PRD linked"
+        }
+      ],
+      "tickets": {
+        "total": 0,
+        "percent": 0,
+        "todo": 0,
+        "in_progress": 0,
+        "done": 0
+      },
+      "open_tickets": [],
+      "unmapped_tickets": [],
+      "unmapped_reqs": [],
+      "risks": []
     }
   ]
 };

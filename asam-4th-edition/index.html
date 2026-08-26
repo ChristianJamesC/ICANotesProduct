@@ -4,8 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ASAM 4th Edition — Prototype</title>
-<!-- Vendored so the page needs no CDN, no bundler and no host runtime: plain
-     static files, all paths relative. Serve the folder from anything. -->
 <script src="vendor/react.production.min.js"></script>
 <script src="vendor/react-dom.production.min.js"></script>
 <script src="./support.js"></script>
@@ -115,14 +113,14 @@
         <div style="position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;background:#fff">
 
           <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 18px 12px;flex:0 0 auto">
-            <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" themeColor="base" fillMode="outline" icon="{{ tbUserIcon }}" onClick="{{ closePreview }}" hint-size="150px,38px">Chart Face</x-import>
-            <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" themeColor="base" fillMode="outline" icon="{{ tbBackIcon }}" onClick="{{ closePreview }}" hint-size="150px,38px">Go To Work Areas</x-import>
-            <x-import component-from-global-scope="ICANotesDesignSystem_94514a.ButtonGroup" items="{{ invoiceGroup }}" onChange="{{ noop }}" hint-size="240px,38px"></x-import>
-            <x-import component-from-global-scope="ICANotesDesignSystem_94514a.ButtonGroup" items="{{ summaryGroup }}" onChange="{{ noop }}" hint-size="190px,38px"></x-import>
+            <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" theme-color="base" fill-mode="outline" icon="{{ tbUserIcon }}" on-click="{{ closePreview }}" hint-size="150px,38px">Chart Face</x-import>
+            <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" theme-color="base" fill-mode="outline" icon="{{ tbBackIcon }}" on-click="{{ closePreview }}" hint-size="150px,38px">Go To Work Areas</x-import>
+            <x-import component-from-global-scope="ICANotesDesignSystem_94514a.ButtonGroup" items="{{ invoiceGroup }}" on-change="{{ noop }}" hint-size="240px,38px"></x-import>
+            <x-import component-from-global-scope="ICANotesDesignSystem_94514a.ButtonGroup" items="{{ summaryGroup }}" on-change="{{ noop }}" hint-size="190px,38px"></x-import>
             <span style="display:flex;align-items:center;gap:10px;margin-left:auto;flex-wrap:wrap">
-            <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" themeColor="base" fillMode="outline" icon="{{ tbCopyIcon }}" hint-size="150px,38px">Copy to Clipboard</x-import>
-            <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" themeColor="base" fillMode="outline" icon="{{ tbDownloadIcon }}" hint-size="150px,38px">Download</x-import>
-            <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" themeColor="base" fillMode="outline" icon="{{ tbPrintIcon }}" hint-size="150px,38px">Print</x-import>
+            <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" theme-color="base" fill-mode="outline" icon="{{ tbCopyIcon }}" hint-size="150px,38px">Copy to Clipboard</x-import>
+            <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" theme-color="base" fill-mode="outline" icon="{{ tbDownloadIcon }}" hint-size="150px,38px">Download</x-import>
+            <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" theme-color="base" fill-mode="outline" icon="{{ tbPrintIcon }}" hint-size="150px,38px">Print</x-import>
             </span>
           </div>
 
@@ -179,7 +177,7 @@
             </div>
 
             <div style="display:flex;flex-direction:column;gap:22px;justify-content:flex-end;padding-bottom:8px;min-height:100%">
-              <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Checkbox" checked="{{ sigLines }}" onChange="{{ setSigLines }}" label="Include blank signature lines for print" hint-size="300px,20px"></x-import>
+              <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Checkbox" checked="{{ sigLines }}" on-change="{{ setSigLines }}" label="Include blank signature lines for print" hint-size="300px,20px"></x-import>
 
               <div style="border:1px solid #d3d7db;border-radius:4px;overflow:hidden">
                 <div style="padding:16px 20px;font-size:17px;font-weight:700;color:#1c1f24">Signed Copies</div>
@@ -200,7 +198,7 @@
                     <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-caret-alt-to-right" size="{{ 12 }}" color="#9aa3ab" hint-size="12px,12px"></x-import>
                   </span>
                   <span style="width:88px;display:flex">
-                    <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Select" options="{{ pageSizes }}" value="{{ pageSize }}" onChange="{{ setPageSize }}" size="small" stretch="{{ yes }}" hint-size="88px,28px"></x-import>
+                    <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Select" options="{{ pageSizes }}" value="{{ pageSize }}" on-change="{{ setPageSize }}" size="small" stretch="{{ yes }}" hint-size="88px,28px"></x-import>
                   </span>
                   <span>items per page</span>
                 </div>
@@ -209,7 +207,7 @@
           </div>
 
           <div style="display:flex;align-items:center;justify-content:flex-end;padding:14px 20px;background:#DCE9F5;border-top:1px solid #c3d5e6;flex:0 0 auto">
-            <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" themeColor="primary" fillMode="outline" size="large" hint-size="160px,42px">Electronically Sign</x-import>
+            <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" theme-color="primary" fill-mode="outline" size="large" hint-size="160px,42px">Electronically Sign</x-import>
           </div>
         </div>
       </sc-if>
@@ -364,7 +362,7 @@
       <div style="background:#DEDFDE;border:1px solid var(--ica-color-border);margin:0;padding:12px 10px 18px;flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column">
 
         <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:12px;flex-wrap:wrap;flex:0 0 auto">
-          <span style="font-family:var(--font-lato);font-size:var(--font-size-h6);font-weight:var(--ica-font-weight-700);line-height:normal;color:#1c1f24">{{ activeTitle }}</span>
+          <span style="font-family:var(--font-lato);font-size:var(--font-size-16);font-weight:var(--ica-font-weight-700);line-height:normal;color:#1c1f24">{{ activeTitle }}</span>
           <span style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
             <a style="display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:#B4392B;cursor:pointer;font-weight:600">Delete This Note<x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-trash" size="{{ 13 }}" color="#B4392B" hint-size="13px,13px"></x-import></a>
           </span>
@@ -380,7 +378,7 @@
                   <div style="min-height:54px;border:1px solid #dfe3e7;border-radius:4px;background:#EAF7F0;padding:7px 9px;font-family:var(--font-lato);font-size:13px;color:#1c1f24">Unspecified mood [affective] disorder, F39 (ICD10), Active</div>
                   <div style="display:flex;align-items:center;gap:14px;margin-top:8px;flex-wrap:wrap">
                     <span style="font-family:var(--font-lato);font-size:12px;color:#3a3f46">Include Diagnosis in the note?</span>
-                    <x-import component-from-global-scope="ICANotesDesignSystem_94514a.RadioGroup" options="{{ ynOptions }}" value="{{ recDx }}" onChange="{{ setRecDx }}" orientation="horizontal" hint-size="126px,24px"></x-import>
+                    <x-import component-from-global-scope="ICANotesDesignSystem_94514a.RadioGroup" options="{{ ynOptions }}" value="{{ recDx }}" on-change="{{ setRecDx }}" orientation="horizontal" hint-size="126px,24px"></x-import>
                   </div>
                 </div>
                 <div style="position:relative;border:1px solid #b7bcc3;border-radius:6px;background:#fff;padding:10px 12px">
@@ -388,13 +386,13 @@
                   <div style="min-height:54px;border:1px solid #dfe3e7;border-radius:4px;background:#FFFDF0"></div>
                   <div style="display:flex;align-items:center;gap:14px;margin-top:8px;flex-wrap:wrap">
                     <span style="font-family:var(--font-lato);font-size:12px;color:#3a3f46">Include Service Codes in the note?</span>
-                    <x-import component-from-global-scope="ICANotesDesignSystem_94514a.RadioGroup" options="{{ ynOptions }}" value="{{ recSvc }}" onChange="{{ setRecSvc }}" orientation="horizontal" hint-size="126px,24px"></x-import>
-                    <span style="margin-left:auto;display:flex"><x-import component-from-global-scope="ICANotesDesignSystem_94514a.Checkbox" checked="{{ telehealth }}" onChange="{{ setTelehealth }}" label="Telehealth Session" hint-size="150px,20px"></x-import></span>
+                    <x-import component-from-global-scope="ICANotesDesignSystem_94514a.RadioGroup" options="{{ ynOptions }}" value="{{ recSvc }}" on-change="{{ setRecSvc }}" orientation="horizontal" hint-size="126px,24px"></x-import>
+                    <span style="margin-left:auto;display:flex"><x-import component-from-global-scope="ICANotesDesignSystem_94514a.Checkbox" checked="{{ telehealth }}" on-change="{{ setTelehealth }}" label="Telehealth Session" hint-size="150px,20px"></x-import></span>
                   </div>
                 </div>
                 <div style="display:flex;gap:8px">
-                  <span style="flex:1;display:flex"><x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" themeColor="primary" fillMode="outline" stretch="{{ yes }}" hint-size="100%,32px">Make a Recommendation</x-import></span>
-                  <span style="flex:1;display:flex"><x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" themeColor="primary" fillMode="outline" onClick="{{ openTimeSpent }}" stretch="{{ yes }}" hint-size="100%,32px">{{ timeSpentLabel }}</x-import></span>
+                  <span style="flex:1;display:flex"><x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" theme-color="primary" fill-mode="outline" stretch="{{ yes }}" hint-size="100%,32px">Make a Recommendation</x-import></span>
+                  <span style="flex:1;display:flex"><x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" theme-color="primary" fill-mode="outline" on-click="{{ openTimeSpent }}" stretch="{{ yes }}" hint-size="100%,32px">{{ timeSpentLabel }}</x-import></span>
                 </div>
                 <div ref="{{ ratingsRef }}" style="display:flex;flex-direction:column;gap:5px">
                   <span onClick="{{ toggleRatings }}" style="display:flex;align-items:center;gap:8px;height:32px;font-size:12.5px;font-weight:700;color:#2d3138;cursor:pointer;user-select:none">
@@ -415,7 +413,7 @@
 
                 <div ref="{{ locRef }}" onPointerDownCapture="{{ revealLoc }}" onClickCapture="{{ revealLoc }}" onFocusCapture="{{ revealLoc }}" style="display:flex;flex-direction:column;gap:5px">
                   <span style="font-size:12.5px;font-weight:700;color:#2d3138">Recommended Level of Care</span>
-                  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Select" options="{{ locOptions }}" value="{{ loc }}" onChange="{{ setLoc }}" stretch="{{ yes }}" hint-size="100%,32px"></x-import>
+                  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Select" options="{{ locOptions }}" value="{{ loc }}" on-change="{{ setLoc }}" stretch="{{ yes }}" hint-size="100%,32px"></x-import>
                   <span style="font-size:11px;color:#5b6570">Confirmed option list (REQ-R-4).</span>
                 </div>
               </div>
@@ -491,12 +489,12 @@
                         <sc-for list="{{ r.codes }}" as="c" hint-placeholder-count="6">
                           <sc-if value="{{ c.unselected }}" hint-placeholder-val="{{ true }}">
                             <div role="radio" onClick="{{ c.pick }}" style="box-sizing:border-box;display:flex;align-items:center;gap:12px;min-height:44px;padding:8px 12px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-on-surface,#107ead);background:var(--ica-color-app-surface,#fff);color:#124D6A;font-family:var(--font-lato);cursor:pointer;user-select:none;transition:background-color .12s,border-color .12s,color .12s" style-hover="background:var(--ica-primary-hover,#0d6f99);border-color:var(--ica-primary-hover,#0d6f99);color:#fff;text-decoration:none">
-                              <span style="font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:var(--ica-font-weight-500);line-height:1.35;color:inherit;text-wrap:pretty"><span style="font-weight:700">{{ c.cc }}</span>: {{ c.cl }}</span>
+                              <span style="flex:1;min-width:0;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:var(--ica-font-weight-500);line-height:1.35;color:inherit;text-wrap:pretty">{{ c.cl }}</span><span style="flex:0 0 auto;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:var(--ica-font-weight-500);line-height:1.35;color:inherit;font-variant-numeric:tabular-nums">{{ c.cc }}</span>
                             </div>
                           </sc-if>
                           <sc-if value="{{ c.selected }}" hint-placeholder-val="{{ false }}">
                             <div role="radio" onClick="{{ c.pick }}" style="box-sizing:border-box;display:flex;align-items:center;gap:12px;min-height:44px;padding:8px 12px;border-radius:var(--ica-border-radius-8,8px);border:1px solid var(--ica-primary-hover,#0d6f99);background:var(--ica-primary-hover,#0d6f99);color:var(--ica-primary-on-primary,#fff);font-family:var(--font-lato);cursor:pointer;user-select:none;transition:background-color .12s,border-color .12s" style-hover="background:#0a5a7d;border-color:#0a5a7d;color:#fff;text-decoration:none">
-                              <span style="font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:700;line-height:1.35;color:inherit;text-wrap:pretty"><span style="font-weight:700">{{ c.cc }}</span>: {{ c.cl }}</span>
+                              <span style="flex:1;min-width:0;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:var(--ica-font-weight-500);line-height:1.35;color:inherit;text-wrap:pretty">{{ c.cl }}</span><span style="flex:0 0 auto;font-family:var(--font-lato);font-size:var(--font-size-14);font-weight:var(--ica-font-weight-500);line-height:1.35;color:inherit;font-variant-numeric:tabular-nums">{{ c.cc }}</span>
                             </div>
                           </sc-if>
                         </sc-for>
@@ -534,11 +532,11 @@
                     <div style="display:grid;grid-template-columns:minmax(0,1fr) 100px;column-gap:14px;row-gap:6px;align-items:center;font-size:12.5px;color:#3a3f46">
                     <sc-for list="{{ s.ynRows }}" as="q" hint-placeholder-count="2">
                         <span style="min-width:0;text-wrap:pretty">{{ q.text }}</span>
-                        <span style="display:flex;align-items:center;justify-self:start"><x-import component-from-global-scope="ICANotesDesignSystem_94514a.RadioGroup" options="{{ ynOptions }}" value="{{ q.value }}" onChange="{{ q.set }}" orientation="horizontal" hint-size="120px,24px"></x-import></span>
+                        <span style="display:flex;align-items:center;justify-self:start"><x-import component-from-global-scope="ICANotesDesignSystem_94514a.RadioGroup" options="{{ ynOptions }}" value="{{ q.value }}" on-change="{{ q.set }}" orientation="horizontal" hint-size="120px,24px"></x-import></span>
                     </sc-for>
                     <sc-for list="{{ s.checkRows }}" as="k" hint-placeholder-count="3">
                         <span style="min-width:0;text-wrap:pretty">{{ k.text }}</span>
-                        <span style="display:flex;align-items:center;justify-content:center;justify-self:start;width:16px"><x-import component-from-global-scope="ICANotesDesignSystem_94514a.Checkbox" checked="{{ k.on }}" onChange="{{ k.toggle }}" size="medium" hint-size="16px,16px"></x-import></span>
+                        <span style="display:flex;align-items:center;justify-content:center;justify-self:start;width:16px"><x-import component-from-global-scope="ICANotesDesignSystem_94514a.Checkbox" checked="{{ k.on }}" on-change="{{ k.toggle }}" size="medium" hint-size="16px,16px"></x-import></span>
                     </sc-for>
                     </div>
                   </div>
@@ -577,9 +575,9 @@
 
             <sc-if value="{{ isRec }}" hint-placeholder-val="{{ false }}">
               <div style="display:flex;align-items:stretch;gap:8px;margin-top:4px">
-                <span style="box-sizing:border-box;flex:1 1 575px;max-width:575px;min-width:500px;display:flex"><x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" themeColor="primary" fillMode="solid" size="large" icon="{{ draftIcon }}" onClick="{{ openPreview }}" stretch="{{ yes }}" hint-size="100%,47px">Compile And Preview</x-import></span>
+                <span style="box-sizing:border-box;flex:1 1 575px;max-width:575px;min-width:500px;display:flex"><x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" theme-color="primary" fill-mode="solid" size="large" icon="{{ draftIcon }}" on-click="{{ openPreview }}" stretch="{{ yes }}" hint-size="100%,47px">Compile And Preview</x-import></span>
                 <div style="flex:0 1 215px;min-width:120px;display:flex">
-                  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" themeColor="primary" fillMode="outline" stretch="{{ yes }}" hint-size="215px,47px">+ Create Custom Button</x-import>
+                  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" theme-color="primary" fill-mode="outline" stretch="{{ yes }}" hint-size="215px,47px">+ Create Custom Button</x-import>
                 </div>
               </div>
             </sc-if>
@@ -588,7 +586,7 @@
               <div style="display:flex;gap:8px;margin-top:4px">
                 <div style="flex:1 1 575px;max-width:575px;min-width:500px"></div>
                 <div style="flex:0 1 215px;min-width:120px;display:flex">
-                  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" themeColor="primary" fillMode="outline" stretch="{{ yes }}" hint-size="215px,32px">+ Create Custom Button</x-import>
+                  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" theme-color="primary" fill-mode="outline" stretch="{{ yes }}" hint-size="215px,32px">+ Create Custom Button</x-import>
                 </div>
               </div>
             </sc-if>
@@ -613,7 +611,7 @@
     </div>
   </div>
 
-  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Dialog" open="{{ pickerOpen }}" title="Select ASAM Edition" onClose="{{ closePicker }}" width="{{ 620 }}" footer="{{ pickerFooter }}" hint-size="620px,340px">
+  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Dialog" open="{{ pickerOpen }}" title="Select ASAM Edition" on-close="{{ closePicker }}" width="{{ 620 }}" footer="{{ pickerFooter }}" hint-size="620px,340px">
     <div style="display:flex;flex-direction:column;gap:16px">
       <span style="font-family:var(--font-lato);font-size:14px;color:#3a4249;line-height:1.5;text-wrap:pretty">Choose the edition this assessment follows. You cannot switch editions once the note is signed.</span>
       <div role="radiogroup" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px">
@@ -651,7 +649,7 @@
     </div>
   </x-import>
 
-  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Dialog" open="{{ shrubOpen }}" title="{{ shrubTitle }}" onClose="{{ closeShrub }}" width="{{ 1240 }}" footer="{{ shrubFooter }}" hint-size="1240px,760px">
+  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Dialog" open="{{ shrubOpen }}" title="{{ shrubTitle }}" on-close="{{ closeShrub }}" width="{{ 1240 }}" footer="{{ shrubFooter }}" hint-size="1240px,760px">
     <div style="display:flex;gap:12px;height:620px">
       <div ref="{{ shrubStripRef }}" style="flex:1;min-width:0;min-height:0;border:1px solid #e2e6ea;border-radius:10px;overflow-x:auto;overflow-y:hidden;background:#fff;display:flex;align-items:stretch">
         <sc-for list="{{ shrubCols }}" as="col" hint-placeholder-count="1">
@@ -689,21 +687,21 @@
     </div>
   </x-import>
 
-  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Dialog" open="{{ tsOpen }}" title="Time Spent" onClose="{{ closeTimeSpent }}" width="{{ 560 }}" footer="{{ tsFooter }}" hint-size="560px,420px">
+  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Dialog" open="{{ tsOpen }}" title="Time Spent" on-close="{{ closeTimeSpent }}" width="{{ 560 }}" footer="{{ tsFooter }}" hint-size="560px,420px">
     <div style="display:flex;flex-direction:column;gap:var(--ica-spacing-20,20px)">
       <x-import component-from-global-scope="ICANotesDesignSystem_94514a.FormField" label="Length of session" hint-size="auto,64px">
         <div style="display:flex;align-items:center;gap:var(--ica-spacing-8,8px)">
-          <x-import component="NumberField" from="./ds-ext/NumberField.js" value="{{ tsMin }}" onChange="{{ setTsMin }}" step="{{ five }}" placeholder="--" hint-size="110px,40px"></x-import>
+          <x-import component="NumberField" from="./ds-ext/NumberField.js" value="{{ tsMin }}" on-change="{{ setTsMin }}" step="{{ five }}" placeholder="--" hint-size="110px,40px"></x-import>
           <span style="font-family:var(--font-lato);font-size:var(--font-size-14,14px);color:var(--ica-color-subtle)">min.</span>
         </div>
       </x-import>
 
       <div style="display:flex;align-items:flex-start;gap:var(--ica-spacing-16,16px);flex-wrap:wrap">
         <x-import component-from-global-scope="ICANotesDesignSystem_94514a.FormField" label="Start Time" hint-size="150px,64px">
-          <x-import component="TimePicker" from="./ds-ext/TimePicker.js" value="{{ tsStart }}" onChange="{{ setTsStart }}" hint-size="150px,40px"></x-import>
+          <x-import component="TimePicker" from="./ds-ext/TimePicker.js" value="{{ tsStart }}" on-change="{{ setTsStart }}" hint-size="150px,40px"></x-import>
         </x-import>
         <x-import component-from-global-scope="ICANotesDesignSystem_94514a.FormField" label="End Time" hint-size="150px,64px">
-          <x-import component="TimePicker" from="./ds-ext/TimePicker.js" value="{{ tsEnd }}" onChange="{{ setTsEnd }}" hint-size="150px,40px"></x-import>
+          <x-import component="TimePicker" from="./ds-ext/TimePicker.js" value="{{ tsEnd }}" on-change="{{ setTsEnd }}" hint-size="150px,40px"></x-import>
         </x-import>
         <x-import component-from-global-scope="ICANotesDesignSystem_94514a.FormField" label="Units billed" hint-size="150px,64px">
           <div style="display:flex;align-items:center;justify-content:center;gap:var(--ica-spacing-6,6px);box-sizing:border-box;height:40px;width:56px;padding:0 var(--ica-spacing-10,10px);border-radius:var(--ica-border-radius-8,8px);background:var(--ica-color-surface-alt);border:1px solid var(--ica-color-border)">
@@ -716,18 +714,18 @@
       <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Divider" hint-size="100%,1px"></x-import>
 
       <x-import component-from-global-scope="ICANotesDesignSystem_94514a.FormField" label="Include start and end times in the note?" orientation="horizontal" gap="var(--ica-spacing-16)" hint-size="100%,24px">
-        <x-import component-from-global-scope="ICANotesDesignSystem_94514a.RadioGroup" options="{{ ynOptions }}" value="{{ tsPrintTimes }}" onChange="{{ setTsPrintTimes }}" orientation="horizontal" hint-size="126px,24px"></x-import>
+        <x-import component-from-global-scope="ICANotesDesignSystem_94514a.RadioGroup" options="{{ ynOptions }}" value="{{ tsPrintTimes }}" on-change="{{ setTsPrintTimes }}" orientation="horizontal" hint-size="126px,24px"></x-import>
       </x-import>
 
       <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Divider" hint-size="100%,1px"></x-import>
 
       <x-import component-from-global-scope="ICANotesDesignSystem_94514a.FormField" label="Include Time Spent in the note?" orientation="horizontal" gap="var(--ica-spacing-16)" hint-size="100%,24px">
-        <x-import component-from-global-scope="ICANotesDesignSystem_94514a.RadioGroup" options="{{ ynOptions }}" value="{{ tsInclude }}" onChange="{{ setTsInclude }}" orientation="horizontal" hint-size="126px,24px"></x-import>
+        <x-import component-from-global-scope="ICANotesDesignSystem_94514a.RadioGroup" options="{{ ynOptions }}" value="{{ tsInclude }}" on-change="{{ setTsInclude }}" orientation="horizontal" hint-size="126px,24px"></x-import>
       </x-import>
     </div>
   </x-import>
 
-  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Dialog" open="{{ vitalsOpen }}" title="Vital Signs" onClose="{{ closeVitals }}" width="{{ 1240 }}" footer="{{ vitalsFooter }}" hint-size="1240px,760px">
+  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Dialog" open="{{ vitalsOpen }}" title="Vital Signs" on-close="{{ closeVitals }}" width="{{ 1240 }}" footer="{{ vitalsFooter }}" hint-size="1240px,760px">
     <div style="display:flex;gap:12px;height:620px">
       <div style="flex:1;min-width:0;display:flex;gap:12px;overflow-y:auto;padding-right:2px">
         <sc-for list="{{ vsCols }}" as="col" hint-placeholder-count="2">
@@ -796,13 +794,13 @@
       <div style="flex:0 0 140px;display:flex;flex-direction:column;gap:4px;min-height:0">
         <span style="font-family:'Lato',sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#5b6570">&nbsp;</span>
         <div style="flex:1;min-height:0;overflow-y:auto;border:1px solid #e2e6ea;border-radius:8px;background:#fff;background-image:repeating-linear-gradient(to bottom,#fff 0,#fff 25px,#eef0f2 25px,#eef0f2 26px)"></div>
-        <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" themeColor="primary" fillMode="outline" size="small" stretch="{{ yes }}" hint-size="140px,30px">+ Create Custom Button</x-import>
+        <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" theme-color="primary" fill-mode="outline" size="small" stretch="{{ yes }}" hint-size="140px,30px">+ Create Custom Button</x-import>
       </div>
     </div>
   </x-import>
 
-  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.SideDialog" open="{{ reqsOpen }}" title="{{ reqsTitle }}" onClose="{{ closeReqs }}" width="{{ 720 }}" hint-size="720px,100%">
-    <div style="display:flex;flex-direction:column;gap:9px;min-height:0">
+  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.SideDialog" open="{{ reqsOpen }}" title="{{ reqsTitle }}" on-close="{{ closeReqs }}" width="{{ 720 }}" hint-size="720px,100%">
+    <div ref="{{ reqsPanelRef }}" style="display:flex;flex-direction:column;gap:9px;min-height:0">
       <div style="font-family:var(--font-lato);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#5b666e">Requirements &amp; acceptance criteria</div>
       <label style="display:flex;align-items:center;gap:9px;padding:9px 11px;border:1px solid #D6E4EC;border-radius:8px;background:#F7FBFD;cursor:pointer;user-select:none">
         <input type="checkbox" checked="{{ annot }}" onChange="{{ toggleAnnot }}" style="margin:0;width:14px;height:14px;cursor:pointer">
@@ -940,6 +938,11 @@ class Component extends DCLogic {
   // (window.__resources) and fall back to re-blobbing with a JS MIME type when a
   // direct module import of it is rejected.
   async loadMod(id, path) {
+    // A fully-inlined build hands the module objects over directly, so nothing
+    // has to be imported at runtime (data:/blob: module loading is blocked in
+    // some browsers and by strict CSP on static hosts).
+    const pre = (window.__modules || {})[id];
+    if (pre) return pre;
     const url = (window.__resources || {})[id] || path;
     try { return await import(/* webpackIgnore */ url); } catch (e) {
       const txt = await (await fetch(url)).text();
@@ -978,6 +981,11 @@ class Component extends DCLogic {
   componentDidMount() {
     this.setState({ concept: this.readConcept() });
     document.addEventListener('keydown', this.onConceptKey);
+    // The drawer's own scrim sits inside a scaled ancestor, so a click on the
+    // chart never reaches it. Dismiss from the document instead: anything
+    // outside the drawer body closes it, as does Escape.
+    document.addEventListener('mousedown', this.onDocDown, true);
+    document.addEventListener('keydown', this.onDocEsc);
     this.loadMod('asamScreens', './asam-screens.js').then((m) => this.setState({
       screens: m.SCREENS, locOptions: m.LOC_OPTIONS,
     }));
@@ -998,7 +1006,23 @@ class Component extends DCLogic {
 
   componentWillUnmount() {
     document.removeEventListener('keydown', this.onConceptKey);
+    document.removeEventListener('mousedown', this.onDocDown, true);
+    document.removeEventListener('keydown', this.onDocEsc);
   }
+
+  reqsPanelRef = (el) => { this.reqsPanelEl = el; };
+
+  onDocDown = (e) => {
+    if (!this.state.reqsOpen) return;
+    const el = this.reqsPanelEl;
+    if (el && el.contains(e.target)) return;   // interacting inside the drawer
+    this.setState({ reqsOpen: false });
+  };
+
+  onDocEsc = (e) => {
+    if (e.key !== 'Escape' || !this.state.reqsOpen) return;
+    this.setState({ reqsOpen: false });
+  };
 
   componentDidUpdate() {
     this.mountPad();
@@ -1715,7 +1739,7 @@ class Component extends DCLogic {
       .concat([{ id: 'rec', label: 'Recommendation' }])
       .map((t) => ({
         label: t.label,
-        pick: () => this.setState({ active: t.id, ptcOpen: false }),
+        pick: () => this.setState({ active: t.id, ptcOpen: false, reqsOpen: false }),
         style: TAB + (t.id === this.state.active
           ? 'background:#DEDFDE;border:1px solid #808080;border-bottom:0;z-index:2;'
           : 'background:#D7D5D8;border:1px solid #adb2b8;border-bottom:0;'),
@@ -1782,7 +1806,7 @@ class Component extends DCLogic {
         title: (sc.title || sc.tab) + ' \u2014 open this dimension',
         badges: set.map((r) => ({ code: r.code, title: r.name + ' \u2014 ' + r.value })),
         empty: set.length === 0,
-        jump: () => this.setState({ active: sc.id, ptcOpen: false }),
+        jump: () => this.setState({ active: sc.id, ptcOpen: false, reqsOpen: false }),
       };
     }).filter(Boolean);
 
@@ -2192,6 +2216,7 @@ class Component extends DCLogic {
       reqsSummary: REQ.summary,
       hasReqsSummary: !!REQ.summary,
       reqsTitle: (this.state.previewOpen ? 'Compiled note' : (S ? S.tab : 'Recommendation')) + ' \u2014 what\u2019s changing',
+      reqsPanelRef: this.reqsPanelRef,
       openReqs: () => this.setState({ reqsOpen: true }),
       closeReqs: () => this.setState({ reqsOpen: false }),
       reqRows,

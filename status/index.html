@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Feature Status — ICANotes</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <p class="eyebrow" id="quarter">Loading</p>
+      <h1>Where we are</h1>
+      <p class="sub" id="note"></p>
+    </div>
+    <div class="top-right">
+      <div class="sync" id="sync" hidden>
+        <span class="pulse"></span><span id="synced">—</span>
+      </div>
+      <span class="mode-name" id="mode-name" aria-live="polite"></span>
+      <button class="icon-btn" id="theme" type="button" aria-label="Change theme">◐</button>
+    </div>
+  </header>
+
+  <main id="features"></main>
+
+  <footer class="foot" id="foot" hidden>
+    <h3>How to read this</h3>
+    <dl id="rag"></dl>
+    <p id="sources"></p>
+  </footer>
+
+</div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

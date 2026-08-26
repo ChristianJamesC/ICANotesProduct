@@ -2,10 +2,17 @@
    Do not edit by hand -- edit resources/roadmap.yml there instead. */
 window.STATUS_DATA = {
   "schema": 2,
-  "generated_at": "2026-08-26T16:14:02+00:00",
+  "timeline": {
+    "start": "2026-05-01",
+    "end": "2026-11-30",
+    "today": "2026-08-26",
+    "pto": [],
+    "pto_unresolved": []
+  },
+  "generated_at": "2026-08-26T21:44:33+00:00",
   "quarter": "Q3-2026",
   "note": "Milestone progress is measured against two independent sources: the PRD requirement set (what we said we'd build) and Jira (what the team has ticketed and done). Where they disagree, the page says so rather than picking one.",
-  "jira_connected": false,
+  "jira_connected": true,
   "rag_rule": {
     "green": "No warnings raised",
     "amber": "Target within 14 days with more than 25% still open, or work not mapped to a milestone",
@@ -15,6 +22,7 @@ window.STATUS_DATA = {
     {
       "key": "asam-v4",
       "name": "ASAM 4th Edition",
+      "short": "ASAM 4th Edition",
       "blurb": "The 4th Edition of the ASAM criteria, as a working assessment a clinician would choose over paper — not a compliance checkbox bolted onto the 3rd.",
       "owner": "Christian Carlstrom",
       "eng": "Franco Agresta",
@@ -581,6 +589,34 @@ window.STATUS_DATA = {
       "current": 0,
       "rag": "amber",
       "flags": [],
+      "span": {
+        "start": "2026-08-26",
+        "end": "2026-11-14",
+        "planned": true
+      },
+      "events": [
+        {
+          "date": "2026-09-19",
+          "kind": "milestone",
+          "key": "M1",
+          "label": "A pilot practice can complete a 4th Edition assessment",
+          "firm": false
+        },
+        {
+          "date": "2026-10-17",
+          "kind": "milestone",
+          "key": "M2",
+          "label": "The 4th Edition is as workable as the 3rd",
+          "firm": false
+        },
+        {
+          "date": "2026-11-14",
+          "kind": "milestone",
+          "key": "M3",
+          "label": "The surrounding screens catch up",
+          "firm": false
+        }
+      ],
       "tickets": {
         "total": 0,
         "percent": 0,
@@ -626,6 +662,7 @@ window.STATUS_DATA = {
     {
       "key": "go-sessions",
       "name": "Go Sessions — In-Office Patient Intake",
+      "short": "Go Sessions",
       "blurb": "Staff-controlled digital intake on a device in the waiting room, replacing the Office Ally intake flow.",
       "owner": "Christian Carlstrom",
       "eng": null,
@@ -640,28 +677,734 @@ window.STATUS_DATA = {
       "epic_url": "https://icanotes.atlassian.net/browse/CLN-3809",
       "milestones": [],
       "current": -1,
-      "rag": "amber",
+      "rag": "green",
       "flags": [
         {
           "level": "info",
           "text": "No milestones defined — showing epic rollup only, so there is no plan to measure delivery against"
         }
       ],
-      "tickets": {
-        "total": 0,
-        "percent": 0,
-        "todo": 0,
-        "in_progress": 0,
-        "done": 0
+      "span": {
+        "start": "2026-05-29",
+        "end": "2026-08-26"
       },
-      "open_tickets": [],
-      "unmapped_tickets": [],
+      "events": [
+        {
+          "date": "2026-06-02",
+          "kind": "resolved",
+          "key": "CLN-3816",
+          "label": "Identify UC collision with the reuse of form_patient table"
+        },
+        {
+          "date": "2026-07-01",
+          "kind": "resolved",
+          "key": "DO-12381",
+          "label": "Deploy new UI and Backend"
+        },
+        {
+          "date": "2026-07-14",
+          "kind": "resolved",
+          "key": "CLN-3824",
+          "label": "Bootstrap the new interfaces, models and projects"
+        },
+        {
+          "date": "2026-08-11",
+          "kind": "resolved",
+          "key": "CLN-3817",
+          "label": "Intake Session Management: UI Accordion"
+        },
+        {
+          "date": "2026-08-11",
+          "kind": "resolved",
+          "key": "CLN-3821",
+          "label": "Welcome / Default  Intake page"
+        },
+        {
+          "date": "2026-08-13",
+          "kind": "resolved",
+          "key": "CLN-3893",
+          "label": "Create a new permission"
+        },
+        {
+          "date": "2026-08-17",
+          "kind": "resolved",
+          "key": "CLN-3822",
+          "label": "Intake Session Execution Flow"
+        },
+        {
+          "date": "2026-08-21",
+          "kind": "bug",
+          "count": 8,
+          "key": null,
+          "keys": [
+            "CLN-4039",
+            "CLN-4040",
+            "CLN-4041",
+            "CLN-4042",
+            "CLN-4043",
+            "CLN-4044",
+            "CLN-4045",
+            "CLN-4047"
+          ],
+          "label": "8 bugs filed",
+          "through": "2026-08-25"
+        }
+      ],
+      "tickets": {
+        "total": 28,
+        "percent": 25,
+        "todo": 20,
+        "in_progress": 1,
+        "done": 7
+      },
+      "open_tickets": [
+        {
+          "key": "CLN-3980",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3980",
+          "summary": "UI/UX Polish",
+          "status": "Testing",
+          "category": "indeterminate",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-03",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-4039",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4039",
+          "summary": "[Go Session: Desktop] Limit on Forms qty needs a designated error prompt",
+          "status": "Open",
+          "category": "new",
+          "type": "Bug",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-21",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-4040",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4040",
+          "summary": "[Go session] Packages are not order alphabetically in \"select forms and assessment\" modal",
+          "status": "Open",
+          "category": "new",
+          "type": "Bug",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-21",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-4041",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4041",
+          "summary": "[Go session: Desktop] Session creation fails when package selected contains form template ",
+          "status": "Open",
+          "category": "new",
+          "type": "Bug",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-21",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-4042",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4042",
+          "summary": "[Go Session: Desktop] Go Session Forms are accessible in Client Portal",
+          "status": "Open",
+          "category": "new",
+          "type": "Bug",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-21",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-4043",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4043",
+          "summary": "Go Session | Clicking on the Refresh button after having submitted all forms doesn't redirect user to Homepage",
+          "status": "Open",
+          "category": "new",
+          "type": "Bug",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-24",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-4044",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4044",
+          "summary": "Go Session | User with 0 forms gets taken to Something Went Wrong page",
+          "status": "Open",
+          "category": "new",
+          "type": "Bug",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-24",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-4045",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4045",
+          "summary": "Go Session | Incorrect message is displayed when submitting a Go Session that was canceled by creating a new session",
+          "status": "Open",
+          "category": "new",
+          "type": "Bug",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-24",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-4047",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4047",
+          "summary": "Go Session |Completed Go Session QR Code Remains Displayed Until Page Refresh",
+          "status": "Open",
+          "category": "new",
+          "type": "Bug",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-25",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-3837",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3837",
+          "summary": "Check API for camera and QR from chrome/safari",
+          "status": "Open",
+          "category": "new",
+          "type": "Spike",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-06-05",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-3839",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3839",
+          "summary": "Go Frontend Inactivity Daemon",
+          "status": "Open",
+          "category": "new",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-06-05",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-3840",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3840",
+          "summary": "Remove navigation back to the session creation",
+          "status": "Open",
+          "category": "new",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-06-05",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-3905",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3905",
+          "summary": "Add Go-Session status pill for form completion",
+          "status": "Open",
+          "category": "new",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-07-07",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-3906",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3906",
+          "summary": "[Spike] - Verify form-completed notification fires for Go-Sessions intake forms",
+          "status": "Open",
+          "category": "new",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-07-07",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-3907",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3907",
+          "summary": "Go Sessions Report — session history by client",
+          "status": "Open",
+          "category": "new",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-07-07",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-3908",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3908",
+          "summary": "Add \"Go Sessions\" permission category to Roles & Permissions",
+          "status": "Open",
+          "category": "new",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-07-07",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-3915",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3915",
+          "summary": "General cleanup",
+          "status": "Open",
+          "category": "new",
+          "type": "Task",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-07-09",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-3924",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3924",
+          "summary": "Send Go Session Link, Select or add contact",
+          "status": "Open",
+          "category": "new",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-07-13",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-3945",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3945",
+          "summary": "Concurrent session handling — same intake session opened on multiple devices",
+          "status": "Open",
+          "category": "new",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-07-21",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-3991",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3991",
+          "summary": "End/Destroy Session Logic (To be or Not to be Implemented?)",
+          "status": "Open",
+          "category": "new",
+          "type": "Task",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-05",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-4026",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4026",
+          "summary": "In-Progress handling on Admin ui",
+          "status": "Open",
+          "category": "new",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-17",
+          "resolved": null,
+          "updated": null
+        }
+      ],
+      "unmapped_tickets": [
+        {
+          "key": "CLN-3816",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3816",
+          "summary": "Identify UC collision with the reuse of form_patient table",
+          "status": "Closed",
+          "category": "done",
+          "type": "Spike",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-05-29",
+          "resolved": "2026-06-02",
+          "updated": null
+        },
+        {
+          "key": "CLN-3817",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3817",
+          "summary": "Intake Session Management: UI Accordion",
+          "status": "Closed",
+          "category": "done",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-05-29",
+          "resolved": "2026-08-11",
+          "updated": null
+        },
+        {
+          "key": "DO-12381",
+          "url": "https://icanotes.atlassian.net/browse/DO-12381",
+          "summary": "Deploy new UI and Backend",
+          "status": "Closed",
+          "category": "done",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-05-29",
+          "resolved": "2026-07-01",
+          "updated": null
+        },
+        {
+          "key": "CLN-3821",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3821",
+          "summary": "Welcome / Default  Intake page",
+          "status": "Closed",
+          "category": "done",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-05-29",
+          "resolved": "2026-08-11",
+          "updated": null
+        },
+        {
+          "key": "CLN-3822",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3822",
+          "summary": "Intake Session Execution Flow",
+          "status": "Closed",
+          "category": "done",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-06-01",
+          "resolved": "2026-08-17",
+          "updated": null
+        },
+        {
+          "key": "CLN-3824",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3824",
+          "summary": "Bootstrap the new interfaces, models and projects",
+          "status": "Closed",
+          "category": "done",
+          "type": "Dev Improvement",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-06-01",
+          "resolved": "2026-07-14",
+          "updated": null
+        },
+        {
+          "key": "CLN-3837",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3837",
+          "summary": "Check API for camera and QR from chrome/safari",
+          "status": "Open",
+          "category": "new",
+          "type": "Spike",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-06-05",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-3839",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3839",
+          "summary": "Go Frontend Inactivity Daemon",
+          "status": "Open",
+          "category": "new",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-06-05",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-3840",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3840",
+          "summary": "Remove navigation back to the session creation",
+          "status": "Open",
+          "category": "new",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-06-05",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-3893",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3893",
+          "summary": "Create a new permission",
+          "status": "Resolved",
+          "category": "done",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-07-02",
+          "resolved": "2026-08-13",
+          "updated": null
+        },
+        {
+          "key": "CLN-3905",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3905",
+          "summary": "Add Go-Session status pill for form completion",
+          "status": "Open",
+          "category": "new",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-07-07",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-3906",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3906",
+          "summary": "[Spike] - Verify form-completed notification fires for Go-Sessions intake forms",
+          "status": "Open",
+          "category": "new",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-07-07",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-3907",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3907",
+          "summary": "Go Sessions Report — session history by client",
+          "status": "Open",
+          "category": "new",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-07-07",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-3908",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3908",
+          "summary": "Add \"Go Sessions\" permission category to Roles & Permissions",
+          "status": "Open",
+          "category": "new",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-07-07",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-3915",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3915",
+          "summary": "General cleanup",
+          "status": "Open",
+          "category": "new",
+          "type": "Task",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-07-09",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-3924",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3924",
+          "summary": "Send Go Session Link, Select or add contact",
+          "status": "Open",
+          "category": "new",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-07-13",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-3945",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3945",
+          "summary": "Concurrent session handling — same intake session opened on multiple devices",
+          "status": "Open",
+          "category": "new",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-07-21",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-3980",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3980",
+          "summary": "UI/UX Polish",
+          "status": "Testing",
+          "category": "indeterminate",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-03",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-3991",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3991",
+          "summary": "End/Destroy Session Logic (To be or Not to be Implemented?)",
+          "status": "Open",
+          "category": "new",
+          "type": "Task",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-05",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-4026",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4026",
+          "summary": "In-Progress handling on Admin ui",
+          "status": "Open",
+          "category": "new",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-17",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-4039",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4039",
+          "summary": "[Go Session: Desktop] Limit on Forms qty needs a designated error prompt",
+          "status": "Open",
+          "category": "new",
+          "type": "Bug",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-21",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-4040",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4040",
+          "summary": "[Go session] Packages are not order alphabetically in \"select forms and assessment\" modal",
+          "status": "Open",
+          "category": "new",
+          "type": "Bug",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-21",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-4041",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4041",
+          "summary": "[Go session: Desktop] Session creation fails when package selected contains form template ",
+          "status": "Open",
+          "category": "new",
+          "type": "Bug",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-21",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-4042",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4042",
+          "summary": "[Go Session: Desktop] Go Session Forms are accessible in Client Portal",
+          "status": "Open",
+          "category": "new",
+          "type": "Bug",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-21",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-4043",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4043",
+          "summary": "Go Session | Clicking on the Refresh button after having submitted all forms doesn't redirect user to Homepage",
+          "status": "Open",
+          "category": "new",
+          "type": "Bug",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-24",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-4044",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4044",
+          "summary": "Go Session | User with 0 forms gets taken to Something Went Wrong page",
+          "status": "Open",
+          "category": "new",
+          "type": "Bug",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-24",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-4045",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4045",
+          "summary": "Go Session | Incorrect message is displayed when submitting a Go Session that was canceled by creating a new session",
+          "status": "Open",
+          "category": "new",
+          "type": "Bug",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-24",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-4047",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4047",
+          "summary": "Go Session |Completed Go Session QR Code Remains Displayed Until Page Refresh",
+          "status": "Open",
+          "category": "new",
+          "type": "Bug",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-25",
+          "resolved": null,
+          "updated": null
+        }
+      ],
       "unmapped_reqs": [],
       "risks": []
     },
     {
       "key": "zoho-one-provisioning",
       "name": "Product-Led Provisioning in Zoho One",
+      "short": "Zoho One Provisioning",
       "blurb": "A customer signing up product-led is created and can self-subscribe in Zoho One with no manual step, and existing product-led customers migrate across automatically.",
       "owner": "Christian Carlstrom",
       "eng": null,
@@ -672,7 +1415,7 @@ window.STATUS_DATA = {
       "epic_url": "https://icanotes.atlassian.net/browse/CLN-3764",
       "milestones": [],
       "current": -1,
-      "rag": "amber",
+      "rag": "green",
       "flags": [
         {
           "level": "info",
@@ -683,21 +1426,240 @@ window.STATUS_DATA = {
           "text": "No PRD linked"
         }
       ],
-      "tickets": {
-        "total": 0,
-        "percent": 0,
-        "todo": 0,
-        "in_progress": 0,
-        "done": 0
+      "span": {
+        "start": "2026-05-15",
+        "end": "2026-08-26"
       },
-      "open_tickets": [],
-      "unmapped_tickets": [],
+      "events": [
+        {
+          "date": "2026-06-23",
+          "kind": "resolved",
+          "key": "CLN-3780",
+          "label": "Create new Cx in Zoho one at signup"
+        },
+        {
+          "date": "2026-07-24",
+          "kind": "resolved",
+          "key": "CLN-3781",
+          "label": "Create a new tenant in zoho one"
+        },
+        {
+          "date": "2026-08-04",
+          "kind": "resolved",
+          "key": "CLN-3946",
+          "label": "Investigate how to migrate existing product led customers to new zoho instance"
+        },
+        {
+          "date": "2026-08-05",
+          "kind": "resolved",
+          "key": "CLN-3828",
+          "label": "Add new error mapping to Zoho Integrations Error"
+        },
+        {
+          "date": "2026-08-12",
+          "kind": "resolved",
+          "key": "CLN-3783",
+          "label": "Allow Zoho One PL Customers to Self-Subscribe"
+        },
+        {
+          "date": "2026-08-20",
+          "kind": "bug",
+          "count": 1,
+          "key": "CLN-4034",
+          "keys": [
+            "CLN-4034"
+          ],
+          "label": "User business rules can’t be enabled for “none” billing model user when practice is going to be related to zoho one",
+          "through": "2026-08-20"
+        }
+      ],
+      "tickets": {
+        "total": 9,
+        "percent": 56,
+        "todo": 4,
+        "in_progress": 0,
+        "done": 5
+      },
+      "open_tickets": [
+        {
+          "key": "CLN-4034",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4034",
+          "summary": "User business rules can’t be enabled for “none” billing model user when practice is going to be related to zoho one",
+          "status": "Open",
+          "category": "new",
+          "type": "Bug",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-20",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-3794",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3794",
+          "summary": "SMS: Automated Usage Tracking & Usage-Based Billing for SMS",
+          "status": "Open",
+          "category": "new",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-05-22",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-4013",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4013",
+          "summary": "Automate Zoho One migration via Multica",
+          "status": "Open",
+          "category": "new",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-12",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-4018",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4018",
+          "summary": "Spike - Automate Zoho One migration via Multica",
+          "status": "Open",
+          "category": "new",
+          "type": "Spike",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-13",
+          "resolved": null,
+          "updated": null
+        }
+      ],
+      "unmapped_tickets": [
+        {
+          "key": "CLN-3780",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3780",
+          "summary": "Create new Cx in Zoho one at signup",
+          "status": "Closed",
+          "category": "done",
+          "type": "Spike",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-05-15",
+          "resolved": "2026-06-23",
+          "updated": null
+        },
+        {
+          "key": "CLN-3781",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3781",
+          "summary": "Create a new tenant in zoho one",
+          "status": "Closed",
+          "category": "done",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-05-15",
+          "resolved": "2026-07-24",
+          "updated": null
+        },
+        {
+          "key": "CLN-3783",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3783",
+          "summary": "Allow Zoho One PL Customers to Self-Subscribe",
+          "status": "Closed",
+          "category": "done",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-05-18",
+          "resolved": "2026-08-12",
+          "updated": null
+        },
+        {
+          "key": "CLN-3794",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3794",
+          "summary": "SMS: Automated Usage Tracking & Usage-Based Billing for SMS",
+          "status": "Open",
+          "category": "new",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-05-22",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-3828",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3828",
+          "summary": "Add new error mapping to Zoho Integrations Error",
+          "status": "Closed",
+          "category": "done",
+          "type": "Dev Improvement",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-06-02",
+          "resolved": "2026-08-05",
+          "updated": null
+        },
+        {
+          "key": "CLN-3946",
+          "url": "https://icanotes.atlassian.net/browse/CLN-3946",
+          "summary": "Investigate how to migrate existing product led customers to new zoho instance",
+          "status": "Closed",
+          "category": "done",
+          "type": "Spike",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-07-22",
+          "resolved": "2026-08-04",
+          "updated": null
+        },
+        {
+          "key": "CLN-4013",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4013",
+          "summary": "Automate Zoho One migration via Multica",
+          "status": "Open",
+          "category": "new",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-12",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-4018",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4018",
+          "summary": "Spike - Automate Zoho One migration via Multica",
+          "status": "Open",
+          "category": "new",
+          "type": "Spike",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-13",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-4034",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4034",
+          "summary": "User business rules can’t be enabled for “none” billing model user when practice is going to be related to zoho one",
+          "status": "Open",
+          "category": "new",
+          "type": "Bug",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-20",
+          "resolved": null,
+          "updated": null
+        }
+      ],
       "unmapped_reqs": [],
       "risks": []
     },
     {
       "key": "note-ownership",
       "name": "Historical Note Ownership on Clinician Transfer",
+      "short": "Note Ownership",
       "blurb": "A note keeps the clinician who wrote it. Deactivating a clinician stops silently reassigning their signed work, and inactive clinicians stay visible where the record depends on them.",
       "owner": "Christian Carlstrom",
       "eng": null,
@@ -708,7 +1670,7 @@ window.STATUS_DATA = {
       "epic_url": "https://icanotes.atlassian.net/browse/CLN-3516",
       "milestones": [],
       "current": -1,
-      "rag": "amber",
+      "rag": "green",
       "flags": [
         {
           "level": "info",
@@ -719,15 +1681,100 @@ window.STATUS_DATA = {
           "text": "No PRD linked"
         }
       ],
+      "span": {
+        "start": "2026-08-14",
+        "end": "2026-08-26"
+      },
+      "events": [],
       "tickets": {
-        "total": 0,
+        "total": 3,
         "percent": 0,
-        "todo": 0,
-        "in_progress": 0,
+        "todo": 1,
+        "in_progress": 2,
         "done": 0
       },
-      "open_tickets": [],
-      "unmapped_tickets": [],
+      "open_tickets": [
+        {
+          "key": "CLN-4020",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4020",
+          "summary": "Show inactive/deactivated clinicians in note footer (Historical Notes, Assessments/Evaluations, Treatment Plans)",
+          "status": "Review",
+          "category": "indeterminate",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-14",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-4022",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4022",
+          "summary": "Stop auto-transferring note-level assigned clinician on deactivation/transfer",
+          "status": "Review",
+          "category": "indeterminate",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-14",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-4021",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4021",
+          "summary": "Show inactive clinicians in dashboard",
+          "status": "Open",
+          "category": "new",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-14",
+          "resolved": null,
+          "updated": null
+        }
+      ],
+      "unmapped_tickets": [
+        {
+          "key": "CLN-4020",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4020",
+          "summary": "Show inactive/deactivated clinicians in note footer (Historical Notes, Assessments/Evaluations, Treatment Plans)",
+          "status": "Review",
+          "category": "indeterminate",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-14",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-4021",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4021",
+          "summary": "Show inactive clinicians in dashboard",
+          "status": "Open",
+          "category": "new",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-14",
+          "resolved": null,
+          "updated": null
+        },
+        {
+          "key": "CLN-4022",
+          "url": "https://icanotes.atlassian.net/browse/CLN-4022",
+          "summary": "Stop auto-transferring note-level assigned clinician on deactivation/transfer",
+          "status": "Review",
+          "category": "indeterminate",
+          "type": "Story",
+          "assignee": null,
+          "labels": [],
+          "created": "2026-08-14",
+          "resolved": null,
+          "updated": null
+        }
+      ],
       "unmapped_reqs": [],
       "risks": []
     }

@@ -6,10 +6,197 @@ window.STATUS_DATA = {
     "start": "2026-05-01",
     "end": "2026-11-30",
     "today": "2026-08-26",
-    "pto": [],
-    "pto_unresolved": []
+    "pto": [
+      {
+        "who": "Diego Lozano",
+        "start": "2026-05-01",
+        "end": "2026-05-01"
+      },
+      {
+        "who": "Franco Agresta",
+        "start": "2026-05-01",
+        "end": "2026-05-01"
+      },
+      {
+        "who": "Lautaro Lobo",
+        "start": "2026-05-01",
+        "end": "2026-05-01"
+      },
+      {
+        "who": "Lucio",
+        "start": "2026-05-01",
+        "end": "2026-05-01"
+      },
+      {
+        "who": "Nicolas",
+        "start": "2026-05-01",
+        "end": "2026-05-01"
+      },
+      {
+        "who": "alexisfreitas",
+        "start": "2026-05-01",
+        "end": "2026-05-01"
+      },
+      {
+        "who": "Dustin Roberts",
+        "start": "2026-05-18",
+        "end": "2026-05-26"
+      },
+      {
+        "who": "Diego Lozano",
+        "start": "2026-05-25",
+        "end": "2026-05-25"
+      },
+      {
+        "who": "Franco Agresta",
+        "start": "2026-05-25",
+        "end": "2026-05-25"
+      },
+      {
+        "who": "Lautaro Lobo",
+        "start": "2026-05-25",
+        "end": "2026-05-25"
+      },
+      {
+        "who": "Nicolas",
+        "start": "2026-05-25",
+        "end": "2026-05-25"
+      },
+      {
+        "who": "Lautaro Lobo",
+        "start": "2026-06-15",
+        "end": "2026-06-15"
+      },
+      {
+        "who": "Nico Bone",
+        "start": "2026-06-15",
+        "end": "2026-06-15"
+      },
+      {
+        "who": "Lucio",
+        "start": "2026-06-16",
+        "end": "2026-06-16"
+      },
+      {
+        "who": "Lautaro Lobo",
+        "start": "2026-06-17",
+        "end": "2026-06-18"
+      },
+      {
+        "who": "Franco Agresta",
+        "start": "2026-07-10",
+        "end": "2026-07-10"
+      },
+      {
+        "who": "Nico Bone",
+        "start": "2026-07-10",
+        "end": "2026-07-10"
+      },
+      {
+        "who": "Lautaro Lobo",
+        "start": "2026-07-13",
+        "end": "2026-07-13"
+      },
+      {
+        "who": "Nicolas",
+        "start": "2026-07-13",
+        "end": "2026-07-15"
+      },
+      {
+        "who": "Lucio",
+        "start": "2026-08-03",
+        "end": "2026-08-07"
+      },
+      {
+        "who": "Nicolas",
+        "start": "2026-08-17",
+        "end": "2026-08-17"
+      },
+      {
+        "who": "Franco Agresta",
+        "start": "2026-08-24",
+        "end": "2026-08-28"
+      },
+      {
+        "who": "Nico Bone",
+        "start": "2026-08-27",
+        "end": "2026-09-11"
+      },
+      {
+        "who": "Dustin Roberts",
+        "start": "2026-08-28",
+        "end": "2026-08-28"
+      },
+      {
+        "who": "Nicolas",
+        "start": "2026-09-11",
+        "end": "2026-09-11"
+      },
+      {
+        "who": "Lautaro Lobo",
+        "start": "2026-09-14",
+        "end": "2026-09-14"
+      },
+      {
+        "who": "Nico Bone",
+        "start": "2026-09-14",
+        "end": "2026-09-18"
+      },
+      {
+        "who": "Lautaro Lobo",
+        "start": "2026-10-01",
+        "end": "2026-10-02"
+      },
+      {
+        "who": "Diego Lozano",
+        "start": "2026-10-12",
+        "end": "2026-10-23"
+      },
+      {
+        "who": "Lautaro Lobo",
+        "start": "2026-10-28",
+        "end": "2026-11-06"
+      }
+    ],
+    "pto_unresolved": [
+      {
+        "token": "Alex",
+        "why": "ambiguous",
+        "start": "2026-06-08"
+      },
+      {
+        "token": "Alex",
+        "why": "ambiguous",
+        "start": "2026-08-24"
+      },
+      {
+        "token": "Alex",
+        "why": "ambiguous",
+        "start": "2026-07-02"
+      },
+      {
+        "token": "Alex",
+        "why": "ambiguous",
+        "start": "2026-09-21"
+      },
+      {
+        "token": "Nico",
+        "why": "ambiguous",
+        "start": "2026-05-25"
+      },
+      {
+        "token": "Alex",
+        "why": "ambiguous",
+        "start": "2026-05-01"
+      },
+      {
+        "token": "Alex",
+        "why": "ambiguous",
+        "start": "2026-11-16"
+      }
+    ]
   },
-  "generated_at": "2026-08-26T21:44:33+00:00",
+  "generated_at": "2026-08-26T22:03:24+00:00",
   "quarter": "Q3-2026",
   "note": "Milestone progress is measured against two independent sources: the PRD requirement set (what we said we'd build) and Jira (what the team has ticketed and done). Where they disagree, the page says so rather than picking one.",
   "jira_connected": true,

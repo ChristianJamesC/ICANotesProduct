@@ -9026,10 +9026,10 @@ window.__modules["asamNote"] = {NotePad: NotePad, narrativeFor: narrativeFor};
                   <sc-if value="{{ ratingsOpen }}" hint-placeholder-val="{{ true }}">
                     <div style="border:1px solid #b7bcc3;border-radius:6px;background:#fff;overflow:hidden">
                       <sc-for list="{{ recSummary }}" as="g" hint-placeholder-count="6">
-                        <div style="display:flex;flex-direction:column;gap:2px;padding:6px 10px 7px;border-bottom:1px solid #f2f4f5">
+                        <button type="button" onClick="{{ g.jump }}" style="display:flex;flex-direction:column;align-items:stretch;gap:2px;width:100%;padding:6px 10px 7px;border:0;border-bottom:1px solid #f2f4f5;background:transparent;text-align:left;font:inherit;cursor:pointer" style-hover="background:#f3f8fb" style-focus="outline:2px solid #107ead;outline-offset:-2px">
                           <span style="font-family:var(--font-lato);font-size:11.5px;font-weight:700;color:#2d3138">{{ g.dimLabel }}</span>
                           <span style="font-family:var(--font-lato);font-size:11.5px;color:#0d6f99;text-wrap:pretty">{{ g.ratingsText }}</span>
-                        </div>
+                        </button>
                       </sc-for>
                     </div>
                   </sc-if>
@@ -10426,7 +10426,9 @@ class Component extends DCLogic {
       return {
         dim: (sc.tab || '').replace('Dimension ', 'D'),
         dimLabel: (sc.tab || '').replace('Dimension ', 'D') + ' ' + String(sc.title || sc.tab).replace(/^Dimension \d+:\s*/, ''),
-        ratingsText: set.length ? set.map((r) => r.name + ' ' + r.code).join(', ') : 'Not rated',
+        ratingsText: set.length
+          ? set.map((r) => r.name + ': ' + r.code + ' - ' + r.value).join(', ')
+          : 'Not rated',
         title: (sc.title || sc.tab) + ' \u2014 open this dimension',
         badges: set.map((r) => ({ code: r.code, title: r.name + ' \u2014 ' + r.value })),
         empty: set.length === 0,

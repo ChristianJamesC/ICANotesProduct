@@ -1,0 +1,44 @@
+/* Spacing scale (px) — exported from Figma. Dense 2px steps at the low end
+   for form controls, widening to layout gutters. */
+:root {
+  --ica-spacing-0: 0px;
+  --ica-spacing-1: 1px;
+  --ica-spacing-2: 2px;
+  --ica-spacing-3: 3px;
+  --ica-spacing-4: 4px;
+  --ica-spacing-6: 6px;
+  --ica-spacing-8: 8px;
+  --ica-spacing-9: 9px;
+  --ica-spacing-10: 10px;
+  --ica-spacing-12: 12px;
+  --ica-spacing-14: 14px;
+  --ica-spacing-16: 16px;
+  --ica-spacing-18: 18px;
+  --ica-spacing-20: 20px;
+  --ica-spacing-22: 22px;
+  --ica-spacing-24: 24px;
+  --ica-spacing-26: 26px;
+  --ica-spacing-28: 28px;
+  --ica-spacing-30: 30px;
+  --ica-spacing-32: 32px;
+  --ica-spacing-34: 34px;
+  --ica-spacing-36: 36px;
+  --ica-spacing-38: 38px;
+  --ica-spacing-40: 40px;
+  --ica-spacing-42: 42px;
+  --ica-spacing-44: 44px;
+  --ica-spacing-46: 46px;
+  --ica-spacing-48: 48px;
+  --ica-spacing-52: 52px;
+  --ica-spacing-56: 56px;
+  --ica-spacing-60: 60px;
+  --ica-spacing-64: 64px;
+  --ica-spacing-72: 72px;
+  --ica-spacing-80: 80px;
+  --ica-spacing-88: 88px;
+  --ica-spacing-96: 96px;
+  --ica-spacing-112: 112px;
+  --ica-spacing-128: 128px;
+  --ica-spacing-160: 160px;
+  --ica-spacing-192: 192px;
+}

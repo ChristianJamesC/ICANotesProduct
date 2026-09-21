@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="_ds/icanotes-design-system-94514a43-fb4e-4797-a15e-91145838afdf/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/icanotes-design-system-94514a43-fb4e-4797-a15e-91145838afdf/tokens/colors.css">
+<link rel="stylesheet" href="_ds/icanotes-design-system-94514a43-fb4e-4797-a15e-91145838afdf/tokens/swatch.css">
+<link rel="stylesheet" href="_ds/icanotes-design-system-94514a43-fb4e-4797-a15e-91145838afdf/tokens/typography.css">
+<link rel="stylesheet" href="_ds/icanotes-design-system-94514a43-fb4e-4797-a15e-91145838afdf/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/icanotes-design-system-94514a43-fb4e-4797-a15e-91145838afdf/tokens/radii.css">
+<link rel="stylesheet" href="_ds/icanotes-design-system-94514a43-fb4e-4797-a15e-91145838afdf/tokens/effects.css">
+<link rel="stylesheet" href="_ds/icanotes-design-system-94514a43-fb4e-4797-a15e-91145838afdf/styles.css">
+<script src="_ds/icanotes-design-system-94514a43-fb4e-4797-a15e-91145838afdf/_ds_bundle.js"></script>
+<style>
+  html, body { margin: 0; padding: 0; background: #e9edf0; }
+  body { font-family: 'Lato', system-ui, sans-serif; color: #3d3d3d; -webkit-font-smoothing: antialiased; }
+  a { color: #107ead; text-decoration: none; }
+  a:hover { color: #0d6f99; text-decoration: underline; }
+  .ica-menu { max-height: 180px !important; }
+</style>
+</helmet>
+
+<section style="padding:48px 56px 88px;display:flex;flex-direction:column;gap:40px">
+
+  <div style="display:flex;flex-direction:column;gap:14px;max-width:1040px">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:9999px;background:#107ead;color:#fff;font-size:11px;font-weight:700;letter-spacing:.06em">TURN 1</span>
+      <span style="font-size:12px;font-weight:700;letter-spacing:.08em;color:#808080;text-transform:uppercase">Feature parity · Classic → Plus</span>
+    </div>
+    <h1 style="margin:0;font-size:40px;line-height:1.1;font-weight:900;color:#082f43;letter-spacing:-0.01em">Change the progress note title from Compile</h1>
+    <p style="margin:0;font-size:17px;line-height:1.55;color:#555;max-width:820px;text-wrap:pretty">Three directions for the CTA and editor, each shown on the Compile screen with its default, editing, error and saved states. Reference me by id in chat — <a href="#1a">1a</a>, <a href="#1b">1b</a>, <a href="#1c">1c</a>.</p>
+
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:8px">
+      <div style="flex:1 1 320px;min-width:300px;background:#fff;border-radius:16px;padding:18px 20px;box-shadow:0 2px 3px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.12)">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:#808080;text-transform:uppercase;margin-bottom:8px">What Classic does today</div>
+        <div style="font-size:14px;line-height:1.6;color:#3d3d3d">A <strong>Change Note Title</strong> button on the Finished Note screen opens a picker with three parts — <strong>Title</strong>, <strong>Subtitle</strong> and <strong>Discipline</strong> — plus a <strong>Clear Note Title</strong> action and buttons to save custom subtitles and disciplines to a personal list.</div>
+      </div>
+      <div style="flex:1 1 320px;min-width:300px;background:#fff;border-radius:16px;padding:18px 20px;box-shadow:0 2px 3px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.12)">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:#808080;text-transform:uppercase;margin-bottom:8px">What Plus does today</div>
+        <div style="font-size:14px;line-height:1.6;color:#3d3d3d">The title is auto-generated from the note type and cannot be changed. On Compile it renders as a plain <strong>Progress Note</strong> label above the date, and carries unchanged to the chart note list, dashboard, print and portal.</div>
+      </div>
+      <div style="flex:1 1 320px;min-width:300px;background:#fff;border-radius:16px;padding:18px 20px;box-shadow:0 2px 3px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.12)">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:#808080;text-transform:uppercase;margin-bottom:8px">What all three assume</div>
+        <div style="font-size:14px;line-height:1.6;color:#3d3d3d">Editable any time before signing, and after signing with an audit entry. Custom title and subtitle text is capped at <strong>{{ charLimit }} characters</strong> each. Clearing falls back to the note type. Every surface reads from one stored value.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:56px;flex-wrap:wrap;align-items:flex-start">
+    <sc-for list="{{ options }}" as="opt" hint-placeholder-count="3">
+      <div id="{{ opt.id }}" style="display:flex;flex-direction:column;gap:20px;width:1280px;flex:none">
+
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <span style="display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:26px;padding:0 10px;border-radius:9999px;background:#082f43;color:#fff;font-size:13px;font-weight:900;letter-spacing:.04em">{{ opt.id }}</span>
+            <h2 style="margin:0;font-size:26px;line-height:1.25;font-weight:900;color:#082f43;letter-spacing:-0.01em;white-space:nowrap">{{ opt.name }}</h2>
+            <sc-if value="{{ opt.recommended }}" hint-placeholder-val="{{ true }}">
+              <span style="display:inline-flex;align-items:center;height:22px;padding:0 10px;border-radius:9999px;background:#d9fbb5;color:#465c2f;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase">Recommended</span>
+            </sc-if>
+          </div>
+          <p style="margin:0;font-size:16px;line-height:1.55;color:#555;max-width:720px;text-wrap:pretty">{{ opt.tagline }}</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:2px">
+            <sc-for list="{{ opt.traits }}" as="t" hint-placeholder-count="3">
+              <span style="display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:9999px;border:1px solid rgba(0,0,0,.18);background:#fff;font-size:12px;font-weight:700;color:#555;white-space:nowrap;line-height:1">{{ t }}</span>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:#808080;text-transform:uppercase">Editing state — Compile screen</div>
+
+          <div style="position:relative;width:1280px;border-radius:16px;background:#fff;border:1px solid rgba(0,0,0,.10);box-shadow:0 2px 3px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.16)">
+
+            <div style="display:flex;align-items:center;gap:20px;padding:10px 18px;border-bottom:1px solid rgba(0,0,0,.08);background:#fff;border-radius:15px 15px 0 0">
+              <img src="assets/ICANotes_Logo_Color.png" alt="ICANotes Plus" style="height:30px;width:auto;display:block" />
+              <div style="flex:1;display:flex;justify-content:center">
+                <div style="width:460px;height:32px;border:1px solid rgba(61,61,61,.5);border-radius:8px;background:#fbfbfb;display:flex;align-items:center;gap:8px;padding:0 10px;color:#808080;font-size:13px">
+                  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-magnifier" size="{{ 14 }}" hint-size="14px,14px"></x-import>
+                  <span>Search Charts</span>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:18px;color:#107ead">
+                <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-billing-note" size="{{ 20 }}" hint-size="20px,20px"></x-import>
+                <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-chat-circle-text" size="{{ 20 }}" hint-size="20px,20px"></x-import>
+                <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-notification" size="{{ 20 }}" hint-size="20px,20px"></x-import>
+                <span style="font-size:15px;font-weight:700;color:#082f43">Christian Carls…</span>
+              </div>
+            </div>
+
+            <div style="display:flex;align-items:stretch">
+              <div style="width:92px;flex:none;border-right:1px solid rgba(0,0,0,.08);padding:10px 0;display:flex;flex-direction:column;gap:2px;background:#fff">
+                <sc-for list="{{ nav }}" as="n" hint-placeholder-count="9">
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:9px 4px;color:#107ead;text-align:center">
+                    <div style="{{ n.style }}"></div>
+                    <span style="font-size:9px;font-weight:700;letter-spacing:.05em;line-height:1.2">{{ n.label }}</span>
+                  </div>
+                </sc-for>
+              </div>
+
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+
+                <div style="display:flex;align-items:center;gap:8px;padding:12px 18px;border-bottom:1px solid rgba(0,0,0,.06);background:#fff">
+                  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" fill-mode="outline" theme-color="primary" hint-size="auto,32px">Chart Face</x-import>
+                  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" fill-mode="outline" theme-color="primary" hint-size="auto,32px">Go To Work Areas</x-import>
+                  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" fill-mode="outline" theme-color="primary" hint-size="auto,32px">Generate Invoice &amp; Superbill</x-import>
+                  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" fill-mode="outline" theme-color="primary" hint-size="auto,32px">+ Create Summary</x-import>
+                  <sc-if value="{{ opt.toolbarCta }}" hint-placeholder-val="{{ true }}">
+                    <span style="display:inline-flex;border-radius:10px;box-shadow:0 0 0 3px rgba(157,224,86,.55)">
+                      <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" fill-mode="solid" theme-color="primary" hint-size="auto,32px">{{ opt.ctaLabel }}</x-import>
+                    </span>
+                  </sc-if>
+                  <div style="flex:1"></div>
+                  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" fill-mode="outline" theme-color="primary" hint-size="auto,32px">Copy to Clipboard</x-import>
+                  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" fill-mode="outline" theme-color="primary" hint-size="auto,32px">Download</x-import>
+                  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" fill-mode="outline" theme-color="primary" hint-size="auto,32px">Print</x-import>
+                </div>
+
+                <div style="display:flex;gap:20px;padding:18px;align-items:flex-start;background:#fff;min-height:472px">
+
+                  <div style="flex:1;min-width:0;border:1px solid rgba(0,0,0,.10);border-radius:4px;padding:30px 40px 40px;background:#fff">
+                    <div style="text-align:center;font-size:17px;line-height:1.5;color:#555">Topaz Care &amp; Solutions, LLC</div>
+                    <div style="text-align:center;font-size:17px;line-height:1.5;color:#555;margin-bottom:22px">Phone: (647) 497-1652</div>
+                    <div style="text-align:center;font-size:15px;font-weight:700;color:#3d3d3d;margin-bottom:26px">Christian Carlstrom, Testing here on it</div>
+
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:24px;margin-bottom:24px">
+                      <div style="flex:none;white-space:nowrap">
+                        <div style="font-size:18px;color:#555;line-height:1.5">CJ James</div>
+                        <div style="font-size:16px;line-height:1.5"><strong style="color:#3d3d3d">Chart ID</strong> <span style="color:#555">0027</span></div>
+                      </div>
+                      <div style="font-size:16px;line-height:1.5;text-align:right;flex:none;white-space:nowrap"><strong style="color:#3d3d3d">DOB</strong> <span style="color:#555">01-18-1992</span></div>
+                    </div>
+
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:24px;position:relative">
+                      <div style="position:relative;flex:1;min-width:0">
+
+                        <sc-if value="{{ opt.inlineEditing }}" hint-placeholder-val="{{ false }}">
+                          <div style="display:flex;flex-direction:column;gap:6px">
+                            <div style="display:flex;align-items:center;gap:8px">
+                              <div style="flex:1;max-width:420px;height:36px;border:1px solid #3d3d3d;border-radius:8px;background:#fff;box-shadow:0 0 2px 2px rgba(134,208,56,.48);display:flex;align-items:center;padding:0 10px;font-size:17px;font-weight:700;color:#082f43">{{ opt.titleLine }}<span style="display:inline-block;width:1px;height:20px;background:#107ead;margin-left:2px"></span></div>
+                            </div>
+                            <div style="font-size:16px;color:#555;line-height:1.5">{{ opt.subLine }}</div>
+                            <div style="font-size:16px;color:#555;line-height:1.5">{{ opt.discLine }}</div>
+                            <div style="font-size:12px;color:#808080">Enter to save, Esc to cancel</div>
+                          </div>
+                          <div style="height:352px"></div>
+
+                          <div style="position:absolute;top:72px;left:0;width:440px;background:#fff;border-radius:16px;padding:18px 18px 16px;box-shadow:0 2px 3px rgba(0,0,0,.04),0 10px 28px rgba(0,0,0,.24);border:1px solid rgba(0,0,0,.08);z-index:5">
+                            <div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:#808080;text-transform:uppercase;margin-bottom:12px">Note title</div>
+                            <div style="display:flex;flex-direction:column;gap:12px">
+                              <x-import component-from-global-scope="ICANotesDesignSystem_94514a.FormField" label="Title" hint-size="100%,58px">
+                                <x-import component-from-global-scope="ICANotesDesignSystem_94514a.TextInput" value="{{ opt.title }}" on-change="{{ opt.setTitle }}" clearable="{{ true }}" placeholder="Progress Note" hint-size="100%,32px"></x-import>
+                              </x-import>
+                              <x-import component-from-global-scope="ICANotesDesignSystem_94514a.FormField" label="Subtitle" hint-size="100%,58px">
+                                <x-import component-from-global-scope="ICANotesDesignSystem_94514a.TextInput" value="{{ opt.subtitle }}" on-change="{{ opt.setSubtitle }}" clearable="{{ true }}" placeholder="Not specified" hint-size="100%,32px"></x-import>
+                              </x-import>
+                              <sc-if value="{{ opt.discList }}" hint-placeholder-val="{{ true }}">
+                                <x-import component-from-global-scope="ICANotesDesignSystem_94514a.FormField" label="Discipline" hint-size="100%,58px">
+                                  <div style="position:relative">
+                                    <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Select" options="{{ disciplineOptions }}" value="{{ opt.discipline }}" on-change="{{ opt.setDiscipline }}" placeholder="Not specified" hint-size="100%,32px"></x-import>
+                                    <sc-if value="{{ opt.hasDisc }}" hint-placeholder-val="{{ true }}">
+                                      <span onClick="{{ opt.clearDiscipline }}" title="Clear" style="position:absolute;right:22px;top:16px;transform:translateY(-50%);width:16px;height:16px;display:flex;align-items:center;justify-content:center;border-radius:4px;cursor:pointer;color:#666;font-size:15px;line-height:1;z-index:2" style-hover="background:rgba(0,0,0,.08);color:#3d3d3d">×</span>
+                                    </sc-if>
+                                  </div>
+                                </x-import>
+                              </sc-if>
+                              <sc-if value="{{ opt.discCustom }}" hint-placeholder-val="{{ false }}">
+                                <x-import component-from-global-scope="ICANotesDesignSystem_94514a.FormField" label="Discipline" action-title="Choose from list" on-action-click="{{ opt.useList }}" hint-size="100%,58px">
+                                  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.TextInput" value="{{ opt.discipline }}" on-change="{{ opt.setDiscipline }}" clearable="{{ true }}" placeholder="Type a discipline" hint-size="100%,32px"></x-import>
+                                </x-import>
+                              </sc-if>
+                            </div>
+                            <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-top:16px">
+                              <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" fill-mode="outline" theme-color="primary" size="small" hint-size="auto,24px">Cancel</x-import>
+                              <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" fill-mode="solid" theme-color="primary" size="small" hint-size="auto,24px">Save</x-import>
+                            </div>
+                          </div>
+                        </sc-if>
+
+                        <sc-if value="{{ opt.staticTitle }}" hint-placeholder-val="{{ true }}">
+                          <div style="display:flex;align-items:center;gap:10px">
+                            <div style="font-size:19px;font-weight:700;color:#082f43">{{ opt.titleLine }}</div>
+                            <sc-if value="{{ opt.pencilCta }}" hint-placeholder-val="{{ false }}">
+                              <span style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:6px;border:1px solid rgba(0,0,0,.18);background:#fbfbfb;color:#107ead">
+                                <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-pencil" size="{{ 13 }}" hint-size="13px,13px"></x-import>
+                              </span>
+                            </sc-if>
+                          </div>
+                          <sc-if value="{{ opt.hasSub }}" hint-placeholder-val="{{ true }}">
+                            <div style="font-size:16px;color:#555;line-height:1.5;margin-top:2px">{{ opt.subLine }}</div>
+                            <div style="font-size:16px;color:#555;line-height:1.5">{{ opt.discLine }}</div>
+                          </sc-if>
+                        </sc-if>
+
+                      </div>
+                      <div style="text-align:right;flex:none;white-space:nowrap">
+                        <div style="font-size:16px;line-height:1.6"><strong style="color:#3d3d3d">Date</strong> <span style="color:#555">Monday, September 21, 2026</span></div>
+                        <div style="font-size:16px;line-height:1.6"><strong style="color:#3d3d3d">Start Time</strong> <span style="color:#555">01:20 PM -04</span></div>
+                      </div>
+                    </div>
+
+                    <div style="margin-top:92px;font-size:13px;color:#666">Christian Carlstrom</div>
+                  </div>
+
+                  <div style="width:392px;flex:none;display:flex;flex-direction:column;gap:14px">
+                    <div style="display:flex;align-items:center;gap:10px;font-size:15px;color:#3d3d3d">
+                      <span style="width:18px;height:18px;border:1px solid rgba(61,61,61,.5);border-radius:4px;background:#fbfbfb;display:inline-block"></span>
+                      <span>Include blank signature lines for print</span>
+                    </div>
+                    <div style="border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 2px 3px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.12)">
+                      <div style="padding:14px 18px;font-size:16px;font-weight:700;color:#082f43;background:#f6f8f9">Signed Copies</div>
+                      <div style="display:flex;background:#eef7e3;border-top:1px solid rgba(0,0,0,.06);border-bottom:1px solid rgba(0,0,0,.06);font-size:13px;font-weight:700;color:#3d3d3d">
+                        <div style="flex:1.2;padding:9px 18px">Timestamp</div>
+                        <div style="flex:1;padding:9px 12px">Signee</div>
+                        <div style="flex:1;padding:9px 12px">Actions</div>
+                      </div>
+                      <div style="padding:44px 18px;text-align:center;font-size:14px;color:#808080">There are currently no signed copies for this note.</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="padding:12px 18px;background:rgba(18,116,172,.10);display:flex;justify-content:flex-end;align-items:center;border-radius:0 0 15px 0">
+                  <span style="font-size:15px;font-weight:700;color:#107ead">Electronically Sign</span>
+                </div>
+              </div>
+            </div>
+
+            <sc-if value="{{ opt.modalOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute;inset:0;border-radius:16px;background:rgba(0,0,0,.32);display:flex;align-items:center;justify-content:center;z-index:20">
+                <div style="width:640px;height:512px;display:flex;flex-direction:column;background:#fff;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.32)">
+                  <div style="padding:18px 24px 14px;border-bottom:1px solid rgba(0,0,0,.08);display:flex;align-items:center;justify-content:space-between">
+                    <div style="font-size:15px;font-weight:700;letter-spacing:.08em;color:#082f43;text-transform:uppercase">Edit note title</div>
+                    <span style="color:#808080;font-size:18px;line-height:1">×</span>
+                  </div>
+                  <div style="flex:1;min-height:0;padding:20px 24px 4px;display:flex;flex-direction:column;gap:16px">
+                    <x-import component-from-global-scope="ICANotesDesignSystem_94514a.FormField" label="Title" hint-size="100%,58px">
+                      <x-import component-from-global-scope="ICANotesDesignSystem_94514a.TextInput" value="{{ opt.title }}" on-change="{{ opt.setTitle }}" clearable="{{ true }}" placeholder="Progress Note" hint-size="100%,32px"></x-import>
+                    </x-import>
+                    <x-import component-from-global-scope="ICANotesDesignSystem_94514a.FormField" label="Subtitle" hint-size="100%,58px">
+                      <x-import component-from-global-scope="ICANotesDesignSystem_94514a.TextInput" value="{{ opt.subtitle }}" on-change="{{ opt.setSubtitle }}" clearable="{{ true }}" placeholder="Not specified" hint-size="100%,32px"></x-import>
+                    </x-import>
+                    <sc-if value="{{ opt.discList }}" hint-placeholder-val="{{ true }}">
+                      <x-import component-from-global-scope="ICANotesDesignSystem_94514a.FormField" label="Discipline" hint-size="100%,58px">
+                        <div style="position:relative">
+                          <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Select" options="{{ disciplineOptions }}" value="{{ opt.discipline }}" on-change="{{ opt.setDiscipline }}" placeholder="Not specified" hint-size="100%,32px"></x-import>
+                          <sc-if value="{{ opt.hasDisc }}" hint-placeholder-val="{{ true }}">
+                            <span onClick="{{ opt.clearDiscipline }}" title="Clear" style="position:absolute;right:22px;top:16px;transform:translateY(-50%);width:16px;height:16px;display:flex;align-items:center;justify-content:center;border-radius:4px;cursor:pointer;color:#666;font-size:15px;line-height:1;z-index:2" style-hover="background:rgba(0,0,0,.08);color:#3d3d3d">×</span>
+                          </sc-if>
+                        </div>
+                      </x-import>
+                    </sc-if>
+                    <sc-if value="{{ opt.discCustom }}" hint-placeholder-val="{{ false }}">
+                      <x-import component-from-global-scope="ICANotesDesignSystem_94514a.FormField" label="Discipline" action-title="Choose from list" on-action-click="{{ opt.useList }}" hint-size="100%,58px">
+                        <x-import component-from-global-scope="ICANotesDesignSystem_94514a.TextInput" value="{{ opt.discipline }}" on-change="{{ opt.setDiscipline }}" clearable="{{ true }}" placeholder="Type a discipline" hint-size="100%,32px"></x-import>
+                      </x-import>
+                    </sc-if>
+                    <div style="border-radius:8px;background:#f6f8f9;border:1px solid rgba(0,0,0,.06);padding:12px 14px">
+                      <div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:#808080;text-transform:uppercase;margin-bottom:6px">Preview</div>
+                      <div style="font-size:17px;font-weight:700;color:#082f43;min-height:24px">{{ opt.titleLine }}</div>
+                      <div style="font-size:15px;color:#555;line-height:1.5;min-height:23px">{{ opt.subLine }}</div>
+                      <div style="font-size:15px;color:#555;line-height:1.5;min-height:23px">{{ opt.discLine }}</div>
+                      <div style="font-size:12px;color:#808080;margin-top:6px">Appears on the compiled note, the chart note list, the printed copy and the patient portal.</div>
+                    </div>
+                  </div>
+                  <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:16px 24px 18px">
+                    <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" fill-mode="outline" theme-color="primary" hint-size="auto,32px">Cancel</x-import>
+                    <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" fill-mode="solid" theme-color="primary" hint-size="auto,32px">Save</x-import>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ opt.drawerOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute;inset:0;border-radius:16px;background:rgba(0,0,0,.24);z-index:20"></div>
+              <div style="position:absolute;top:0;right:0;bottom:0;width:436px;background:#fff;border-radius:0 16px 16px 0;box-shadow:-8px 0 32px rgba(0,0,0,.28);z-index:21;display:flex;flex-direction:column">
+                <div style="padding:18px 22px 14px;border-bottom:1px solid rgba(0,0,0,.08);display:flex;align-items:center;justify-content:space-between">
+                  <div style="font-size:15px;font-weight:700;letter-spacing:.08em;color:#082f43;text-transform:uppercase">Note details</div>
+                  <span style="color:#808080;font-size:18px;line-height:1">×</span>
+                </div>
+                <div style="flex:1;overflow:hidden;padding:18px 22px;display:flex;flex-direction:column;gap:16px">
+                  <div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:#808080;text-transform:uppercase">Title</div>
+                  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.FormField" label="Title" hint-size="100%,58px">
+                    <x-import component-from-global-scope="ICANotesDesignSystem_94514a.TextInput" value="{{ opt.title }}" on-change="{{ opt.setTitle }}" clearable="{{ true }}" placeholder="Progress Note" hint-size="100%,32px"></x-import>
+                  </x-import>
+                  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.FormField" label="Subtitle" hint-size="100%,58px">
+                    <x-import component-from-global-scope="ICANotesDesignSystem_94514a.TextInput" value="{{ opt.subtitle }}" on-change="{{ opt.setSubtitle }}" clearable="{{ true }}" placeholder="Not specified" hint-size="100%,32px"></x-import>
+                  </x-import>
+                  <sc-if value="{{ opt.discList }}" hint-placeholder-val="{{ true }}">
+                    <x-import component-from-global-scope="ICANotesDesignSystem_94514a.FormField" label="Discipline" hint-size="100%,58px">
+                      <div style="position:relative">
+                        <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Select" options="{{ disciplineOptions }}" value="{{ opt.discipline }}" on-change="{{ opt.setDiscipline }}" placeholder="Not specified" hint-size="100%,32px"></x-import>
+                        <sc-if value="{{ opt.hasDisc }}" hint-placeholder-val="{{ true }}">
+                          <span onClick="{{ opt.clearDiscipline }}" title="Clear" style="position:absolute;right:22px;top:16px;transform:translateY(-50%);width:16px;height:16px;display:flex;align-items:center;justify-content:center;border-radius:4px;cursor:pointer;color:#666;font-size:15px;line-height:1;z-index:2" style-hover="background:rgba(0,0,0,.08);color:#3d3d3d">×</span>
+                        </sc-if>
+                      </div>
+                    </x-import>
+                  </sc-if>
+                  <sc-if value="{{ opt.discCustom }}" hint-placeholder-val="{{ false }}">
+                    <x-import component-from-global-scope="ICANotesDesignSystem_94514a.FormField" label="Discipline" action-title="Choose from list" on-action-click="{{ opt.useList }}" hint-size="100%,58px">
+                      <x-import component-from-global-scope="ICANotesDesignSystem_94514a.TextInput" value="{{ opt.discipline }}" on-change="{{ opt.setDiscipline }}" clearable="{{ true }}" placeholder="Type a discipline" hint-size="100%,32px"></x-import>
+                    </x-import>
+                  </sc-if>
+                  <div style="border-radius:8px;background:#f6f8f9;border:1px solid rgba(0,0,0,.06);padding:12px 14px">
+                    <div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:#808080;text-transform:uppercase;margin-bottom:6px">Preview</div>
+                    <div style="font-size:16px;font-weight:700;color:#082f43">{{ opt.titleLine }}</div>
+                    <div style="font-size:14px;color:#555;line-height:1.5">{{ opt.subLine }}</div>
+                    <div style="font-size:14px;color:#555;line-height:1.5">{{ opt.discLine }}</div>
+                  </div>
+                  <div style="height:1px;background:rgba(0,0,0,.08)"></div>
+                  <div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:#808080;text-transform:uppercase">About this note</div>
+                  <div style="display:flex;flex-direction:column;gap:7px;font-size:13px;color:#555">
+                    <div style="display:flex;justify-content:space-between;gap:12px"><span>Created</span><strong style="color:#3d3d3d">Sep 21, 2026 1:10 PM ET</strong></div>
+                    <div style="display:flex;justify-content:space-between;gap:12px"><span>First compiled</span><strong style="color:#3d3d3d">Sep 21, 2026 1:20 PM ET</strong></div>
+                    <div style="display:flex;justify-content:space-between;gap:12px"><span>Service location</span><strong style="color:#3d3d3d">Inpatient Facility</strong></div>
+                    <div style="display:flex;justify-content:space-between;gap:12px"><span>Status</span><strong style="color:#3d3d3d">In progress</strong></div>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:14px 22px;border-top:1px solid rgba(0,0,0,.08)">
+                  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" fill-mode="outline" theme-color="primary" hint-size="auto,32px">Cancel</x-import>
+                  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" fill-mode="solid" theme-color="primary" hint-size="auto,32px">Save</x-import>
+                </div>
+              </div>
+            </sc-if>
+
+          </div>
+        </div>
+
+        <div style="display:flex;gap:16px;flex-wrap:wrap">
+
+          <div style="flex:1 1 400px;min-width:380px;display:flex;flex-direction:column;gap:8px">
+            <div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:#808080;text-transform:uppercase">Default — the entry point</div>
+            <div style="background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 3px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.12);display:flex;flex-direction:column;gap:14px;min-height:150px">
+              <sc-if value="{{ opt.toolbarCta }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;align-items:center;gap:8px;padding:10px;border-radius:8px;background:#fbfbfb;border:1px solid rgba(0,0,0,.06)">
+                  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" fill-mode="outline" theme-color="primary" size="small" hint-size="auto,24px">+ Create Summary</x-import>
+                  <span style="display:inline-flex;border-radius:8px;box-shadow:0 0 0 3px rgba(157,224,86,.55)">
+                    <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" fill-mode="solid" theme-color="primary" size="small" hint-size="auto,24px">{{ opt.ctaLabel }}</x-import>
+                  </span>
+                </div>
+              </sc-if>
+              <sc-if value="{{ opt.inlineEditing }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:14px 12px;border-radius:8px;background:#fbfbfb;border:1px solid rgba(0,0,0,.06);display:flex;flex-direction:column;align-items:flex-start;gap:12px">
+                  <div style="display:inline-flex;align-items:center;gap:8px;padding:4px 8px;border-radius:6px;background:rgba(18,116,172,.06);white-space:nowrap">
+                    <span style="font-size:19px;font-weight:700;color:#082f43;border-bottom:1px dashed #107ead;padding-bottom:1px">Progress Note</span>
+                    <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-pencil" size="{{ 13 }}" color="#107ead" hint-size="13px,13px"></x-import>
+                  </div>
+                  <div style="background:#082f43;color:#fff;font-size:12px;border-radius:6px;padding:5px 9px;white-space:nowrap">Click to edit the note title</div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ opt.pencilCta }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:14px 12px;border-radius:8px;background:#fbfbfb;border:1px solid rgba(0,0,0,.06);display:flex;flex-direction:column;align-items:flex-start;gap:12px">
+                  <div style="display:flex;align-items:center;gap:10px;white-space:nowrap">
+                    <span style="font-size:19px;font-weight:700;color:#082f43">Progress Note</span>
+                    <span style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:6px;border:1px solid rgba(0,0,0,.18);background:#fff;color:#107ead;box-shadow:0 0 0 3px rgba(157,224,86,.55)">
+                      <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-pencil" size="{{ 13 }}" hint-size="13px,13px"></x-import>
+                    </span>
+                  </div>
+                  <div style="background:#082f43;color:#fff;font-size:12px;border-radius:6px;padding:5px 9px;white-space:nowrap">Note details</div>
+                </div>
+              </sc-if>
+              <div style="font-size:13px;line-height:1.55;color:#555;text-wrap:pretty">{{ opt.defaultNote }}</div>
+            </div>
+          </div>
+
+          <div style="flex:1 1 400px;min-width:380px;display:flex;flex-direction:column;gap:8px">
+            <div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:#808080;text-transform:uppercase">Error — custom text over the limit</div>
+            <div style="background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 3px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.12);display:flex;flex-direction:column;gap:14px;min-height:150px">
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
+                  <span style="font-size:12px;font-weight:700;color:#3d3d3d">Custom subtitle</span>
+                  <span style="font-size:12px;font-weight:700;color:#ca1400">{{ overLabel }}</span>
+                </div>
+                <div style="height:32px;border:1px solid #df1600;border-radius:8px;background:#fbfbfb;box-shadow:0 0 2px 2px rgba(223,22,0,.24);display:flex;align-items:center;padding:0 10px;font-size:14px;color:#3d3d3d;overflow:hidden;white-space:nowrap">{{ overSample }}</div>
+                <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#ca1400">
+                  <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-warning-circle" size="{{ 13 }}" hint-size="13px,13px"></x-import>
+                  <span>{{ errorMsg }}</span>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" fill-mode="outline" theme-color="primary" size="small" hint-size="auto,24px">Cancel</x-import>
+                <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" fill-mode="solid" theme-color="primary" size="small" disabled="{{ true }}" hint-size="auto,24px">Save</x-import>
+              </div>
+              <div style="font-size:13px;line-height:1.55;color:#555;text-wrap:pretty">Save stays disabled until the count is within range. The stored title is never partially written — an over-length entry cannot reach print or the portal.</div>
+            </div>
+          </div>
+
+          <div style="flex:1 1 400px;min-width:380px;display:flex;flex-direction:column;gap:8px">
+            <div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:#808080;text-transform:uppercase">Saved — confirmation and record</div>
+            <div style="background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 3px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.12);display:flex;flex-direction:column;gap:14px;min-height:150px">
+              <div style="border-radius:12px;overflow:hidden;box-shadow:0 2px 3px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.12)">
+                <div style="height:4px;background:#37b400"></div>
+                <div style="padding:12px 14px;display:flex;gap:10px;align-items:flex-start;background:#fff">
+                  <span style="color:#2d9600;margin-top:2px">
+                    <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-check-circle-1" size="{{ 15 }}" hint-size="15px,15px"></x-import>
+                  </span>
+                  <div>
+                    <div style="font-size:14px;font-weight:700;color:#3d3d3d">Note title updated</div>
+                    <div style="font-size:13px;color:#555;line-height:1.5">The compiled note, chart note list, print and portal copy now read {{ savedTitle }}.</div>
+                  </div>
+                  <span style="margin-left:auto;color:#808080;font-size:15px;line-height:1">×</span>
+                </div>
+              </div>
+              <div style="padding:12px 14px;border-radius:8px;background:#fbfbfb;border:1px solid rgba(0,0,0,.06)">
+                <div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:#808080;text-transform:uppercase;margin-bottom:6px">Audit log entry</div>
+                <div style="font-size:13px;line-height:1.55;color:#3d3d3d">Note title changed from <strong>Progress Note</strong> to <strong>{{ savedTitle }}</strong> — Christian Carlstrom, Clinical Social Worker · Sep 21, 2026 1:42 PM ET</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </sc-for>
+  </div>
+
+  <sc-if value="{{ showSurfaces }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;gap:16px;max-width:1720px">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <h2 style="margin:0;font-size:24px;font-weight:900;color:#082f43">Shared across all three — where the title lands</h2>
+        <p style="margin:0;font-size:15px;line-height:1.55;color:#555;max-width:780px;text-wrap:pretty">One stored value, read by every surface. These do not change between the options above.</p>
+      </div>
+
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+
+        <div style="flex:1 1 420px;min-width:400px;background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 3px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.12);display:flex;flex-direction:column;gap:12px">
+          <div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:#808080;text-transform:uppercase">Chart note list</div>
+          <div style="border:1px solid rgba(0,0,0,.10);border-radius:8px;overflow:hidden">
+            <div style="display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid rgba(0,0,0,.06)">
+              <img src="assets/doc-note.svg" alt="" style="width:18px;height:18px;flex:none" />
+              <span style="font-size:13px;color:#555;flex:none">09/21/26</span>
+              <span style="font-size:14px;font-weight:700;color:#082f43;flex:1;min-width:0">{{ savedTitle }}</span>
+              <span style="font-size:13px;color:#555;flex:none">Inpatient Facility</span>
+              <span style="display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:9999px;background:#d9fbb5;color:#465c2f;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;flex:none">Signed</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:11px 14px">
+              <img src="assets/doc-note.svg" alt="" style="width:18px;height:18px;flex:none" />
+              <span style="font-size:13px;color:#555;flex:none">07/16/26</span>
+              <span style="font-size:14px;font-weight:700;color:#082f43;flex:1;min-width:0">Complete Evaluation / Activity Therapy</span>
+              <span style="font-size:13px;color:#555;flex:none">Inpatient Facility</span>
+              <span style="display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:9999px;background:#d9fbb5;color:#465c2f;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;flex:none">Signed</span>
+            </div>
+          </div>
+          <div style="font-size:13px;line-height:1.55;color:#555">Matches how Classic already writes the composed title to the chart face.</div>
+        </div>
+
+        <div style="flex:1 1 300px;min-width:290px;background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 3px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.12);display:flex;flex-direction:column;gap:12px">
+          <div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:#808080;text-transform:uppercase">Printed note header</div>
+          <div style="border:1px solid rgba(0,0,0,.10);border-radius:4px;padding:16px;text-align:center">
+            <div style="font-size:13px;color:#555">Topaz Care &amp; Solutions, LLC</div>
+            <div style="font-size:16px;font-weight:700;color:#082f43;margin-top:10px">{{ savedTitleLine }}</div>
+            <div style="font-size:14px;color:#555">{{ savedSubLine }}</div>
+            <div style="font-size:14px;color:#555">{{ savedDiscLine }}</div>
+            <div style="font-size:12px;color:#555;margin-top:6px">CJ James · Chart ID 0027 · Sep 21, 2026</div>
+          </div>
+          <div style="font-size:13px;line-height:1.55;color:#555">Same string on the PDF, the portal copy and any re-print of a signed note.</div>
+        </div>
+
+        <div style="flex:1 1 420px;min-width:400px;background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 3px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.12);display:flex;flex-direction:column;gap:12px">
+          <div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:#808080;text-transform:uppercase">Signed note — title change</div>
+          <div style="border-radius:8px;border:1px solid rgba(255,192,0,.5);background:#fff8e0;padding:12px 14px;display:flex;gap:10px;align-items:flex-start">
+            <span style="color:#5e4700;margin-top:1px;flex:none">
+              <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Icon" name="ica-warning-triangle" size="{{ 15 }}" hint-size="15px,15px"></x-import>
+            </span>
+            <div style="font-size:13px;line-height:1.55;color:#5e4700">This note is signed. Changing the title does not alter clinical content. The change is recorded in the audit log and applied to the portal copy.</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="flex:1"></div>
+            <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" fill-mode="outline" theme-color="primary" size="small" hint-size="auto,24px">Cancel</x-import>
+            <x-import component-from-global-scope="ICANotesDesignSystem_94514a.Button" fill-mode="solid" theme-color="primary" size="small" hint-size="auto,24px">Change title</x-import>
+          </div>
+          <div style="font-size:13px;line-height:1.55;color:#555">Shown only when the note is already signed. Unsigned notes save without a confirmation step.</div>
+        </div>
+
+        <div style="flex:1 1 560px;min-width:520px;background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 3px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.12);display:flex;flex-direction:column;gap:12px">
+          <div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:#808080;text-transform:uppercase">Empty fields</div>
+          <div style="font-size:14px;line-height:1.6;color:#3d3d3d;text-wrap:pretty">There is no “none” to pick and nothing to clear. Subtitle and discipline are optional — leave them empty and their line simply does not print. Title falls back to the note type, so a note is never untitled.</div>
+          <div style="display:flex;flex-direction:column;gap:7px;margin-top:2px">
+            <div style="display:flex;align-items:baseline;gap:10px;font-size:13px;color:#555"><span style="width:150px;flex:none">All three filled</span><strong style="color:#082f43;font-size:14px">Progress Note · Individual Therapy · Clinical Social Worker</strong></div>
+            <div style="display:flex;align-items:baseline;gap:10px;font-size:13px;color:#555"><span style="width:150px;flex:none">Subtitle empty</span><strong style="color:#082f43;font-size:14px">Progress Note · Clinical Social Worker</strong></div>
+            <div style="display:flex;align-items:baseline;gap:10px;font-size:13px;color:#555"><span style="width:150px;flex:none">Both empty</span><strong style="color:#082f43;font-size:14px">Progress Note</strong></div>
+          </div>
+          <div style="font-size:12px;color:#808080;line-height:1.5">Shown here separated by · for space; on the note each is its own line.</div>
+        </div>
+
+      </div>
+    </div>
+  </sc-if>
+
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;charLimit&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:60,&quot;min&quot;:20,&quot;max&quot;:140,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Rules&quot;},&quot;titleFormat&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Title / Subtitle — Discipline&quot;,&quot;options&quot;:[&quot;Title / Subtitle — Discipline&quot;,&quot;Title — Subtitle (Discipline)&quot;,&quot;Title / Subtitle&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Rules&quot;},&quot;showSurfaces&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Board&quot;}}">
+class Component extends DCLogic {
+  state = {
+    a: { title: 'Progress Note', subtitle: 'Individual Therapy', discipline: 'Clinical Social Worker' },
+    b: { title: 'Progress Note', subtitle: 'Individual Therapy', discipline: 'Clinical Social Worker' },
+    c: { title: 'Progress Note', subtitle: 'Individual Therapy', discipline: 'Clinical Social Worker' }
+  };
+
+  compose(v) {
+    const fmt = this.props.titleFormat || 'Title / Subtitle — Discipline';
+    const clean = (s) => (!s || s === 'None' || s === '[None]' ? '' : String(s).trim());
+    const t = clean(v.title), s = clean(v.subtitle), d = clean(v.discipline);
+    if (!t && !s && !d) return 'Progress Note';
+    if (!t && !s) return 'Progress Note — ' + d;
+    if (fmt === 'Title / Subtitle') return [t, s].filter(Boolean).join(' / ');
+    if (fmt === 'Title — Subtitle (Discipline)') {
+      const head = [t, s].filter(Boolean).join(' — ');
+      return d ? head + ' (' + d + ')' : head;
+    }
+    const head = [t, s].filter(Boolean).join(' / ');
+    return d ? head + ' — ' + d : head;
+  }
+
+  lines(v) {
+    const clean = (s) => (!s || s === 'None' || s === '[None]' ? '' : String(s).trim());
+    const t = clean(v.title), s = clean(v.subtitle), d = clean(v.discipline);
+    return { titleLine: t || 'Progress Note', subLine: s, discLine: d };
+  }
+
+  set(key, field) {
+    return (val) => this.setState((st) => ({ [key]: Object.assign({}, st[key], { [field]: val }) }));
+  }
+
+  setDiscipline(key) {
+    return (val) => this.setState((st) => ({
+      [key]: Object.assign({}, st[key], val === 'Custom…'
+        ? { discCustom: true, discipline: '' }
+        : { discipline: val })
+    }));
+  }
+
+  useList(key) {
+    return () => this.setState((st) => ({ [key]: Object.assign({}, st[key], { discCustom: false, discipline: '' }) }));
+  }
+
+  build(key, meta) {
+    const v = this.state[key];
+    const composed = this.compose(v);
+    const limit = this.props.charLimit ?? 60;
+    return Object.assign({}, meta, this.lines(v), {
+      hasSub: !!(this.lines(v).subLine || this.lines(v).discLine),
+      title: v.title,
+      subtitle: v.subtitle,
+      discipline: v.discipline,
+      composed,
+      countLabel: composed.length + ' of ' + limit + ' characters',
+      setTitle: this.set(key, 'title'),
+      setSubtitle: this.set(key, 'subtitle'),
+      discCustom: !!v.discCustom,
+      discList: !v.discCustom,
+      setDiscipline: this.setDiscipline(key),
+      useList: this.useList(key),
+      hasDisc: !!this.lines(v).discLine,
+      clearDiscipline: (e) => {
+        if (e && e.stopPropagation) { e.stopPropagation(); e.preventDefault(); }
+        this.setState((st) => ({ [key]: Object.assign({}, st[key], { discipline: '' }) }));
+      }
+    });
+  }
+
+  renderVals() {
+    const limit = this.props.charLimit ?? 60;
+    let overSample = 'Individual Therapy with Collateral Family Participation';
+    while (overSample.length <= limit) overSample += ' and Case Management';
+
+    const a = this.build('a', {
+      id: '1a',
+      name: 'Toolbar dialog',
+      recommended: true,
+      tagline: 'A named button on the Compile toolbar opens a focused dialog with Title, Subtitle and Discipline — the closest read of Classic, and the easiest thing for a migrating clinician to find.',
+      traits: ['Most discoverable', 'Direct Classic parity', 'One extra click'],
+      ctaLabel: 'Edit note title',
+      toolbarCta: true,
+      modalOpen: true,
+      drawerOpen: false,
+      inlineEditing: false,
+      staticTitle: true,
+      pencilCta: false,
+      defaultNote: 'A persistent button sits with the other note-level actions, so the capability is visible before the clinician needs it. No hover discovery required.'
+    });
+
+    const b = this.build('b', {
+      id: '1b',
+      name: 'Edit in place',
+      recommended: false,
+      tagline: 'The title in the compiled note is itself the control. Click it, type, and the change appears exactly where it will print — no dialog, no context switch.',
+      traits: ['Fewest clicks', 'Shows the real result', 'Least discoverable'],
+      ctaLabel: '',
+      toolbarCta: false,
+      modalOpen: false,
+      drawerOpen: false,
+      inlineEditing: true,
+      staticTitle: false,
+      pencilCta: false,
+      defaultNote: 'Discoverability rests on hover: a dashed underline and pencil appear over the title. Consider a one-time coach mark for practices migrating from Classic.'
+    });
+
+    const c = this.build('c', {
+      id: '1c',
+      name: 'Note details drawer',
+      recommended: false,
+      tagline: 'A right-hand drawer that owns the title alongside the rest of the note metadata — service location, compile history, status. Room for the other Classic “About This Note” fields later.',
+      traits: ['Holds future metadata', 'Note stays visible', 'Heaviest to build'],
+      ctaLabel: 'Note details',
+      toolbarCta: false,
+      modalOpen: false,
+      drawerOpen: true,
+      inlineEditing: false,
+      staticTitle: true,
+      pencilCta: true,
+      defaultNote: 'A pencil next to the title opens the drawer. The same drawer is where the remaining “About This Note” fields from Classic would land in a later pass.'
+    });
+
+    return {
+      options: [a, b, c],
+      charLimit: limit,
+      showSurfaces: this.props.showSurfaces ?? true,
+      savedTitle: this.compose(this.state.a),
+      savedTitleLine: this.lines(this.state.a).titleLine,
+      savedSubLine: this.lines(this.state.a).subLine,
+      savedDiscLine: this.lines(this.state.a).discLine,
+      overSample,
+      overLabel: overSample.length + ' / ' + limit,
+      errorMsg: 'Subtitle must be ' + limit + ' characters or fewer.',
+      half: { flex: '1 1 0', minWidth: 0 },
+      titleOptions: ['Progress Note'],
+      subtitleOptions: ['None', 'Individual Therapy', 'Couples Therapy', 'Family Therapy', 'In Home Therapy', 'Addiction Medicine', 'Community Support Program', 'Psychiatric Admission History', 'Therapeutic Mentor', 'Therapeutic Training and Support', 'Assisted Living', 'Independent Living', 'Inpatient', 'Nursing Home', 'OutPatient', 'RTC', 'Adult Foster Care', 'Custom…'],
+      disciplineOptions: ['Clinical Social Worker', 'APRN', 'Behavior Analyst', 'Child Psychiatrist', 'CNS', 'Counselor', 'Geriatric Psychiatrist', 'Intake Coordinator', 'Medical Consultant', 'NP', 'NPP', 'Nurse', 'PA', 'Psychiatrist', 'Psychologist', 'Psychopharmacologist', 'Social Worker', 'Custom…'],
+      nav: [
+        ['nav-dashboard', 'DASHBOARD'], ['nav-charts', 'CHART ROOM'], ['nav-calendar', 'CALENDAR'],
+        ['nav-calendar', 'QUICK CALENDAR'], ['doc-note', 'LABS'], ['nav-messages', 'THERAPY GROUPS'],
+        ['nav-messages', 'SUPPORT'], ['nav-reports', 'REPORTS'], ['nav-billing', 'STATEMENTS']
+      ].map(([f, label]) => ({
+        label,
+        style: {
+          width: 22, height: 22, opacity: .9,
+          backgroundImage: 'url(assets/' + f + '.svg)',
+          backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPosition: 'center'
+        }
+      }))
+    };
+  }
+}
+
+</script>
+</body>
+</html>

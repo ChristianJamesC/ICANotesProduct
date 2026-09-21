@@ -1,0 +1,174 @@
+/* ICANotes color palette — exported from Figma (light + dark ramps).
+   Each hue is a 15-step ramp (1 = lightest ... 15 = darkest for light ramps). */
+:root {
+  --neutral-light-white: #ffffff;
+  --neutral-light-1: #fbfbfb;
+  --neutral-light-2: #f5f5f5;
+  --neutral-light-3: #ebebeb;
+  --neutral-light-4: #e0e0e0;
+  --neutral-light-5: #d6d6d6;
+  --neutral-light-6: #c2c2c2;
+  --neutral-light-7: #adadad;
+  --neutral-light-8: #999999;
+  --neutral-light-9: #808080;
+  --neutral-light-10: #666666;
+  --neutral-light-11: #525252;
+  --neutral-light-12: #3d3d3d;
+  --neutral-light-13: #292929;
+  --neutral-light-14: #1f1f1f;
+  --neutral-light-15: #141414;
+  --neutral-light-black: #000000;
+
+  /* ICA Blue — the primary brand hue */
+  --ica-blue-light-1: #9fe2ff;
+  --ica-blue-light-2: #9acde5;
+  --ica-blue-light-3: #5dceff;
+  --ica-blue-light-4: #38baf3;
+  --ica-blue-light-5: #2db0e9;
+  --ica-blue-light-6: #24a8e1;
+  --ica-blue-light-7: #1c9cd4;
+  --ica-blue-light-8: #138abe;
+  --ica-blue-light-9: #107ead;
+  --ica-blue-light-10: #0d6f99;
+  --ica-blue-light-11: #095d82;
+  --ica-blue-light-12: #054e6e;
+  --ica-blue-light-13: #014461;
+  --ica-blue-light-14: #014461;
+  --ica-blue-light-15: #023f5c;
+
+  /* ICA Green — the tertiary brand accent (checks, toggles, success) */
+  --ica-green-light-1: #e8ffcf;
+  --ica-green-light-2: #d9fbb5;
+  --ica-green-light-3: #d3f9ab;
+  --ica-green-light-4: #c7f696;
+  --ica-green-light-5: #bbee84;
+  --ica-green-light-6: #afe972;
+  --ica-green-light-7: #aaeb65;
+  --ica-green-light-8: #9de056;
+  --ica-green-light-9: #90d34a;
+  --ica-green-light-10: #7fb942;
+  --ica-green-light-11: #74aa3d;
+  --ica-green-light-12: #79975a;
+  --ica-green-light-13: #558226;
+  --ica-green-light-14: #465c2f;
+  --ica-green-light-15: #3d5425;
+
+  /* Coral — chart series / decorative */
+  --coral-light-1: #fff6f5;
+  --coral-light-2: #ffeceb;
+  --coral-light-3: #ffdedb;
+  --coral-light-4: #ffc8c4;
+  --coral-light-5: #ffb1ac;
+  --coral-light-6: #ff9d97;
+  --coral-light-7: #ff8a82;
+  --coral-light-8: #ff766d;
+  --coral-light-9: #ff6358;
+  --coral-light-10: #ea5a51;
+  --coral-light-11: #d45349;
+  --coral-light-12: #bf4a42;
+  --coral-light-13: #a33f38;
+  --coral-light-14: #80322c;
+  --coral-light-15: #5c201c;
+
+  /* Green (semantic success) */
+  --green-light-1: #edf8e9;
+  --green-light-2: #dcf0d3;
+  --green-light-3: #cbe9bf;
+  --green-light-4: #b7e1a5;
+  --green-light-5: #9bda80;
+  --green-light-6: #81d15f;
+  --green-light-7: #69c740;
+  --green-light-8: #4ebe1f;
+  --green-light-9: #37b400;
+  --green-light-10: #32a500;
+  --green-light-11: #2d9600;
+  --green-light-12: #298700;
+  --green-light-13: #227100;
+  --green-light-14: #1c5a00;
+  --green-light-15: #123d00;
+
+  /* Blue (semantic info) */
+  --blue-light-1: #e9f4fd;
+  --blue-light-2: #d2edfb;
+  --blue-light-3: #bde0f8;
+  --blue-light-4: #9ed0f6;
+  --blue-light-5: #80c0f4;
+  --blue-light-6: #60b5f2;
+  --blue-light-7: #40acef;
+  --blue-light-8: #208dec;
+  --blue-light-9: #008ce9;
+  --blue-light-10: #0079d6;
+  --blue-light-11: #006bc2;
+  --blue-light-12: #005daf;
+  --blue-light-13: #005c92;
+  --blue-light-14: #004c75;
+  --blue-light-15: #003559;
+
+  /* Yellow (semantic warning) */
+  --yellow-light-1: #fffae9;
+  --yellow-light-2: #fff4d3;
+  --yellow-light-3: #ffeebd;
+  --yellow-light-4: #ffe79e;
+  --yellow-light-5: #ffe080;
+  --yellow-light-6: #ffd760;
+  --yellow-light-7: #ffd040;
+  --yellow-light-8: #ffc720;
+  --yellow-light-9: #ffc000;
+  --yellow-light-10: #eaaf00;
+  --yellow-light-11: #d49f00;
+  --yellow-light-12: #bf9000;
+  --yellow-light-13: #a07800;
+  --yellow-light-14: #806000;
+  --yellow-light-15: #5e4700;
+
+  /* Red (semantic error) */
+  --red-light-1: #feeeed;
+  --red-light-2: #fcddda;
+  --red-light-3: #fbc8c3;
+  --red-light-4: #faaaa2;
+  --red-light-5: #f98b80;
+  --red-light-6: #f76f60;
+  --red-light-7: #f65140;
+  --red-light-8: #f43520;
+  --red-light-9: #f31700;
+  --red-light-10: #df1600;
+  --red-light-11: #ca1400;
+  --red-light-12: #b61100;
+  --red-light-13: #980f00;
+  --red-light-14: #7a0c00;
+  --red-light-15: #5b0900;
+
+  /* Lemon yellow — chart series */
+  --lemon-yellow-light-5: #fff0b1;
+  --lemon-yellow-light-7: #ffe989;
+  --lemon-yellow-light-9: #ffe162;
+  --lemon-yellow-light-12: #bfa94a;
+  --lemon-yellow-light-14: #807131;
+
+  /* Royal blue — chart series */
+  --royal-blue-light-5: #a5affd;
+  --royal-blue-light-7: #7887fb;
+  --royal-blue-light-9: #4b5ffa;
+  --royal-blue-light-12: #3847bc;
+  --royal-blue-light-14: #26307d;
+
+  /* Purple — chart series */
+  --purple-light-5: #d6acff;
+  --purple-light-7: #c182ff;
+  --purple-light-9: #ac58ff;
+  --purple-light-12: #8142bf;
+  --purple-light-14: #562c80;
+
+  /* Pink — chart series */
+  --pink-light-5: #ffacc9;
+  --pink-light-7: #ff82ae;
+  --pink-light-9: #ff5892;
+  --pink-light-12: #bf426e;
+  --pink-light-14: #802c49;
+
+  /* Legacy classic palette (older ICANotes screens) */
+  --ica-classic-blue: #082f43;
+  --ica-classic-blue-2: #2d74da;
+  --ica-classic-icon-blue: #104d6a;
+  --ica-classic-link: #2d74da;
+}

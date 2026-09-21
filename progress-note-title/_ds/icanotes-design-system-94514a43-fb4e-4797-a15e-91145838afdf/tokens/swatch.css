@@ -1,0 +1,113 @@
+/* Semantic color roles — the layer components consume.
+   Built on top of the raw ramps in colors.css. */
+:root {
+  /* Surfaces & base neutrals */
+  --ica-color-app-surface: var(--neutral-light-white);   /* page background       */
+  --ica-color-surface: var(--neutral-light-1);           /* raised surface        */
+  --ica-color-surface-alt: var(--neutral-light-2);        /* subtle fill           */
+  --ica-color-on-app-surface: var(--neutral-light-12);    /* body text (#3d3d3d)   */
+  --ica-color-subtle: var(--neutral-light-9);             /* muted text (#808080)  */
+  --ica-color-border: rgba(0, 0, 0, 0.24);
+  --ica-color-border-alt: rgba(0, 0, 0, 0.32);
+  --ica-color-border-hover: rgba(0, 0, 0, 0.4);
+
+  --ica-color-base-subtle: var(--neutral-light-3);
+  --ica-color-base-subtle-hover: var(--neutral-light-4);
+  --ica-color-base: var(--neutral-light-1);
+  --ica-color-base-hover: var(--neutral-light-5);
+  --ica-color-base-active: var(--neutral-light-4);
+  --ica-color-base-emphasis: var(--neutral-light-6);
+  --ica-color-base-on-base: var(--neutral-light-12);
+
+  /* Primary — ICA blue */
+  --ica-primary-subtle: var(--ica-blue-light-2);
+  --ica-primary-subtle-hover: var(--ica-blue-light-3);
+  --ica-primary-subtle-active: var(--ica-blue-light-4);
+  --ica-primary: var(--ica-blue-light-9);        /* #107ead */
+  --ica-primary-hover: var(--ica-blue-light-10);  /* #0d6f99 */
+  --ica-primary-active: var(--ica-blue-light-11); /* #095d82 */
+  --ica-primary-emphasis: var(--ica-blue-light-6);
+  --ica-primary-on-primary: var(--neutral-light-white);
+  --ica-primary-on-surface: var(--ica-blue-light-9);
+  --ica-primary-on-subtle: var(--ica-blue-light-15);
+  --ica-primary-opacity-hover: rgba(18, 116, 172, 0.06);
+  --ica-primary-opacity-active: rgba(18, 116, 172, 0.12);
+  --ica-primary-opacity-focus: rgba(18, 116, 172, 0.24);
+
+  /* Secondary — neutral grey */
+  --ica-secondary-subtle: var(--neutral-light-1);
+  --ica-secondary-subtle-hover: var(--neutral-light-2);
+  --ica-secondary-subtle-active: var(--neutral-light-3);
+  --ica-secondary: var(--neutral-light-10);       /* #666666 */
+  --ica-secondary-hover: var(--neutral-light-11);
+  --ica-secondary-active: var(--neutral-light-12);
+  --ica-secondary-emphasis: var(--neutral-light-4);
+  --ica-secondary-on-secondary: var(--neutral-light-white);
+  --ica-secondary-opacity-focus: rgba(102, 102, 102, 0.24);
+
+  /* Tertiary — ICA green (checks, toggles, selection) */
+  --ica-tertiary-subtle: var(--ica-green-light-1);
+  --ica-tertiary-subtle-hover: var(--ica-green-light-6);
+  --ica-tertiary-subtle-active: var(--ica-green-light-4);
+  --ica-tertiary: var(--ica-green-light-2);        /* #d9fbb5 */
+  --ica-tertiary-hover: var(--ica-green-light-9);   /* #90d34a */
+  --ica-tertiary-active: var(--ica-green-light-8);  /* #9de056 */
+  --ica-tertiary-emphasis: var(--ica-green-light-10); /* #7fb942 */
+  --ica-tertiary-on-tertiary: var(--ica-green-light-14); /* #465c2f */
+  --ica-tertiary-on-surface: var(--ica-green-light-9);
+  --ica-tertiary-opacity-hover: rgba(175, 233, 114, 0.2);
+  --ica-tertiary-opacity-active: rgba(175, 233, 114, 0.32);
+  --ica-tertiary-opacity-focus: rgba(134, 208, 56, 0.48);
+  --ica-tertiary-opacity-border: rgba(86, 160, 7, 0.24);
+
+  /* Success — green */
+  --ica-success-subtle: var(--green-light-2);
+  --ica-success-subtle-hover: var(--green-light-3);
+  --ica-success: var(--green-light-9);            /* #37b400 */
+  --ica-success-hover: var(--green-light-10);
+  --ica-success-active: var(--green-light-11);
+  --ica-success-emphasis: var(--green-light-6);
+  --ica-success-on-success: var(--neutral-light-white);
+  --ica-success-on-surface: var(--green-light-11); /* #2d9600 */
+
+  /* Warning — yellow */
+  --ica-warning-subtle: var(--yellow-light-2);
+  --ica-warning-subtle-hover: var(--yellow-light-3);
+  --ica-warning: var(--yellow-light-9);           /* #ffc000 */
+  --ica-warning-hover: var(--yellow-light-10);
+  --ica-warning-active: var(--yellow-light-11);
+  --ica-warning-emphasis: var(--yellow-light-6);
+  --ica-warning-on-warning: var(--yellow-light-15); /* #5e4700 */
+  --ica-warning-on-surface: var(--yellow-light-9);
+
+  /* Error — red */
+  --ica-error-subtle: var(--red-light-2);
+  --ica-error-subtle-hover: var(--red-light-3);
+  --ica-error-subtle-active: var(--red-light-5);
+  --ica-error: var(--red-light-10);               /* #df1600 */
+  --ica-error-hover: var(--red-light-12);
+  --ica-error-active: var(--red-light-10);
+  --ica-error-emphasis: var(--red-light-6);
+  --ica-error-on-error: var(--neutral-light-white);
+  --ica-error-on-surface: var(--red-light-11);    /* #ca1400 */
+
+  /* Info — blue */
+  --ica-info-subtle: var(--blue-light-2);
+  --ica-info-subtle-hover: var(--blue-light-3);
+  --ica-info: var(--blue-light-9);                /* #008ce9 */
+  --ica-info-hover: var(--blue-light-10);
+  --ica-info-active: var(--blue-light-11);
+  --ica-info-emphasis: var(--blue-light-6);
+  --ica-info-on-info: var(--neutral-light-white);
+  --ica-info-on-surface: var(--blue-light-11);    /* #006bc2 */
+
+  /* Categorical chart series */
+  --ica-color-series-a: var(--coral-light-9);
+  --ica-color-series-b: var(--lemon-yellow-light-9);
+  --ica-color-series-c: var(--ica-green-light-9);
+  --ica-color-series-d: var(--royal-blue-light-9);
+  --ica-color-series-e: var(--purple-light-9);
+  --ica-color-series-f: var(--pink-light-9);
+
+  --transparent: rgba(255, 255, 255, 0);
+}

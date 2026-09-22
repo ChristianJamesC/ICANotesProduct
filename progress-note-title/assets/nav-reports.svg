@@ -1,7 +1,0 @@
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-<title>icon_MainMenu_Reports</title>
-<path fill="#104d6a" d="M6 4h20c1.105 0 2 0.895 2 2v20c0 1.105-0.895 2-2 2h-20c-1.105 0-2-0.895-2-2v-20c0-1.105 0.895-2 2-2z"></path>
-<path fill="#fff" d="M8 13h4v10h-4v-10z"></path>
-<path fill="#fff" d="M20 17h4v6h-4v-6z"></path>
-<path fill="#fff" d="M14 9h4v14h-4v-14z"></path>
-</svg>

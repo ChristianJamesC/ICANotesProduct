@@ -1,4 +1,0 @@
-/* ICANotes ships a single webfont: Lato (400/700 + italics).
-   The product loads it from Google Fonts; we declare it the same way so the
-   token --font-lato resolves for every consumer. */
-@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap');

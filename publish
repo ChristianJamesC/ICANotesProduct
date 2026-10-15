@@ -21,6 +21,7 @@ map_target() {
     *"Share to Sign"*)          echo "share-to-sign-prototype.html" ;;
     *"Edit Note Title"*)        echo "progress-note-title-edit-prototype.html" ;;
     *"Client and Appointment"*) echo "client-and-appointment-transfer-prototype.html" ;;
+    *"Format Toolbar Settings"*) echo "format-toolbar-settings-prototype.html" ;;
     *)                          echo "" ;;
   esac
 }

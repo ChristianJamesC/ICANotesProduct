@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+#
+# Publish a prototype export from ~/Downloads to the GitHub Pages site.
+#
+#   ./publish                          # newest .html in ~/Downloads
+#   ./publish "Share to Sign Prototype.html"
+#   ./publish --target share-to-sign-prototype.html "Some Export.html"
+#
+# Copies the file over its live counterpart, bumps the ?v= cache-buster on the
+# index.html link, commits, and pushes. Leaves every other dirty file alone.
+
+set -euo pipefail
+
+REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOWNLOADS="$HOME/Downloads"
+TARGET=""
+
+# Map a downloaded filename to the prototype it replaces.
+map_target() {
+  case "$1" in
+    *"Share to Sign"*)          echo "share-to-sign-prototype.html" ;;
+    *"Edit Note Title"*)        echo "progress-note-title-edit-prototype.html" ;;
+    *"Client and Appointment"*) echo "client-and-appointment-transfer-prototype.html" ;;
+    *)                          echo "" ;;
+  esac
+}
+
+die() { printf 'publish: %s\n' "$1" >&2; exit 1; }
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --target) TARGET="${2:-}"; shift 2 ;;
+    -*)       die "unknown flag: $1" ;;
+    *)        SRC="$1"; shift ;;
+  esac
+done
+
+# Default source: newest .html sitting in Downloads.
+if [[ -z "${SRC:-}" ]]; then
+  SRC="$(find "$DOWNLOADS" -maxdepth 1 -name '*.html' -print0 \
+         | xargs -0 ls -t 2>/dev/null | head -1)"
+  [[ -n "$SRC" ]] || die "no .html files in $DOWNLOADS"
+fi
+# A bare filename is assumed to live in Downloads.
+ASKED="$SRC"
+[[ -f "$SRC" ]] || SRC="$DOWNLOADS/$SRC"
+[[ -f "$SRC" ]] || die "no such file: $ASKED"
+
+[[ -n "$TARGET" ]] || TARGET="$(map_target "$(basename "$SRC")")"
+if [[ -z "$TARGET" ]]; then
+  printf 'publish: cannot tell which prototype "%s" replaces.\n' "$(basename "$SRC")" >&2
+  printf 'Pass one explicitly, e.g. --target share-to-sign-prototype.html\n\nKnown prototypes:\n' >&2
+  (cd "$REPO" && ls *.html | grep -v '^index.html$' | sed 's/^/  /') >&2
+  exit 1
+fi
+[[ -f "$REPO/$TARGET" ]] || die "target not in repo: $TARGET"
+
+# Nothing to do if the export is byte-identical to what is already live.
+if cmp -s "$SRC" "$REPO/$TARGET"; then
+  printf 'publish: %s is already identical to the live version. Nothing to do.\n' "$(basename "$SRC")"
+  exit 0
+fi
+
+# Cache-buster + commit label both come from the export's own timestamp.
+STAMP="$(date -r "$SRC" +%Y%m%d-%H%M)"
+LABEL="$(date -r "$SRC" '+%m-%d %H:%M')"
+TITLE="$(basename "$SRC" .html)"
+
+cp "$SRC" "$REPO/$TARGET"
+
+# Rewrite href="target" or href="target?v=old" to carry the new stamp.
+perl -pi -e "s{href=\"\Q$TARGET\E(\?v=[^\"]*)?\"}{href=\"$TARGET?v=$STAMP\"}" "$REPO/index.html"
+
+cd "$REPO"
+git add "$TARGET" index.html
+git commit -q -m "Update $TITLE to the $LABEL export
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
+git push -q
+
+printf 'Published %s -> %s (%s bytes)\n' "$(basename "$SRC")" "$TARGET" "$(wc -c < "$REPO/$TARGET" | tr -d ' ')"
+printf '  %s\n' "$(git log --oneline -1)"
+printf '  https://christianjamesc.github.io/ICANotesProduct/%s?v=%s\n' "$TARGET" "$STAMP"

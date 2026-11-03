@@ -22,6 +22,7 @@ map_target() {
     *"Edit Note Title"*)        echo "progress-note-title-edit-prototype.html" ;;
     *"Client and Appointment"*) echo "client-and-appointment-transfer-prototype.html" ;;
     *"Format Toolbar Settings"*) echo "format-toolbar-settings-prototype.html" ;;
+    *"Treatment Plan"*)         echo "ai-treatment-plan-prototype.html" ;;
     *)                          echo "" ;;
   esac
 }

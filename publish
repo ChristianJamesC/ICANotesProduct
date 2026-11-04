@@ -23,6 +23,7 @@ map_target() {
     *"Client and Appointment"*) echo "client-and-appointment-transfer-prototype.html" ;;
     *"Format Toolbar Settings"*) echo "format-toolbar-settings-prototype.html" ;;
     *"Treatment Plan"*)         echo "ai-treatment-plan-prototype.html" ;;
+    *"SMS Settings"*)           echo "sms-settings-prototype.html" ;;
     *)                          echo "" ;;
   esac
 }

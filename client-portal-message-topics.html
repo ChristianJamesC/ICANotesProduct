@@ -2293,11 +2293,11 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   ];
 
   const ALL_TOPICS = [
-    { key: 'medical',     name: 'Medical' },
-    { key: 'appointment', name: 'Appointment' },
-    { key: 'medication',  name: 'Medication' },
-    { key: 'billing',     name: 'Billing' },
-    { key: 'other',       name: 'Other' },
+    { key: 'medical',     name: 'Medical',     defaultDesc: 'Questions about your care or symptoms' },
+    { key: 'appointment', name: 'Appointment', defaultDesc: 'Schedule, change, or cancel an appointment' },
+    { key: 'medication',  name: 'Medication',  defaultDesc: 'Refills and questions about your medications' },
+    { key: 'billing',     name: 'Billing',     defaultDesc: 'Questions about charges, payments, or insurance' },
+    { key: 'other',       name: 'Other',       defaultDesc: 'Anything that doesn\'t fit the topics above' },
   ];
 
   const STAFF = [
@@ -2463,7 +2463,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
           onClick={() => setOpen(o => !o)}
         >
           <span style={{ flex: 1 }}>
-            {sel ? sel.name : <span className="po-sel-ph">Select a topic for your message…</span>}
+            {sel ? sel.name : <span className="po-sel-ph">Select a topic…</span>}
           </span>
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ flexShrink: 0, color: '#6b7280' }}>
             <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
@@ -2675,7 +2675,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   /* ============================================================
      TopicDialog
   ============================================================ */
-  const BLANK_FORM = { topicKey: '', recipients: [], displayName: '', triedSave: false };
+  const BLANK_FORM = { topicKey: '', recipients: [], displayName: '', description: '', triedSave: false };
 
   function TopicDialog({ title, form, setForm, onSave, onCancel, availableTopics, isEditing }) {
     const topicErr      = form.triedSave && !form.topicKey;
@@ -2726,6 +2726,19 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
               <div className="f-hint">Optional. Patients see this name instead of the recipient's actual name.</div>
             </div>
 
+            {/* Description */}
+            <div className="f-group">
+              <label className="f-label">Description</label>
+              <input
+                type="text"
+                className="f-input"
+                value={form.description}
+                placeholder={ALL_TOPICS.find(t => t.key === form.topicKey)?.defaultDesc || 'Describe what this topic is for…'}
+                onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
+              />
+              <div className="f-hint">Shown to patients to help them pick the right topic.</div>
+            </div>
+
           </div>
           <div className="dlg-foot">
             <div onClick={onCancel} style={{ cursor:'pointer' }}>
@@ -2736,6 +2749,37 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
             </div>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  /* ============================================================
+     FallbackRecipient — default routing when topic recipient can't be resolved
+  ============================================================ */
+  function FallbackRecipient({ staff }) {
+    const [fallback, setFallback] = useState('');
+    return (
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 'var(--ica-spacing-12)',
+        padding: 'var(--ica-spacing-14) var(--ica-spacing-16)',
+        background: 'var(--ica-secondary-subtle)',
+        border: '1px solid var(--ica-color-border)',
+        borderRadius: 'var(--ica-border-radius-8)',
+      }}>
+        <span style={{ fontSize:'var(--font-size-14)', color:'var(--ica-color-on-app-surface)', whiteSpace:'nowrap' }}>
+          When no recipient can be resolved, route to
+        </span>
+        <div style={{ flex: 1, maxWidth: 280 }}>
+          <SingleSelect
+            value={fallback}
+            onChange={setFallback}
+            options={STAFF.map(s => ({ value: s.value, label: s.label }))}
+            placeholder="Select default recipient…"
+          />
+        </div>
+        <span style={{ fontSize:'var(--font-size-12)', color:'var(--ica-secondary-active)' }}>
+          Falls back to admin or owner if unresolved.
+        </span>
       </div>
     );
   }
@@ -2805,9 +2849,8 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
             </div>
           </div>
           <p style={{ fontSize:'var(--font-size-14)', color:'var(--ica-secondary-active)' }}>
-            Configure which topics patients can select when composing a portal message. Messages are routed to the
-            staff member assigned to each topic. If no recipient is configured for a topic, the message will be
-            sent to the patient's Primary Clinician.
+            Topics patients can choose when sending a portal message. Each topic's recipient receives the message.
+            If no topics are configured, messages go to the patient's Principal Clinician.
           </p>
 
           <div className="grid-wrap">
@@ -2822,6 +2865,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
                   <th style={{ width:170 }}>Topic</th>
                   <th>Recipient</th>
                   <th>Display name</th>
+                  <th>Description</th>
                   <th style={{ width:148 }}>Actions</th>
                 </tr>
               </thead>
@@ -2861,6 +2905,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
                         }
                       </td>
                       <td>{row.displayName || <span className="italic-muted">—</span>}</td>
+                      <td>{row.description || (ALL_TOPICS.find(t => t.key === row.topicKey)?.defaultDesc || <span className="italic-muted">—</span>)}</td>
                       <td>
                         <div className="row-actions">
                           <div onClick={() => openEdit(i)} style={{ cursor:'pointer' }}>
@@ -2890,6 +2935,9 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
             </div>
           </div>
         </div>
+
+        {/* Fallback recipient — when no topic recipient can be resolved */}
+        <FallbackRecipient staff={STAFF} />
 
         {dlgOpen && (
           <TopicDialog

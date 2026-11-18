@@ -932,7 +932,7 @@
     .ms-value       { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .ms-placeholder { color: var(--ica-secondary-active); }
     .ms-caret       { flex-shrink: 0; width: 30px; display: flex; align-items: center; justify-content: center; }
-    .ms-list        { position: absolute; top: calc(100% + 2px); left: 0; min-width: 100%; max-height: 240px; overflow: hidden; display: flex; flex-direction: column; background: var(--ica-color-app-surface); border: 1px solid var(--ica-color-on-app-surface); border-radius: var(--ica-border-radius-8); box-shadow: 0 4px 16px rgba(0,0,0,.12); z-index: 500; }
+    .ms-list        { position: absolute; top: calc(100% + 2px); left: 0; max-height: 240px; overflow: hidden; display: flex; flex-direction: column; background: var(--ica-color-app-surface); border: 1px solid var(--ica-color-on-app-surface); border-radius: var(--ica-border-radius-8); box-shadow: 0 4px 16px rgba(0,0,0,.12); z-index: 500; }
     /* Filter input styled as ica-text-input with magnifier prefix */
     .ms-search      { display: flex; align-items: center; margin: var(--ica-spacing-6) var(--ica-spacing-8); border: 1px solid var(--ica-color-border); border-radius: var(--ica-border-radius-8); background: var(--ica-secondary-subtle); height: 32px; flex-shrink: 0; }
     .ms-search:focus-within { border-color: var(--ica-color-on-app-surface); box-shadow: 0 0 0 3px var(--ica-tertiary-opacity-focus); }
@@ -961,10 +961,10 @@
     ============================================================ */
     .grid-wrap    { border: 1px solid var(--ica-color-border); border-radius: var(--ica-border-radius-8); overflow: hidden; }
     .grid-toolbar { height: 49px; background: var(--ica-secondary-subtle); border-bottom: 1px solid var(--ica-secondary-emphasis); display: flex; align-items: center; padding: 0 var(--ica-spacing-8); gap: var(--ica-spacing-8); }
-    .kgrid { width: 100%; border-collapse: collapse; font-size: var(--font-size-14); color: var(--ica-color-on-app-surface); }
+    .kgrid { width: 100%; border-collapse: collapse; font-size: var(--font-size-14); color: var(--ica-color-on-app-surface); table-layout: fixed; }
     .kgrid thead th { height: 41px; background: var(--ica-tertiary-opacity-hover); border-bottom: 1px solid var(--ica-tertiary-opacity-border); padding: 4px var(--ica-spacing-8); text-align: left; font-size: var(--font-size-14); font-weight: var(--ica-font-weight-700); white-space: nowrap; }
     .kgrid thead th + th { border-left: 1px solid rgba(0,0,0,.08); }
-    .kgrid tbody tr { height: 40px; }
+    .kgrid tbody tr { height: 52px; }
     .kgrid tbody tr:nth-child(odd)  td { background: var(--ica-secondary-subtle); }
     .kgrid tbody tr:nth-child(even) td { background: var(--ica-secondary-subtle-active); }
     .kgrid tbody tr:hover td { background: var(--ica-tertiary-opacity-hover); }
@@ -2245,7 +2245,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     'kendo-svgicon':  SvgIcon,
   } = window.ICANotes;
 
-  const { useState } = React;
+  const { useState, useRef, useCallback } = React;
 
   /* ============================================================
      Static data
@@ -2293,10 +2293,10 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   ];
 
   const ALL_TOPICS = [
-    { key: 'medical',     name: 'Medical',     defaultDesc: 'Questions about your care or symptoms' },
     { key: 'appointment', name: 'Appointment', defaultDesc: 'Schedule, change, or cancel an appointment' },
-    { key: 'medication',  name: 'Medication',  defaultDesc: 'Refills and questions about your medications' },
     { key: 'billing',     name: 'Billing',     defaultDesc: 'Questions about charges, payments, or insurance' },
+    { key: 'medical',     name: 'Medical',     defaultDesc: 'Questions about your care or symptoms' },
+    { key: 'medication',  name: 'Medication',  defaultDesc: 'Refills and questions about your medications' },
     { key: 'other',       name: 'Other',       defaultDesc: 'Anything that doesn\'t fit the topics above' },
   ];
 
@@ -2324,14 +2324,24 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   ============================================================ */
   function SingleSelect({ value, onChange, options, placeholder, disabled = false, invalid = false }) {
     const [open, setOpen] = useState(false);
+    const [pos,  setPos]  = useState({});
+    const wrapRef = useRef(null);
     const selected = options.find(o => o.value === value);
 
+    function handleOpen() {
+      if (!disabled && wrapRef.current) {
+        const rect = wrapRef.current.getBoundingClientRect();
+        setPos({ top: rect.bottom + 2, left: rect.left, width: Math.min(Math.max(rect.width, 220), 320) });
+      }
+      if (!disabled) setOpen(o => !o);
+    }
+
     return (
-      <div className="ms-wrap">
+      <div className="ms-wrap" ref={wrapRef}>
         <div
           className={`ms-box${open ? ' ms-open' : ''}${invalid ? ' ms-invalid' : ''}`}
           style={{ cursor: disabled ? 'not-allowed' : 'pointer', opacity: disabled ? .6 : 1 }}
-          onClick={() => !disabled && setOpen(o => !o)}
+          onClick={handleOpen}
         >
           <span className="ms-value">
             {selected ? selected.label : <span className="ms-placeholder">{placeholder || 'Select…'}</span>}
@@ -2342,8 +2352,8 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
         </div>
         {open && (
           <>
-            <div style={{ position:'fixed', inset:0, zIndex:499 }} onClick={() => setOpen(false)} />
-            <div className="ms-list">
+            <div style={{ position:'fixed', inset:0, zIndex:9998 }} onClick={() => setOpen(false)} />
+            <div className="ms-list" style={{ position:'fixed', top:pos.top, left:pos.left, width:pos.width, zIndex:9999 }}>
               {options.map(opt => (
                 <div
                   key={opt.value}
@@ -2370,6 +2380,8 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   function MultiSelect({ value = [], onChange, options, placeholder, invalid = false }) {
     const [open,   setOpen]   = useState(false);
     const [search, setSearch] = useState('');
+    const [pos,    setPos]    = useState({});
+    const wrapRef = useRef(null);
 
     const filtered = options.filter(o =>
       o.label.toLowerCase().includes(search.toLowerCase())
@@ -2383,11 +2395,19 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
       onChange(value.includes(val) ? value.filter(v => v !== val) : [...value, val]);
     }
 
+    function handleOpen() {
+      if (wrapRef.current) {
+        const rect = wrapRef.current.getBoundingClientRect();
+        setPos({ top: rect.bottom + 2, left: rect.left, width: Math.min(Math.max(rect.width, 220), 320) });
+      }
+      setOpen(o => !o);
+    }
+
     function handleClose() { setOpen(false); setSearch(''); }
 
     return (
-      <div className="ms-wrap">
-        <div className={`ms-box${open ? ' ms-open' : ''}${invalid ? ' ms-invalid' : ''}`} onClick={() => setOpen(o => !o)}>
+      <div className="ms-wrap" ref={wrapRef}>
+        <div className={`ms-box${open ? ' ms-open' : ''}${invalid ? ' ms-invalid' : ''}`} onClick={handleOpen}>
           <span className="ms-value">
             {selectedLabels.length > 0
               ? selectedLabels.join(', ')
@@ -2400,9 +2420,8 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
         </div>
         {open && (
           <>
-            <div style={{ position:'fixed', inset:0, zIndex:499 }} onClick={handleClose} />
-            <div className="ms-list">
-              {/* Search input styled as ica-text-input with magnifier prefix */}
+            <div style={{ position:'fixed', inset:0, zIndex:9998 }} onClick={handleClose} />
+            <div className="ms-list" style={{ position:'fixed', top:pos.top, left:pos.left, width:pos.width, zIndex:9999, maxHeight:240 }}>
               <div className="ms-search" onClick={e => e.stopPropagation()}>
                 <span className="ms-search-icon">
                   <SvgIcon svgIcon="ica-magnifier" width={16} height={16} />
@@ -2416,7 +2435,6 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
                   onChange={e => setSearch(e.target.value)}
                 />
               </div>
-              {/* Options */}
               <div className="ms-options">
                 {filtered.length === 0 ? (
                   <div style={{ padding:'var(--ica-spacing-10) var(--ica-spacing-8)', fontSize:'var(--font-size-12)', color:'var(--ica-secondary-active)' }}>
@@ -2662,18 +2680,18 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 
   function PortalOverlay({ onClose, configTopics }) {
     return (
-      <div className="po-overlay">
-        {/* Back bar */}
-        <div className="po-topbar">
-          <button className="po-back" onClick={onClose}>
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <path d="M8 2L4 6l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
-            Back to settings
-          </button>
-          <span className="po-topbar-hint">Patient-facing portal · myportal.icanotes.com</span>
+      <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,.5)', zIndex:999, display:'flex', alignItems:'flex-start', justifyContent:'center', overflowY:'auto', padding:'40px 24px' }}>
+        <div style={{ background:'#f5f7fa', borderRadius:12, width:'100%', maxWidth:900, boxShadow:'0 8px 32px rgba(0,0,0,.2)', overflow:'hidden', flexShrink:0 }}>
+          {/* Modal header bar */}
+          <div style={{ background:'#1b4f72', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'10px 20px' }}>
+            <span style={{ color:'#fff', fontSize:13, opacity:.85 }}>Patient view · myportal.icanotes.com</span>
+            <button onClick={onClose} style={{ background:'transparent', border:'1px solid rgba(255,255,255,.4)', borderRadius:6, color:'rgba(255,255,255,.9)', cursor:'pointer', padding:'3px 12px', fontSize:13, fontFamily:'inherit', display:'flex', alignItems:'center', gap:6 }}>
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 1l8 8M9 1l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+              Close
+            </button>
+          </div>
+          <PortalCompose configTopics={configTopics} />
         </div>
-        <PortalCompose configTopics={configTopics} />
       </div>
     );
   }
@@ -2768,6 +2786,15 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     { topicKey:'other',       enabled:true, recipients:['front-desk'],          displayName:'Front Office',  description:'' },
   ];
 
+  /* Recipient options per topic — Medical/Medication only use group options */
+  const GROUP_ONLY = ['principal', 'clinical-team'];
+  function recipientOptions(topicKey) {
+    if (topicKey === 'medical' || topicKey === 'medication') {
+      return STAFF.filter(s => GROUP_ONLY.includes(s.value));
+    }
+    return STAFF.filter(s => !GROUP_ONLY.includes(s.value));
+  }
+
   /* ============================================================
      TopicRow — inline editing per row
   ============================================================ */
@@ -2793,21 +2820,21 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     if (editing) {
       return (
         <tr style={{ background:'var(--ica-primary-opacity-hover)' }}>
-          {/* Topic + toggle */}
+          {/* Topic — name left, toggle right */}
           <td>
-            <div style={{ display:'flex', alignItems:'center', gap:'var(--ica-spacing-10)' }}>
-              <div style={{ cursor:'pointer', flexShrink:0 }} onClick={onToggle}>
-                <Toggle controlValue={row.enabled} size="small" />
-              </div>
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', height:'100%', paddingRight:'var(--ica-spacing-8)' }}>
               <span style={{ fontWeight:'var(--ica-font-weight-700)' }}>{topic.name}</span>
+              <div style={{ cursor:'pointer', flexShrink:0 }} onClick={onToggle}>
+                <Toggle controlValue={row.enabled} size="medium" />
+              </div>
             </div>
           </td>
-          {/* Recipient — MultiSelect */}
+          {/* Recipient — MultiSelect with topic-specific options */}
           <td style={{ minWidth:200 }}>
             <MultiSelect
               value={editForm.recipients}
               onChange={v => setEditForm(p => ({ ...p, recipients: v }))}
-              options={STAFF}
+              options={recipientOptions(topic.key)}
               placeholder="Choose recipient…"
               invalid={false}
             />
@@ -2847,30 +2874,25 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 
     return (
       <tr>
-        {/* Topic + toggle */}
+        {/* Topic — name+warning left, toggle right */}
         <td>
-          <div style={{ display:'flex', alignItems:'center', gap:'var(--ica-spacing-10)' }}>
-            <div style={{ cursor:'pointer', flexShrink:0 }} onClick={onToggle}>
-              <Toggle controlValue={row.enabled} size="small" />
-            </div>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', height:'100%', paddingRight:'var(--ica-spacing-8)' }}>
             <span style={{ fontWeight:'var(--ica-font-weight-700)', color: row.enabled ? 'inherit' : 'var(--ica-secondary-active)' }}>
               {topic.name}
+              {outside && (
+                <span title="Recipient outside clinical caseload" style={{ display:'inline-flex', alignItems:'center', marginLeft:'var(--ica-spacing-4)', verticalAlign:'middle' }}>
+                  <SvgIcon svgIcon="ica-warning-triangle" width={13} height={13} color="#ffc000" />
+                </span>
+              )}
             </span>
+            <div style={{ cursor:'pointer', flexShrink:0 }} onClick={onToggle}>
+              <Toggle controlValue={row.enabled} size="medium" />
+            </div>
           </div>
         </td>
-        {/* Recipient */}
+        {/* Recipient — plain text, warning moved to topic cell */}
         <td>
-          {names
-            ? <span>
-                {names}
-                {outside && (
-                  <span title="Outside caseload" style={{ display:'inline-flex', alignItems:'center', marginLeft:'var(--ica-spacing-4)', verticalAlign:'middle' }}>
-                    <SvgIcon svgIcon="ica-warning-triangle" width={14} height={14} color="#ffc000" />
-                  </span>
-                )}
-              </span>
-            : <span className="italic-muted">—</span>
-          }
+          {names || <span className="italic-muted">—</span>}
         </td>
         {/* To: name */}
         <td>{row.displayName || <span className="italic-muted">—</span>}</td>
@@ -2973,6 +2995,12 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 
           <div className="grid-wrap">
             <table className="kgrid">
+              <colgroup>
+                <col style={{ width:'210px' }} />
+                <col style={{ width:'200px' }} />
+                <col style={{ width:'140px' }} />
+                <col />
+              </colgroup>
               <thead>
                 <tr>
                 <th style={{ width:160 }}>Topic</th>

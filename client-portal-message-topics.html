@@ -1002,6 +1002,118 @@
     .feat-name    { font-size: var(--font-size-14); font-weight: var(--ica-font-weight-700); margin-bottom: var(--ica-spacing-4); }
     .feat-desc    { font-size: var(--font-size-12); color: var(--ica-secondary-active); }
     .feat-heading { font-size: var(--font-size-14); font-weight: var(--ica-font-weight-700); padding: var(--ica-spacing-10) 0 var(--ica-spacing-8); }
+
+    /* ============================================================
+       Disclaimer badge with tooltip
+    ============================================================ */
+    .disclaimer-badge {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      color: var(--ica-warning-on-surface);
+      cursor: default;
+      flex-shrink: 0;
+      margin-left: var(--ica-spacing-4);
+    }
+    .disclaimer-badge::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 0;
+      padding: var(--ica-spacing-6) var(--ica-spacing-10);
+      background: var(--ica-color-on-app-surface);
+      color: var(--ica-color-app-surface);
+      font-size: var(--font-size-12);
+      font-weight: var(--ica-font-weight-500);
+      border-radius: var(--ica-border-radius-4);
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 100ms, visibility 100ms;
+      pointer-events: none;
+      z-index: 400;
+    }
+    .disclaimer-badge:hover::after {
+      opacity: 1;
+      visibility: visible;
+      transition-delay: 200ms;
+    }
+
+    /* ============================================================
+       Disabled row styling
+    ============================================================ */
+    .topic-row-disabled {
+      background: var(--ica-secondary-subtle);
+    }
+    .topic-row-disabled .topic-name {
+      color: var(--ica-secondary-active);
+    }
+    .topic-row-disabled .edit-btn-wrap {
+      opacity: 0.35;
+      pointer-events: none;
+      cursor: not-allowed;
+    }
+
+    /* ============================================================
+       FAB (Floating Action Button) — Patient compose preview
+    ============================================================ */
+    .fab-preview {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 400;
+      display: flex;
+      align-items: center;
+      gap: var(--ica-spacing-8);
+      padding: var(--ica-spacing-10) var(--ica-spacing-16) var(--ica-spacing-10) var(--ica-spacing-14);
+      background: #1e3c5f; /* Portal dark blue — not a DS token, matches patient portal chrome */
+      color: #fff;
+      border: none;
+      border-radius: 24px;
+      font-size: var(--font-size-14);
+      font-weight: var(--ica-font-weight-500);
+      font-family: var(--font-lato);
+      cursor: pointer;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      transition: background 0.1s, box-shadow 0.1s;
+    }
+    .fab-preview:hover {
+      background: #163450;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+    }
+    .fab-preview svg {
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+       Portal compose disclaimer banner
+    ============================================================ */
+    .po-disclaimer {
+      display: none;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 14px;
+      background: hsl(45, 100%, 93%);
+      border: 1px solid hsl(45, 65%, 78%);
+      border-radius: 6px;
+      margin-bottom: 16px;
+    }
+    .po-disclaimer.visible {
+      display: flex;
+    }
+    .po-disclaimer svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      color: hsl(38, 85%, 35%);
+    }
+    .po-disclaimer-text {
+      font-size: 13px;
+      color: hsl(38, 85%, 28%);
+      line-height: 1.5;
+    }
   </style>
 </head>
 <body>
@@ -2293,12 +2405,24 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   ];
 
   const ALL_TOPICS = [
-    { key: 'appointment', name: 'Appointment', defaultDesc: 'Schedule, change, or cancel an appointment' },
-    { key: 'billing',     name: 'Billing',     defaultDesc: 'Questions about charges, payments, or insurance' },
-    { key: 'medical',     name: 'Medical',     defaultDesc: 'Questions about your care or symptoms' },
-    { key: 'medication',  name: 'Medication',  defaultDesc: 'Refills and questions about your medications' },
-    { key: 'other',       name: 'Other',       defaultDesc: 'Anything that doesn\'t fit the topics above' },
+    { key: 'appointment', name: 'Appointment', defaultDesc: 'Schedule, change, or cancel an appointment', hasDisclaimer: true },
+    { key: 'billing',     name: 'Billing',     defaultDesc: 'Questions about charges, payments, or insurance', hasDisclaimer: true },
+    { key: 'medical',     name: 'Medical',     defaultDesc: 'Questions about your care or symptoms', hasDisclaimer: false },
+    { key: 'medication',  name: 'Medication',  defaultDesc: 'Refills and questions about your medications', hasDisclaimer: false },
+    { key: 'other',       name: 'Other',       defaultDesc: 'Anything that doesn\'t fit the topics above', hasDisclaimer: true },
   ];
+
+  /* Disclaimer badge with hover tooltip */
+  function DisclaimerBadge() {
+    return (
+      <span
+        className="disclaimer-badge"
+        data-tooltip="Client disclaimer: Office staff will read this message. Please don't include symptoms or clinical details."
+      >
+        <SvgIcon svgIcon="ica-warning-triangle" width={13} height={13} />
+      </span>
+    );
+  }
 
   const STAFF = [
     { value: 'principal',    label: 'Principal Clinician' },
@@ -2524,6 +2648,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 
     const sel       = configTopics.find(t => t.key === topic);
     const recipient = sel ? sel.displayName : null;
+    const showDisclaimer = sel?.hasDisclaimer || false;
     const canSend   = !!topic && !!subject.trim() && !!message.trim();
 
     function handleSend() {
@@ -2616,6 +2741,17 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
                       />
                       {trySend && !topic && <div className="po-err">Please select a topic for your message.</div>}
                     </div>
+
+                    {/* Disclaimer banner — shown for non-clinical topics */}
+                    <div className={`po-disclaimer${showDisclaimer ? ' visible' : ''}`} role="alert">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" />
+                        <path d="M12 9v4" />
+                        <path d="M12 17h.01" />
+                      </svg>
+                      <span className="po-disclaimer-text">Office staff will read this message. Please don't include symptoms or clinical details.</span>
+                    </div>
+
                     {/* To — read-only, resolved from topic */}
                     <div className="po-field">
                       <label className="po-lbl">To</label>
@@ -2807,7 +2943,6 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     });
 
     const names   = row.recipients.map(r => staffLabel(r)).filter(Boolean).join(', ');
-    const outside = row.recipients.some(r => OUTSIDE_CASELOAD.has(r));
     const desc    = row.description || topic.defaultDesc;
 
     function startEdit() {
@@ -2820,10 +2955,13 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     if (editing) {
       return (
         <tr style={{ background:'var(--ica-primary-opacity-hover)' }}>
-          {/* Topic — name left, toggle right */}
+          {/* Topic — name + disclaimer left, toggle right */}
           <td>
             <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', height:'100%', paddingRight:'var(--ica-spacing-8)' }}>
-              <span style={{ fontWeight:'var(--ica-font-weight-700)' }}>{topic.name}</span>
+              <span style={{ display:'flex', alignItems:'center', fontWeight:'var(--ica-font-weight-700)' }}>
+                {topic.name}
+                {topic.hasDisclaimer && <DisclaimerBadge />}
+              </span>
               <div style={{ cursor:'pointer', flexShrink:0 }} onClick={onToggle}>
                 <Toggle controlValue={row.enabled} size="medium" />
               </div>
@@ -2873,24 +3011,20 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     }
 
     return (
-      <tr>
-        {/* Topic — name+warning left, toggle right */}
+      <tr className={!row.enabled ? 'topic-row-disabled' : ''}>
+        {/* Topic — name+disclaimer left, toggle right */}
         <td>
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', height:'100%', paddingRight:'var(--ica-spacing-8)' }}>
-            <span style={{ fontWeight:'var(--ica-font-weight-700)', color: row.enabled ? 'inherit' : 'var(--ica-secondary-active)' }}>
+            <span className="topic-name" style={{ display:'flex', alignItems:'center', fontWeight:'var(--ica-font-weight-700)', color: row.enabled ? 'inherit' : 'var(--ica-secondary-active)' }}>
               {topic.name}
-              {outside && (
-                <span title="Recipient outside clinical caseload" style={{ display:'inline-flex', alignItems:'center', marginLeft:'var(--ica-spacing-4)', verticalAlign:'middle' }}>
-                  <SvgIcon svgIcon="ica-warning-triangle" width={13} height={13} color="#ffc000" />
-                </span>
-              )}
+              {topic.hasDisclaimer && <DisclaimerBadge />}
             </span>
             <div style={{ cursor:'pointer', flexShrink:0 }} onClick={onToggle}>
               <Toggle controlValue={row.enabled} size="medium" />
             </div>
           </div>
         </td>
-        {/* Recipient — plain text, warning moved to topic cell */}
+        {/* Recipient — plain text */}
         <td>
           {names || <span className="italic-muted">—</span>}
         </td>
@@ -2900,15 +3034,97 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
           <td style={{ color: desc ? 'inherit' : 'var(--ica-secondary-active)' }}>
             <div style={{ display:'flex', alignItems:'center', gap:'var(--ica-spacing-8)', justifyContent:'space-between' }}>
               <span>{desc || '—'}</span>
-              <div onClick={startEdit} style={{ cursor:'pointer', flexShrink:0, opacity:.5 }}
-                onMouseEnter={e => e.currentTarget.style.opacity=1}
-                onMouseLeave={e => e.currentTarget.style.opacity=.5}
+              <div
+                className={!row.enabled ? 'edit-btn-wrap' : ''}
+                onClick={row.enabled ? startEdit : undefined}
+                style={{ cursor: row.enabled ? 'pointer' : 'not-allowed', flexShrink:0, opacity: row.enabled ? 0.5 : 0.35 }}
+                onMouseEnter={e => { if (row.enabled) e.currentTarget.style.opacity = 1; }}
+                onMouseLeave={e => { if (row.enabled) e.currentTarget.style.opacity = 0.5; }}
               >
                 <SvgIcon svgIcon="ica-pencil" width={14} height={14} />
               </div>
             </div>
           </td>
       </tr>
+    );
+  }
+
+  /* ============================================================
+     SearchableSelect — single-select combobox with search filter
+  ============================================================ */
+  function SearchableSelect({ value, onChange, options, placeholder }) {
+    const [open,   setOpen]   = useState(false);
+    const [search, setSearch] = useState('');
+    const [pos,    setPos]    = useState({});
+    const wrapRef = useRef(null);
+
+    const filtered = options.filter(o =>
+      o.label.toLowerCase().includes(search.toLowerCase())
+    );
+
+    const selected = options.find(o => o.value === value);
+
+    function handleOpen() {
+      if (wrapRef.current) {
+        const rect = wrapRef.current.getBoundingClientRect();
+        setPos({ top: rect.bottom + 2, left: rect.left, width: Math.min(Math.max(rect.width, 220), 320) });
+      }
+      setOpen(o => !o);
+    }
+
+    function handleClose() { setOpen(false); setSearch(''); }
+
+    function handleSelect(val) {
+      onChange(val);
+      handleClose();
+    }
+
+    return (
+      <div className="ms-wrap" ref={wrapRef}>
+        <div className={`ms-box${open ? ' ms-open' : ''}`} onClick={handleOpen}>
+          <span className="ms-value">
+            {selected ? selected.label : <span className="ms-placeholder">{placeholder || 'Select…'}</span>}
+          </span>
+          <span className="ms-caret">
+            <SvgIcon svgIcon="ica-caret-down" width={12} height={12} />
+          </span>
+        </div>
+        {open && (
+          <>
+            <div style={{ position:'fixed', inset:0, zIndex:9998 }} onClick={handleClose} />
+            <div className="ms-list" style={{ position:'fixed', top:pos.top, left:pos.left, width:pos.width, zIndex:9999, maxHeight:280 }}>
+              <div className="ms-search" onClick={e => e.stopPropagation()}>
+                <span className="ms-search-icon">
+                  <SvgIcon svgIcon="ica-magnifier" width={16} height={16} />
+                </span>
+                <input
+                  className="ms-search-input"
+                  type="text"
+                  placeholder="Search staff…"
+                  value={search}
+                  autoFocus
+                  onChange={e => setSearch(e.target.value)}
+                />
+              </div>
+              <div className="ms-options">
+                {filtered.length === 0 ? (
+                  <div style={{ padding:'var(--ica-spacing-10) var(--ica-spacing-8)', fontSize:'var(--font-size-12)', color:'var(--ica-secondary-active)' }}>
+                    No results
+                  </div>
+                ) : filtered.map(opt => (
+                  <div
+                    key={opt.value}
+                    className={`ms-item${value === opt.value ? ' ms-selected' : ''}`}
+                    onClick={() => handleSelect(opt.value)}
+                  >
+                    {opt.label}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
     );
   }
 
@@ -2929,16 +3145,13 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
           When no recipient can be resolved, route to
         </span>
         <div style={{ flex: 1, maxWidth: 280 }}>
-          <SingleSelect
+          <SearchableSelect
             value={fallback}
             onChange={setFallback}
-            options={STAFF.map(s => ({ value: s.value, label: s.label }))}
+            options={STAFF.filter(s => !['principal', 'clinical-team'].includes(s.value)).map(s => ({ value: s.value, label: s.label }))}
             placeholder="Select default recipient…"
           />
         </div>
-        <span style={{ fontSize:'var(--font-size-12)', color:'var(--ica-secondary-active)' }}>
-          Falls back to admin or owner if unresolved.
-        </span>
       </div>
     );
   }
@@ -2961,18 +3174,22 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     // Build the topic list the patient would see
     const configTopics = rows
       .filter(r => r.enabled && r.recipients.length > 0)
-      .map(r => ({
-        key:         r.topicKey,
-        name:        topicName(r.topicKey),
-        desc:        r.description || ALL_TOPICS.find(t => t.key === r.topicKey)?.defaultDesc || '',
-        displayName: r.displayName || staffLabel(r.recipients[0]),
-      }));
+      .map(r => {
+        const topicMeta = ALL_TOPICS.find(t => t.key === r.topicKey);
+        return {
+          key:           r.topicKey,
+          name:          topicName(r.topicKey),
+          desc:          r.description || topicMeta?.defaultDesc || '',
+          displayName:   r.displayName || staffLabel(r.recipients[0]),
+          hasDisclaimer: topicMeta?.hasDisclaimer || false,
+        };
+      });
 
     const previewTopics = configTopics.length > 0 ? configTopics : [
-      { key:'appointment', name:'Appointment', desc:'Schedule, change, or cancel an appointment',    displayName:'Scheduling' },
-      { key:'billing',     name:'Billing',     desc:'Questions about charges, payments, or insurance', displayName:'Angela Martinez' },
-      { key:'medical',     name:'Medical',     desc:'Questions about your care or symptoms',          displayName:'Clinical Team' },
-      { key:'medication',  name:'Medication',  desc:'Refills and questions about your medications',   displayName:'Pharmacy' },
+      { key:'appointment', name:'Appointment', desc:'Schedule, change, or cancel an appointment',    displayName:'Scheduling', hasDisclaimer:true },
+      { key:'billing',     name:'Billing',     desc:'Questions about charges, payments, or insurance', displayName:'Angela Martinez', hasDisclaimer:true },
+      { key:'medical',     name:'Medical',     desc:'Questions about your care or symptoms',          displayName:'Clinical Team', hasDisclaimer:false },
+      { key:'medication',  name:'Medication',  desc:'Refills and questions about your medications',   displayName:'Pharmacy', hasDisclaimer:false },
     ];
 
     return (
@@ -2982,9 +3199,6 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', paddingBottom:'var(--ica-spacing-12)', borderBottom:'1px solid var(--ica-color-border)' }}>
             <div style={{ fontSize:'var(--font-size-16)', fontWeight:'var(--ica-font-weight-700)', color:'var(--ica-primary)' }}>
               Message Topics
-            </div>
-            <div onClick={() => setShowPreview(true)} style={{ cursor:'pointer', flexShrink:0 }}>
-              <Button title="Preview patient view" svgIcon="ica-eye" themeColor="base" fillMode="outline" size="small" />
             </div>
           </div>
 
@@ -3029,6 +3243,19 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 
         {/* Fallback recipient */}
         <FallbackRecipient staff={STAFF} />
+
+        {/* FAB — Patient compose preview */}
+        {!showPreview && (
+          <button className="fab-preview" onClick={() => setShowPreview(true)}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+              <path d="M8 12h.01" />
+              <path d="M12 12h.01" />
+              <path d="M16 12h.01" />
+            </svg>
+            Patient compose
+          </button>
+        )}
 
         {showPreview && (
           <PortalOverlay

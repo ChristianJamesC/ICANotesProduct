@@ -2288,7 +2288,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     { key: 'portal-invitation-email',    label: 'Portal Invitation Email' },
     { key: 'form-package-email',         label: 'Form Package Email' },
     { key: 'single-form-email',          label: 'Single Form Email' },
-    { key: 'message-notification-email', label: 'Message Notification Email' },
+    { key: 'message-notification-email', label: 'New Message Email' },
     { key: 'message-topics',             label: 'Message Topics',           isNew: true },
   ];
 
@@ -2301,11 +2301,16 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   ];
 
   const STAFF = [
-    { value: 'jones',      label: 'Dr. Sarah Jones' },
-    { value: 'chen',       label: 'Dr. Michael Chen' },
-    { value: 'patel',      label: 'Dr. Anita Patel' },
+    { value: 'principal', label: 'Principal Clinician' },
+    { value: 'jones',      label: 'Sarah Rogers' },
+    { value: 'chen',       label: 'James Morningstar' },
+    { value: 'patel',      label: 'Priya Patel' },
     { value: 'martinez',   label: 'Angela Martinez' },
     { value: 'front-desk', label: 'Front Desk' },
+    { value: 'lisa',       label: 'Lisa Barnard' },
+    { value: 'david',      label: 'David Crowley' },
+    { value: 'rachel',     label: 'Rachel Boyles' },
+    { value: 'tom',        label: 'Tom Lindell' },
   ];
 
   const OUTSIDE_CASELOAD = new Set(['martinez', 'front-desk']);
@@ -2753,6 +2758,137 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     );
   }
 
+  /* Pre-configured rows — all 5 topics always present */
+  const INITIAL_ROWS = [
+    { topicKey:'appointment', enabled:true, recipients:['front-desk'],          displayName:'Scheduling',    description:'' },
+    { topicKey:'billing',     enabled:true, recipients:['martinez'],            displayName:'',              description:'' },
+    { topicKey:'medical',     enabled:true, recipients:['jones','chen'],        displayName:'Clinical Team', description:'' },
+    { topicKey:'medication',  enabled:true, recipients:['principal','patel'],   displayName:'Pharmacy',      description:'' },
+    { topicKey:'other',       enabled:true, recipients:['front-desk'],          displayName:'Front Office',  description:'' },
+  ];
+
+  /* ============================================================
+     TopicRow — inline editing per row
+  ============================================================ */
+  function TopicRow({ topic, row, onToggle, onSave }) {
+    const [editing,  setEditing]  = useState(false);
+    const [editForm, setEditForm] = useState({
+      recipients:  row.recipients,
+      displayName: row.displayName,
+      description: row.description,
+    });
+
+    const names   = row.recipients.map(r => staffLabel(r)).filter(Boolean).join(', ');
+    const outside = row.recipients.some(r => OUTSIDE_CASELOAD.has(r));
+    const desc    = row.description || topic.defaultDesc;
+
+    function startEdit() {
+      setEditForm({ recipients: row.recipients, displayName: row.displayName, description: row.description || topic.defaultDesc });
+      setEditing(true);
+    }
+    function cancelEdit() { setEditing(false); }
+    function saveEdit()   { onSave(editForm); setEditing(false); }
+
+    if (editing) {
+      return (
+        <tr style={{ background:'var(--ica-primary-opacity-hover)' }}>
+          {/* Topic + toggle */}
+          <td>
+            <div style={{ display:'flex', alignItems:'center', gap:'var(--ica-spacing-10)' }}>
+              <div style={{ cursor:'pointer', flexShrink:0 }} onClick={onToggle}>
+                <Toggle controlValue={row.enabled} size="small" />
+              </div>
+              <span style={{ fontWeight:'var(--ica-font-weight-700)' }}>{topic.name}</span>
+            </div>
+          </td>
+          {/* Recipient — MultiSelect */}
+          <td style={{ minWidth:200 }}>
+            <MultiSelect
+              value={editForm.recipients}
+              onChange={v => setEditForm(p => ({ ...p, recipients: v }))}
+              options={STAFF}
+              placeholder="Choose recipient…"
+              invalid={false}
+            />
+          </td>
+          {/* To: name */}
+          <td>
+            <input
+              type="text"
+              className="f-input"
+              value={editForm.displayName}
+              placeholder="Same as recipient"
+              onChange={e => setEditForm(p => ({ ...p, displayName: e.target.value }))}
+            />
+          </td>
+          {/* Description */}
+          <td>
+            <input
+              type="text"
+              className="f-input"
+              value={editForm.description}
+              placeholder={topic.defaultDesc}
+              onChange={e => setEditForm(p => ({ ...p, description: e.target.value }))}
+            />
+          </td>
+          {/* Save / Cancel */}
+          <td>
+            <div style={{ display:'flex', gap:'var(--ica-spacing-4)', alignItems:'center' }}>
+              <div onClick={saveEdit} style={{ cursor:'pointer' }}>
+                <Button themeColor="primary" fillMode="flat" size="small" svgIcon="ica-checkmark" />
+              </div>
+              <div onClick={cancelEdit} style={{ cursor:'pointer' }}>
+                <Button themeColor="error" fillMode="flat" size="small" svgIcon="ica-cross" />
+              </div>
+            </div>
+          </td>
+        </tr>
+      );
+    }
+
+    return (
+      <tr>
+        {/* Topic + toggle */}
+        <td>
+          <div style={{ display:'flex', alignItems:'center', gap:'var(--ica-spacing-10)' }}>
+            <div style={{ cursor:'pointer', flexShrink:0 }} onClick={onToggle}>
+              <Toggle controlValue={row.enabled} size="small" />
+            </div>
+            <span style={{ fontWeight:'var(--ica-font-weight-700)', color: row.enabled ? 'inherit' : 'var(--ica-secondary-active)' }}>
+              {topic.name}
+            </span>
+          </div>
+        </td>
+        {/* Recipient */}
+        <td>
+          {names
+            ? <span>
+                {names}
+                {outside && (
+                  <span title="Outside caseload" style={{ display:'inline-flex', alignItems:'center', marginLeft:'var(--ica-spacing-4)', verticalAlign:'middle' }}>
+                    <SvgIcon svgIcon="ica-warning-triangle" width={14} height={14} color="#ffc000" />
+                  </span>
+                )}
+              </span>
+            : <span className="italic-muted">—</span>
+          }
+        </td>
+        {/* To: name */}
+        <td>{row.displayName || <span className="italic-muted">—</span>}</td>
+        {/* Description */}
+        <td style={{ color: desc ? 'inherit' : 'var(--ica-secondary-active)' }}>
+          {desc || '—'}
+        </td>
+        {/* Edit */}
+        <td>
+          <div onClick={startEdit} style={{ cursor:'pointer' }}>
+            <Button themeColor="base" fillMode="flat" size="small" svgIcon="ica-pencil" />
+          </div>
+        </td>
+      </tr>
+    );
+  }
+
   /* ============================================================
      FallbackRecipient — default routing when topic recipient can't be resolved
   ============================================================ */
@@ -2785,55 +2921,35 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   }
 
   /* ============================================================
-     MessageTopicsPanel
+     MessageTopicsPanel — inline editing, all 5 topics always present
   ============================================================ */
   function MessageTopicsPanel() {
-    const [rows,        setRows]       = useState([]);
-    const [dlgOpen,     setDlgOpen]    = useState(false);
-    const [editIdx,     setEditIdx]    = useState(null);
-    const [form,        setForm]       = useState(BLANK_FORM);
+    const [rows,        setRows]        = useState(INITIAL_ROWS);
     const [showPreview, setShowPreview] = useState(false);
 
-    const usedKeys  = rows.map(r => r.topicKey);
-    const available = editIdx !== null ? ALL_TOPICS : ALL_TOPICS.filter(t => !usedKeys.includes(t.key));
-    const allUsed   = usedKeys.length >= ALL_TOPICS.length;
+    function toggleRow(key) {
+      setRows(prev => prev.map(r => r.topicKey === key ? { ...r, enabled: !r.enabled } : r));
+    }
 
-    const openNew  = ()  => { setForm(BLANK_FORM); setEditIdx(null); setDlgOpen(true); };
-    const openEdit = (i) => { setForm({ ...rows[i], triedSave: false }); setEditIdx(i); setDlgOpen(true); };
-    const closeDlg = ()  => setDlgOpen(false);
+    function saveRow(key, updated) {
+      setRows(prev => prev.map(r => r.topicKey === key ? { ...r, ...updated } : r));
+    }
 
-    const handleSave = () => {
-      if (!form.topicKey || form.recipients.length === 0) {
-        setForm(p => ({ ...p, triedSave: true }));
-        return;
-      }
-      setRows(prev =>
-        editIdx !== null
-          ? prev.map((r, i) => i === editIdx ? { ...form } : r)
-          : [...prev, { ...form, enabled: true }]
-      );
-      setDlgOpen(false);
-    };
-
-    const handleDelete = i => setRows(prev => prev.filter((_, idx) => idx !== i));
-    const toggleRow    = i => setRows(prev => prev.map((r, idx) => idx === i ? { ...r, enabled: !r.enabled } : r));
-
-    // Build the topic list the patient would see (enabled rows only, with display names)
+    // Build the topic list the patient would see
     const configTopics = rows
-      .filter(r => r.enabled !== false && r.recipients?.length > 0)
+      .filter(r => r.enabled && r.recipients.length > 0)
       .map(r => ({
-        key:  r.topicKey,
-        name: topicName(r.topicKey),
-        desc: TOPIC_DESCS[r.topicKey] || '',
+        key:         r.topicKey,
+        name:        topicName(r.topicKey),
+        desc:        r.description || ALL_TOPICS.find(t => t.key === r.topicKey)?.defaultDesc || '',
         displayName: r.displayName || staffLabel(r.recipients[0]),
       }));
 
-    // Fall back to demo topics when nothing is configured yet
     const previewTopics = configTopics.length > 0 ? configTopics : [
-      { key:'medical',     name:'Medical',     desc:'General medical questions',           displayName:'Dr. Sarah Jones' },
-      { key:'appointment', name:'Appointment', desc:'Scheduling and appointment requests',  displayName:'Dr. Sarah Jones' },
-      { key:'medication',  name:'Medication',  desc:'Medication refills and questions',     displayName:'Dr. Michael Chen' },
-      { key:'billing',     name:'Billing',     desc:'Billing and payment questions',        displayName:'Billing Department' },
+      { key:'appointment', name:'Appointment', desc:'Schedule, change, or cancel an appointment',    displayName:'Scheduling' },
+      { key:'billing',     name:'Billing',     desc:'Questions about charges, payments, or insurance', displayName:'Angela Martinez' },
+      { key:'medical',     name:'Medical',     desc:'Questions about your care or symptoms',          displayName:'Clinical Team' },
+      { key:'medication',  name:'Medication',  desc:'Refills and questions about your medications',   displayName:'Pharmacy' },
     ];
 
     return (
@@ -2848,105 +2964,43 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
               <Button title="Preview patient view" svgIcon="ica-eye" themeColor="base" fillMode="outline" size="small" />
             </div>
           </div>
+
           <p style={{ fontSize:'var(--font-size-14)', color:'var(--ica-secondary-active)' }}>
             Topics patients can choose when sending a portal message. Each topic's recipient receives the message.
             If no topics are configured, messages go to the patient's Principal Clinician.
           </p>
 
           <div className="grid-wrap">
-            <div className="grid-toolbar">
-              <div onClick={allUsed ? undefined : openNew} style={{ cursor: allUsed ? 'default' : 'pointer' }}>
-                <Button title="New Topic" themeColor="primary" fillMode="solid" size="medium" disabled={allUsed} />
-              </div>
-            </div>
             <table className="kgrid">
               <thead>
                 <tr>
-                  <th style={{ width:170 }}>Topic</th>
-                  <th>Recipient</th>
-                  <th>Display name</th>
+                  <th style={{ width:160 }}>Topic</th>
+                  <th>Recipient <span style={{ color:'var(--ica-error)' }}>*</span></th>
+                  <th style={{ width:160 }}>To: name</th>
                   <th>Description</th>
-                  <th style={{ width:148 }}>Actions</th>
+                  <th style={{ width:48 }}></th>
                 </tr>
               </thead>
               <tbody>
-                {rows.length === 0 ? (
-                  <tr><td colSpan={4}><div className="grid-empty">No records available.</div></td></tr>
-                ) : rows.map((row, i) => {
-                  const on      = row.enabled !== false;
-                  const outside = row.recipients?.some(r => OUTSIDE_CASELOAD.has(r));
-                  const names   = row.recipients?.length > 0 ? row.recipients.map(r => staffLabel(r)).join(', ') : null;
+                {ALL_TOPICS.map(topic => {
+                  const row = rows.find(r => r.topicKey === topic.key) || { topicKey: topic.key, enabled: false, recipients: [], displayName: '', description: '' };
                   return (
-                    <tr key={i}>
-                      <td>
-                        <div style={{ display:'flex', alignItems:'center', gap:'var(--ica-spacing-10)' }}>
-                          <div style={{ cursor:'pointer', flexShrink:0 }} onClick={() => toggleRow(i)}>
-                            <Toggle controlValue={on} size="small" />
-                          </div>
-                          <span style={{ fontWeight:'var(--ica-font-weight-700)', color: on ? 'inherit' : 'var(--ica-secondary-active)' }}>
-                            {topicName(row.topicKey)}
-                          </span>
-                        </div>
-                      </td>
-                      <td>
-                        {row.recipients?.length > 0
-                          ? row.recipients.map((r, i) => (
-                              <React.Fragment key={r}>
-                                {i > 0 && ', '}
-                                {staffLabel(r)}
-                                {OUTSIDE_CASELOAD.has(r) && (
-                                  <span title="Outside caseload" style={{ display:'inline-flex', alignItems:'center', marginLeft:'var(--ica-spacing-4)', verticalAlign:'middle', cursor:'default' }}>
-                                    <SvgIcon svgIcon="ica-warning-triangle" width={14} height={14} color="#ffc000" />
-                                  </span>
-                                )}
-                              </React.Fragment>
-                            ))
-                          : <span className="italic-muted">Routes to Primary Clinician</span>
-                        }
-                      </td>
-                      <td>{row.displayName || <span className="italic-muted">—</span>}</td>
-                      <td>{row.description || (ALL_TOPICS.find(t => t.key === row.topicKey)?.defaultDesc || <span className="italic-muted">—</span>)}</td>
-                      <td>
-                        <div className="row-actions">
-                          <div onClick={() => openEdit(i)} style={{ cursor:'pointer' }}>
-                            <Button title="Edit" svgIcon="ica-pencil" themeColor="base" fillMode="outline" size="small" />
-                          </div>
-                          <div onClick={() => handleDelete(i)} style={{ cursor:'pointer' }}>
-                            <Button title="Delete" svgIcon="ica-trash" themeColor="base" fillMode="solid" size="small" />
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
+                    <TopicRow
+                      key={topic.key}
+                      topic={topic}
+                      row={row}
+                      onToggle={() => toggleRow(topic.key)}
+                      onSave={updated => saveRow(topic.key, updated)}
+                    />
                   );
                 })}
               </tbody>
             </table>
-            <div className="grid-footer">
-              <button className="pg-btn" disabled><SvgIcon svgIcon="ica-caret-alt-to-left" width={12} height={12} /></button>
-              <button className="pg-btn" disabled><SvgIcon svgIcon="ica-caret-left" width={12} height={12} /></button>
-              <div className="pg-current">1</div>
-              <button className="pg-btn" disabled><SvgIcon svgIcon="ica-caret-right" width={12} height={12} /></button>
-              <button className="pg-btn" disabled><SvgIcon svgIcon="ica-caret-alt-to-right" width={12} height={12} /></button>
-              <select className="pg-select"><option>25</option><option>50</option></select>
-              <span>items per page</span>
-              <span className="pg-count">
-                {rows.length === 0 ? '0 – 0 of 0 items' : `1 – ${rows.length} of ${rows.length} items`}
-              </span>
-            </div>
           </div>
         </div>
 
-        {/* Fallback recipient — when no topic recipient can be resolved */}
+        {/* Fallback recipient */}
         <FallbackRecipient staff={STAFF} />
-
-        {dlgOpen && (
-          <TopicDialog
-            title={editIdx !== null ? 'Edit Topic' : 'New Topic'}
-            form={form} setForm={setForm}
-            onSave={handleSave} onCancel={closeDlg}
-            availableTopics={available} isEditing={editIdx !== null}
-          />
-        )}
 
         {showPreview && (
           <PortalOverlay

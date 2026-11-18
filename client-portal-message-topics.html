@@ -2822,23 +2822,21 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
               onChange={e => setEditForm(p => ({ ...p, displayName: e.target.value }))}
             />
           </td>
-          {/* Description */}
+          {/* Description input + Save/Cancel inline at the end */}
           <td>
-            <input
-              type="text"
-              className="f-input"
-              value={editForm.description}
-              placeholder={topic.defaultDesc}
-              onChange={e => setEditForm(p => ({ ...p, description: e.target.value }))}
-            />
-          </td>
-          {/* Save / Cancel */}
-          <td>
-            <div style={{ display:'flex', gap:'var(--ica-spacing-4)', alignItems:'center' }}>
-              <div onClick={saveEdit} style={{ cursor:'pointer' }}>
+            <div style={{ display:'flex', alignItems:'center', gap:'var(--ica-spacing-6)' }}>
+              <input
+                type="text"
+                className="f-input"
+                value={editForm.description}
+                placeholder={topic.defaultDesc}
+                onChange={e => setEditForm(p => ({ ...p, description: e.target.value }))}
+                style={{ flex:1 }}
+              />
+              <div onClick={saveEdit} style={{ cursor:'pointer', flexShrink:0 }}>
                 <Button themeColor="primary" fillMode="flat" size="small" svgIcon="ica-checkmark" />
               </div>
-              <div onClick={cancelEdit} style={{ cursor:'pointer' }}>
+              <div onClick={cancelEdit} style={{ cursor:'pointer', flexShrink:0 }}>
                 <Button themeColor="error" fillMode="flat" size="small" svgIcon="ica-cross" />
               </div>
             </div>
@@ -2876,16 +2874,18 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
         </td>
         {/* To: name */}
         <td>{row.displayName || <span className="italic-muted">—</span>}</td>
-        {/* Description */}
-        <td style={{ color: desc ? 'inherit' : 'var(--ica-secondary-active)' }}>
-          {desc || '—'}
-        </td>
-        {/* Edit */}
-        <td>
-          <div onClick={startEdit} style={{ cursor:'pointer' }}>
-            <Button themeColor="base" fillMode="flat" size="small" svgIcon="ica-pencil" />
-          </div>
-        </td>
+          {/* Description — pencil icon sits at the right edge of this cell */}
+          <td style={{ color: desc ? 'inherit' : 'var(--ica-secondary-active)' }}>
+            <div style={{ display:'flex', alignItems:'center', gap:'var(--ica-spacing-8)', justifyContent:'space-between' }}>
+              <span>{desc || '—'}</span>
+              <div onClick={startEdit} style={{ cursor:'pointer', flexShrink:0, opacity:.5 }}
+                onMouseEnter={e => e.currentTarget.style.opacity=1}
+                onMouseLeave={e => e.currentTarget.style.opacity=.5}
+              >
+                <SvgIcon svgIcon="ica-pencil" width={14} height={14} />
+              </div>
+            </div>
+          </td>
       </tr>
     );
   }
@@ -2975,11 +2975,10 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
             <table className="kgrid">
               <thead>
                 <tr>
-                  <th style={{ width:160 }}>Topic</th>
+                <th style={{ width:160 }}>Topic</th>
                   <th>Recipient <span style={{ color:'var(--ica-error)' }}>*</span></th>
                   <th style={{ width:160 }}>To: name</th>
                   <th>Description</th>
-                  <th style={{ width:48 }}></th>
                 </tr>
               </thead>
               <tbody>

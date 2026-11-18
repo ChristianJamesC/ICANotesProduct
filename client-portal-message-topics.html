@@ -2301,16 +2301,17 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   ];
 
   const STAFF = [
-    { value: 'principal', label: 'Principal Clinician' },
-    { value: 'jones',      label: 'Sarah Rogers' },
-    { value: 'chen',       label: 'James Morningstar' },
-    { value: 'patel',      label: 'Priya Patel' },
-    { value: 'martinez',   label: 'Angela Martinez' },
-    { value: 'front-desk', label: 'Front Desk' },
-    { value: 'lisa',       label: 'Lisa Barnard' },
-    { value: 'david',      label: 'David Crowley' },
-    { value: 'rachel',     label: 'Rachel Boyles' },
-    { value: 'tom',        label: 'Tom Lindell' },
+    { value: 'principal',    label: 'Principal Clinician' },
+    { value: 'clinical-team',label: 'Clinical Team' },
+    { value: 'jones',        label: 'Sarah Rogers' },
+    { value: 'chen',         label: 'James Morningstar' },
+    { value: 'patel',        label: 'Priya Patel' },
+    { value: 'martinez',     label: 'Angela Martinez' },
+    { value: 'front-desk',   label: 'Front Desk' },
+    { value: 'lisa',         label: 'Lisa Barnard' },
+    { value: 'david',        label: 'David Crowley' },
+    { value: 'rachel',       label: 'Rachel Boyles' },
+    { value: 'tom',          label: 'Tom Lindell' },
   ];
 
   const OUTSIDE_CASELOAD = new Set(['martinez', 'front-desk']);
@@ -2762,8 +2763,8 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   const INITIAL_ROWS = [
     { topicKey:'appointment', enabled:true, recipients:['front-desk'],          displayName:'Scheduling',    description:'' },
     { topicKey:'billing',     enabled:true, recipients:['martinez'],            displayName:'',              description:'' },
-    { topicKey:'medical',     enabled:true, recipients:['jones','chen'],        displayName:'Clinical Team', description:'' },
-    { topicKey:'medication',  enabled:true, recipients:['principal','patel'],   displayName:'Pharmacy',      description:'' },
+    { topicKey:'medical',     enabled:true, recipients:['clinical-team'],           displayName:'Clinical Team', description:'' },
+    { topicKey:'medication',  enabled:true, recipients:['principal','clinical-team'], displayName:'Pharmacy',      description:'' },
     { topicKey:'other',       enabled:true, recipients:['front-desk'],          displayName:'Front Office',  description:'' },
   ];
 
